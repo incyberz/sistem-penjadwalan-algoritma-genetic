@@ -3,6 +3,7 @@
 # ARRAY SQL
 # ============================================================
 $arr_sql = [];
+
 # ============================================================
 # prodi
 # ============================================================
@@ -27,20 +28,6 @@ $arr_sql['mk'] = "CREATE TABLE IF NOT EXISTS tb_mk (
   )
 ";
 
-# ============================================================
-# dosen
-# ============================================================
-$arr_sql['dosen'] = "CREATE TABLE IF NOT EXISTS tb_dosen (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  nama VARCHAR(100) NOT NULL,
-  nidn VARCHAR(50) UNIQUE NOT NULL,
-  email VARCHAR(100) UNIQUE NOT NULL,
-  no_telp VARCHAR(15),
-  alamat TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-  )
-";
 
 # ============================================================
 # dosen
@@ -48,8 +35,7 @@ $arr_sql['dosen'] = "CREATE TABLE IF NOT EXISTS tb_dosen (
 $arr_sql['dosen'] = "CREATE TABLE IF NOT EXISTS tb_dosen (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nama VARCHAR(30) NOT NULL,
-  nidn VARCHAR(50) UNIQUE NOT NULL,
-  email VARCHAR(100) UNIQUE NOT NULL,
+  nidn VARCHAR(16) UNIQUE NOT NULL,
   whatsapp VARCHAR(14) UNIQUE NOT NULL,
   alamat TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -61,8 +47,6 @@ $arr_sql['dosen'] = "CREATE TABLE IF NOT EXISTS tb_dosen (
 
   CHECK (nidn REGEXP '^[0-9]+$'),
   CHECK (CHAR_LENGTH(nidn) BETWEEN 10 AND 16),
-
-  CHECK (email REGEXP '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'),
 
   CHECK (nama REGEXP '^[a-zA-Z ]+$'),
   CHECK (CHAR_LENGTH(nama) BETWEEN 3 AND 30)
