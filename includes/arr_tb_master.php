@@ -1,2 +1,2 @@
 <?php
-$arr_tb_master = ['prodi', 'dosen',  'mk', 'kelas', 'ruang'];
+$arr_tb_master = ['ta', 'prodi', 'kurikulum', 'mk', 'kelas', 'dosen',   'ruang'];

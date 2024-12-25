@@ -10,6 +10,7 @@ foreach ($arr_tb_master as $tb) {
     <ul>
       <li><a href="?">Home</a></li>
       <?= $li ?>
+      <li><a href="?jadwal">Jadwal</a></li>
     </ul>
   </nav>
 </header>

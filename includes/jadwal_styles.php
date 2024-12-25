@@ -9,6 +9,8 @@
   }
 
   header nav {
+    position: sticky;
+    top: 0;
     background: linear-gradient(#efe, #cfc);
     padding: 10px 0;
     border-radius: 5px;

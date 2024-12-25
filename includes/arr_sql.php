@@ -5,11 +5,45 @@
 $arr_sql = [];
 
 # ============================================================
+# ta
+# ============================================================
+$arr_sql['ta'] = "CREATE TABLE IF NOT EXISTS tb_ta (
+    id SMALLINT(5) PRIMARY KEY,
+    nama SMALLINT(5) NOT NULL UNIQUE,
+    awal DATE DEFAULT CURRENT_TIMESTAMP, 
+    akhir DATE DEFAULT CURRENT_TIMESTAMP,
+    CHECK (nama = id),
+    CHECK (nama >= $awal_ta),
+    CHECK (nama <= $akhir_ta),
+    CHECK (id >= $awal_ta),
+    CHECK (id <= $akhir_ta)
+  );
+";
+
+# ============================================================
 # prodi
 # ============================================================
 $arr_sql['prodi'] = "CREATE TABLE IF NOT EXISTS tb_prodi (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nama VARCHAR(100) NOT NULL UNIQUE
+    nama VARCHAR(100) NOT NULL UNIQUE,
+    singkatan VARCHAR(3) NOT NULL UNIQUE,
+    jenjang SET('D3', 'S1', 'S2', 'S3') NOT NULL,
+    jumlah_semester SET('2','4','6','8') NOT NULL
+  );
+";
+
+# ============================================================
+# kurikulum
+# ============================================================
+$arr_sql['kurikulum'] = "CREATE TABLE IF NOT EXISTS tb_kurikulum (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_ta SMALLINT(5) NOT NULL,
+    id_prodi INT NOT NULL,
+    nama VARCHAR(100) NOT NULL UNIQUE,
+
+    FOREIGN KEY (id_ta) REFERENCES tb_ta(id) ON DELETE RESTRICT,
+    FOREIGN KEY (id_prodi) REFERENCES tb_prodi(id) ON DELETE RESTRICT
+
   );
 ";
 
@@ -18,13 +52,16 @@ $arr_sql['prodi'] = "CREATE TABLE IF NOT EXISTS tb_prodi (
 # ============================================================
 $arr_sql['mk'] = "CREATE TABLE IF NOT EXISTS tb_mk (
   id INT AUTO_INCREMENT PRIMARY KEY,       
+  id_kurikulum INT NOT NULL,
   kode VARCHAR(10) NOT NULL UNIQUE,     
   nama VARCHAR(100) NOT NULL,           
   sks TINYINT NOT NULL CHECK (sks > 0),    
   semester TINYINT NOT NULL CHECK (semester > 0), 
   deskripsi TEXT NULL,                     
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (id_kurikulum) REFERENCES tb_kurikulum(id) ON DELETE RESTRICT
   )
 ";
 
@@ -61,7 +98,8 @@ $arr_sql['ruang'] = "CREATE TABLE IF NOT EXISTS tb_ruang (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nama VARCHAR(100) NOT NULL,
   kapasitas INT NOT NULL,
-  lokasi VARCHAR(255) DEFAULT NULL
+  lokasi VARCHAR(255) DEFAULT NULL,
+  jenis SET('kelas', 'lab', 'aula', 'studio') NOT NULL
   );
 ";
 
@@ -72,9 +110,10 @@ $arr_sql['kelas'] = "CREATE TABLE IF NOT EXISTS tb_kelas (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nama VARCHAR(50) NOT NULL UNIQUE,
   kapasitas TINYINT UNSIGNED NOT NULL CHECK (kapasitas <= 50),
-  ta SMALLINT(5) UNSIGNED NOT NULL CHECK (ta >= 20241),
+  id_ta SMALLINT(5) NOT NULL ,
   id_prodi INT NOT NULL,
-  FOREIGN KEY (id_prodi) REFERENCES tb_prodi(id) ON DELETE RESTRICT
+  FOREIGN KEY (id_prodi) REFERENCES tb_prodi(id) ON DELETE RESTRICT,
+  FOREIGN KEY (id_ta) REFERENCES tb_ta(id) ON DELETE RESTRICT
   );
 ";
 

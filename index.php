@@ -3,6 +3,8 @@ session_start();
 # ============================================================
 # APLIKASI PENJADWALAN KULIAH
 # ============================================================
+$awal_ta = 20241;
+$akhir_ta = 20262;
 
 # ============================================================
 # DEBUGGING
@@ -24,7 +26,7 @@ $includes = [
   'date_management',
   'echolog',
   'img_icon',
-  'insho_style',
+  'insho_styles',
   'jsurl',
   'set_h2',
 ];
@@ -53,15 +55,17 @@ try {
   }
 } catch (Exception $e) {  // Tangkap dan tampilkan error
   echo $e->getMessage();
-  echolog('MEMBUAT TABLES<hr>');
 
   # ============================================================
   # CREATE TABLES
   # ============================================================
+  echolog('<b class="darkblue f20">UPDATING TABLES</b><hr>');
   foreach ($arr_sql as $key => $sql) {
     echolog($sql);
     $conn->query($sql);
   }
+  alert("Tables created successfully. | <a href='?'>Back to Home</a>", 'success');
+  exit;
 }
 
 
@@ -82,7 +86,7 @@ $username = $_SESSION['jadwal_username'] ?? '';
 </head>
 
 <body>
-  <div class="container">
+  <div class="container" style="position: relative;">
     <?php include 'pages/header.php'; ?>
     <main>
       <section>
