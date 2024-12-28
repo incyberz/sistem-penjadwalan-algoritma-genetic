@@ -16,6 +16,7 @@ $arr_info_tambahan = [
     'kapasitas' => 'biasanya tidak > 40 mhs',
   ],
   'dosen' => [
+    'nama' => 'hanya diperbolehkan A-Z (abaikan titik, petik, dll)', // add script JS to whatsapp ZZZ
     'whatsapp' => 'awali dengan "628..."', // add script JS to whatsapp ZZZ
   ],
   'ruang' => [

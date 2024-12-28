@@ -8,6 +8,19 @@
     display: none;
   }
 
+  a,
+  div a {
+    text-decoration: none;
+    transition: .2s;
+  }
+
+  div a:hover {
+    text-decoration: underline;
+    color: darkblue;
+    letter-spacing: .3px;
+  }
+
+
   header nav {
     position: sticky;
     top: 0;
@@ -111,5 +124,30 @@
 
   .section-title p {
     margin: 15px 0 0 0;
+  }
+
+
+  @media (max-width:600px) {
+    .section-title h2 {
+      font-size: 20px;
+    }
+
+    .section-title h2::before,
+    .section-title h2::after {
+      width: 10px;
+    }
+
+  }
+
+  @media (max-width:400px) {
+    .section-title h2 {
+      font-size: 16px;
+    }
+
+    .section-title h2::before,
+    .section-title h2::after {
+      width: 5px;
+    }
+
   }
 </style>

@@ -17,6 +17,7 @@ if ($is_live) {
 }
 
 $conn = new mysqli($db_server, $db_user, $db_pass, $db_name);
+$cn = $conn;
 if ($conn->connect_errno) {
   echo "Error Konfigurasi# Tidak dapat terhubung ke MySQL Server :: $db_name";
   exit();

@@ -52,7 +52,7 @@ $arr_sql['kurikulum'] = "CREATE TABLE IF NOT EXISTS tb_kurikulum (
 # ============================================================
 $arr_sql['mk'] = "CREATE TABLE IF NOT EXISTS tb_mk (
   id INT AUTO_INCREMENT PRIMARY KEY,       
-  id_kurikulum INT NOT NULL,
+  id_prodi INT NOT NULL,
   kode VARCHAR(10) NOT NULL UNIQUE,     
   nama VARCHAR(100) NOT NULL,           
   sks TINYINT NOT NULL CHECK (sks > 0),    
@@ -61,7 +61,7 @@ $arr_sql['mk'] = "CREATE TABLE IF NOT EXISTS tb_mk (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-  FOREIGN KEY (id_kurikulum) REFERENCES tb_kurikulum(id) ON DELETE RESTRICT
+  FOREIGN KEY (id_prodi) REFERENCES tb_prodi(id) ON DELETE RESTRICT
   )
 ";
 
@@ -73,6 +73,8 @@ $arr_sql['dosen'] = "CREATE TABLE IF NOT EXISTS tb_dosen (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nama VARCHAR(30) NOT NULL,
   nidn VARCHAR(16) UNIQUE NOT NULL,
+  gelar_depan VARCHAR(20) NULL DEFAULT NULL,
+  gelar_belakang VARCHAR(20) NULL DEFAULT NULL,
   whatsapp VARCHAR(14) UNIQUE NOT NULL,
   alamat TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -85,7 +87,7 @@ $arr_sql['dosen'] = "CREATE TABLE IF NOT EXISTS tb_dosen (
   CHECK (nidn REGEXP '^[0-9]+$'),
   CHECK (CHAR_LENGTH(nidn) BETWEEN 10 AND 16),
 
-  CHECK (nama REGEXP '^[a-zA-Z ]+$'),
+  CHECK (nama REGEXP '^[a-zA-Z ]+$'), -- nama ada curek nya ZZZ
   CHECK (CHAR_LENGTH(nama) BETWEEN 3 AND 30)
   )
 ";
