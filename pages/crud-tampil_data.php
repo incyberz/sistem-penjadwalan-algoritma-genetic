@@ -1,13 +1,17 @@
 <?php
 $sub_data = '<div class="f10 abu">sub data</div>';
-$th_jadwal = "<th class=f12>$sub_data Jadwal</th>";
-$sql_count = ",(SELECT COUNT(1) FROM tb_jadwal WHERE id_$tb=a.id) count";
-if ($tb == 'prodi' || $tb == 'ta' || $tb == 'kurikulum') {
-  $th_jadwal = '';
-  $sql_count = '';
-  $rule_join = 'id_prodi=a.id';
-  $th_jadwal = "<th class=f12>$sub_data Kelas</th>";
-  $sql_count = ",(SELECT COUNT(1) FROM tb_kelas WHERE $rule_join) count";
+$th_jadwal = "<th class=f12>$sub_data Kelas</th>";
+$sql_count = ",(SELECT COUNT(1) FROM tb_kelas WHERE id_prodi=a.id) count";
+
+$th_jadwal = '';
+$sql_count = '';
+
+# ============================================================
+# MASTER OF TB JADWAL
+# ============================================================
+if ($tb == 'kelas' || $tb == 'mk' || $tb == 'dosen' || $tb == 'ruang') {
+  $th_jadwal = "<th class=f12>$sub_data Jadwal</th>";
+  $sql_count = ",(SELECT COUNT(1) FROM tb_jadwal WHERE id_$tb=a.id) count";
 }
 
 $sql = "SELECT a.* $sql_count 
@@ -30,12 +34,13 @@ while ($row = $result->fetch_assoc()) {
     $td .= "<td>$row[$field]</td>";
   }
 
-  $td_count = "<td>$row[count]</td>";
+  $sub_count = $row['count'] ?? '';
+  $td_count = $th_jadwal ? "<td>$sub_count</td>" : '';
   if (!isset($row['id'])) $row['id'] = $row[$tb];
 
   $btn_delete = "<span class='btn-transparan btn_delete' id=btn_delete__$row[id]>$img_delete</span>";
-  $btn_delete_disabled = "<span class='btn-transparan' onclick='alert(`Tidak bisa menghapus karena ada $row[count] sub-data.`)'>$img_delete_disabled</span>";
-  $btn = $row['count'] ? $btn_delete_disabled : $btn_delete;
+  $btn_delete_disabled = !$th_jadwal ? '' : "<span class='btn-transparan' onclick='alert(`Tidak bisa menghapus karena ada $row[count] sub-data.`)'>$img_delete_disabled</span>";
+  $btn = $sub_count ? $btn_delete_disabled : $btn_delete;
 
   $tr .= "
     <tr>

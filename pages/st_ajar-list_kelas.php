@@ -13,6 +13,7 @@ if (mysqli_num_rows($q)) {
     ";
   }
 } else {
-  $list_kelas .= alert("Belum ada satupun kelas di prodi [$dkur[nama_prodi]]<hr><a href='?crud&tb=kelas'>Buat Kelas</a>", 'danger', '', false);
+  $pesan_error = alert("Belum ada satupun kelas di prodi [$dkur[nama_prodi]]<hr><a href='?crud&tb=kelas'>Buat Kelas</a>", 'danger', '', false);
+  $list_kelas .= $pesan_error;
   $siap_assign = false;
 }

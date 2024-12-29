@@ -5,7 +5,7 @@
 $s = "SELECT
 (SELECT COUNT(1) FROM tb_kurikulum) count_kurikulum,
 (SELECT COUNT(1) FROM tb_prodi) count_prodi,
-(SELECT COUNT(1) FROM tb_ta) count_ta
+(SELECT COUNT(1) FROM tb_ta WHERE id <= $tahun_ini_genap ) count_ta
 ";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $d = mysqli_fetch_assoc($q);
@@ -20,6 +20,7 @@ if ($d['count_kurikulum'] != $d['count_prodi'] * $d['count_ta']) {
     $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
     while ($d2 = mysqli_fetch_assoc($q2)) {
       $id_ta = $d2['id'];
+      if ($id_ta > $tahun_ini_genap) break; // skip kur untuk tahun depan
       $s3 = "INSERT INTO tb_kurikulum (
         id_ta,
         id_prodi,

@@ -28,7 +28,7 @@ $arr_sql['prodi'] = "CREATE TABLE IF NOT EXISTS tb_prodi (
     nama VARCHAR(100) NOT NULL UNIQUE,
     singkatan VARCHAR(3) NOT NULL UNIQUE,
     jenjang SET('D3', 'S1', 'S2', 'S3') NOT NULL,
-    jumlah_semester SET('2','4','6','8') NOT NULL
+    jumlah_semester SET('6','8') NOT NULL
   );
 ";
 
@@ -56,7 +56,7 @@ $arr_sql['mk'] = "CREATE TABLE IF NOT EXISTS tb_mk (
   kode VARCHAR(10) NOT NULL UNIQUE,     
   nama VARCHAR(100) NOT NULL,           
   sks TINYINT NOT NULL CHECK (sks > 0),    
-  semester TINYINT NOT NULL CHECK (semester > 0), 
+  semester SET('1', '2', '3', '4', '5', '6', '7', '8') NOT NULL,
   deskripsi TEXT NULL,                     
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -75,10 +75,13 @@ $arr_sql['dosen'] = "CREATE TABLE IF NOT EXISTS tb_dosen (
   nidn VARCHAR(16) UNIQUE NOT NULL,
   gelar_depan VARCHAR(20) NULL DEFAULT NULL,
   gelar_belakang VARCHAR(20) NULL DEFAULT NULL,
+  id_prodi INT NULL DEFAULT NULL, -- NULL = DOSEN LB
   whatsapp VARCHAR(14) UNIQUE NOT NULL,
   alamat TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (id_prodi) REFERENCES tb_prodi(id) ON DELETE RESTRICT,
 
   CHECK (CHAR_LENGTH(whatsapp) BETWEEN 11 AND 14),
   CHECK (whatsapp LIKE '628%'),
@@ -111,13 +114,40 @@ $arr_sql['ruang'] = "CREATE TABLE IF NOT EXISTS tb_ruang (
 $arr_sql['kelas'] = "CREATE TABLE IF NOT EXISTS tb_kelas (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nama VARCHAR(50) NOT NULL UNIQUE,
-  kapasitas TINYINT UNSIGNED NOT NULL CHECK (kapasitas <= 50),
+  kapasitas TINYINT UNSIGNED NOT NULL DEFAULT 40,
   id_ta SMALLINT(5) NOT NULL ,
   id_prodi INT NOT NULL,
+  angkatan SMALLINT(4) UNSIGNED NOT NULL,
+  semester SET('1', '2', '3', '4', '5', '6', '7', '8') NOT NULL,
+  shift SET('R', 'NR') NOT NULL,
+  counter SET('A', 'B', 'C', 'D', 'E') NULL DEFAULT NULL,
+
+  CONSTRAINT KAPASITAS_KELAS CHECK (kapasitas <= 50), 
+  CONSTRAINT ANGKATAN_KELAS CHECK (angkatan BETWEEN 2020 AND 2030), 
+
   FOREIGN KEY (id_prodi) REFERENCES tb_prodi(id) ON DELETE RESTRICT,
   FOREIGN KEY (id_ta) REFERENCES tb_ta(id) ON DELETE RESTRICT
   );
 ";
+
+# ============================================================
+# petugas
+# ============================================================
+$arr_sql['petugas'] = "CREATE TABLE IF NOT EXISTS tb_petugas (
+  id int(11) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  nama varchar(30) NOT NULL,
+  username varchar(20) NOT NULL,
+  password varchar(200) DEFAULT NULL,
+  created_at timestamp NOT NULL DEFAULT current_timestamp(),
+  whatsapp varchar(14) NOT NULL,
+  role SET('AKD', 'KEU', 'PIM') NOT NULL,
+  image varchar(100) DEFAULT NULL,
+  CONSTRAINT chk_username CHECK (username REGEXP '^[a-z0-9]+$'),
+  CONSTRAINT chk_whatsapp CHECK (whatsapp LIKE '628%'),
+  CONSTRAINT chk_nama CHECK (nama REGEXP '^[A-Z'' ]+$')
+  );
+";
+
 
 # ============================================================
 # jadwal
@@ -136,5 +166,33 @@ $arr_sql['jadwal'] = "CREATE TABLE IF NOT EXISTS tb_jadwal (
     FOREIGN KEY (id_dosen) REFERENCES tb_dosen(id) ON DELETE RESTRICT,
     FOREIGN KEY (id_ruang) REFERENCES tb_ruang(id) ON DELETE RESTRICT,
     CHECK (jam_mulai < jam_selesai)
+  );
+";
+
+# ============================================================
+# st
+# ============================================================
+$arr_sql['st'] = "CREATE TABLE IF NOT EXISTS tb_st (
+    id varchar(20) NOT NULL COMMENT 'id_ta id_dosen' PRIMARY KEY,
+    id_dosen int(11) NOT NULL,
+    id_ta SMALLINT(5) NOT NULL,
+    tanggal timestamp NOT NULL DEFAULT current_timestamp(),
+    id_user int(11) NOT NULL,
+    CONSTRAINT ST_DOSEN FOREIGN KEY (id_dosen) REFERENCES tb_dosen(id),
+    CONSTRAINT ST_TA FOREIGN KEY (id_ta) REFERENCES tb_ta(id)
+  );
+";
+
+# ============================================================
+# st_mk
+# ============================================================
+$arr_sql['st_mk'] = "CREATE TABLE IF NOT EXISTS tb_st_mk (
+    id varchar(20) NOT NULL COMMENT 'id_st id_mk' PRIMARY KEY,
+    id_st varchar(20) NOT NULL,
+    id_mk int(11) NOT NULL,
+
+    CONSTRAINT PARENT_MK FOREIGN KEY (id_mk) REFERENCES tb_mk(id),
+    CONSTRAINT PARENT_ST FOREIGN KEY (id_st) REFERENCES tb_st(id)
+
   );
 ";

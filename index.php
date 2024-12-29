@@ -9,7 +9,7 @@ $akhir_ta = 20262;
 # ============================================================
 # DEBUGGING
 # ============================================================
-$_SESSION['jadwal_username'] = 'insho';
+$_SESSION['jadwal_username'] = 'yunita';
 
 
 # ============================================================
@@ -73,6 +73,9 @@ try {
 # LOGIN INFO
 # ============================================================
 $username = $_SESSION['jadwal_username'] ?? '';
+$user = [];
+if ($username) include 'pages/user.php';
+
 
 ?>
 <!DOCTYPE html>

@@ -3,7 +3,12 @@
 # SK AJAR
 # ============================================================
 $id_kurikulum = $_GET['id_kurikulum'] ?? udef('id_kurikulum');
+$aksi = $_GET['aksi'] ?? 'create';
 $siap_assign = true;
+$pesan_error = '';
+
+include 'st_ajar-styles.php';
+include 'st_ajar-processors.php';
 
 # ============================================================
 # DATA KURIKULUM
@@ -13,45 +18,18 @@ $s = "SELECT a.*,
 FROM tb_kurikulum a WHERE a.id = $id_kurikulum";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $dkur = mysqli_fetch_assoc($q);
-
-set_h2('Surat Tugas', $dkur['nama']);
-
-# ============================================================
-# LIST KELAS
-# ============================================================
-$list_kelas = '';
-include 'st_ajar-list_kelas.php';
-
-# ============================================================
-# LIST mk
-# ============================================================
-$list_mk = '';
-include 'st_ajar-list_mk.php';
+$is_ganjil = $dkur['id_ta'] % 2 == 0 ? 0 : 1;
+$Ganjil = $is_ganjil ? 'Ganjil' : 'Genap';
+$Tahun = intval($dkur['id_ta'] / 10);
+include 'includes/arr_bulan_romawi.php';
+$bulan_romawi = $arr_bulan_romawi[date('m')];
 
 
-
-echo "
-  <div class='row'>
-    <div class='col-sm-4'>
-      <div class='wadah gradasi-hijau'>
-        <div class='mb1 f12'>Ketik dan Pilih Dosen:</div>
-        <input id=keyword_dosen class='form-control'>
-      </div>
-
-    </div>
-    <div class='col-sm-4'>
-      <div class='wadah gradasi-hijau'>
-        <div class='mb1 f12'>Ketik dan Pilih MK:</div>
-        $list_mk
-      </div>
-
-    </div>
-    <div class='col-sm-4'>
-      <div class='wadah gradasi-hijau'>
-        <div class='mb1 f12'>Untuk kelas:</div>
-        $list_kelas
-      </div>
-
-    </div>
-  </div>
-";
+if ($aksi) {
+  $file = "st_ajar-$aksi.php";
+  if (file_exists("pages/$file")) {
+    include $file;
+  } else {
+    alert("Aksi [$aksi] belum ada handler.");
+  }
+}
