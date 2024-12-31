@@ -13,10 +13,10 @@ $arr_sql['ta'] = "CREATE TABLE IF NOT EXISTS tb_ta (
     awal DATE DEFAULT CURRENT_TIMESTAMP, 
     akhir DATE DEFAULT CURRENT_TIMESTAMP,
     CHECK (nama = id),
-    CHECK (nama >= $awal_ta),
-    CHECK (nama <= $akhir_ta),
-    CHECK (id >= $awal_ta),
-    CHECK (id <= $akhir_ta)
+    CHECK (nama >= $min_ta_ganjil),
+    CHECK (nama <= $max_ta_genap),
+    CHECK (id >= $min_ta_ganjil),
+    CHECK (id <= $max_ta_genap)
   );
 ";
 
@@ -55,7 +55,7 @@ $arr_sql['mk'] = "CREATE TABLE IF NOT EXISTS tb_mk (
   id_prodi INT NOT NULL,
   kode VARCHAR(10) NOT NULL UNIQUE,     
   nama VARCHAR(100) NOT NULL,           
-  sks TINYINT NOT NULL CHECK (sks > 0),    
+  semester SET('2', '3', '4', '5', '6') NOT NULL,
   semester SET('1', '2', '3', '4', '5', '6', '7', '8') NOT NULL,
   deskripsi TEXT NULL,                     
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
@@ -115,18 +115,17 @@ $arr_sql['kelas'] = "CREATE TABLE IF NOT EXISTS tb_kelas (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nama VARCHAR(50) NOT NULL UNIQUE,
   kapasitas TINYINT UNSIGNED NOT NULL DEFAULT 40,
-  id_ta SMALLINT(5) NOT NULL ,
   id_prodi INT NOT NULL,
   angkatan SMALLINT(4) UNSIGNED NOT NULL,
   semester SET('1', '2', '3', '4', '5', '6', '7', '8') NOT NULL,
   shift SET('R', 'NR') NOT NULL,
   counter SET('A', 'B', 'C', 'D', 'E') NULL DEFAULT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
   CONSTRAINT KAPASITAS_KELAS CHECK (kapasitas <= 50), 
   CONSTRAINT ANGKATAN_KELAS CHECK (angkatan BETWEEN 2020 AND 2030), 
 
-  FOREIGN KEY (id_prodi) REFERENCES tb_prodi(id) ON DELETE RESTRICT,
-  FOREIGN KEY (id_ta) REFERENCES tb_ta(id) ON DELETE RESTRICT
+  FOREIGN KEY (id_prodi) REFERENCES tb_prodi(id) ON DELETE RESTRICT
   );
 ";
 
@@ -178,6 +177,10 @@ $arr_sql['st'] = "CREATE TABLE IF NOT EXISTS tb_st (
     id_ta SMALLINT(5) NOT NULL,
     tanggal timestamp NOT NULL DEFAULT current_timestamp(),
     id_user int(11) NOT NULL,
+    pernah_save_kelas tinyint(1) UNSIGNED DEFAULT NULL,
+    verif_by int(11) UNSIGNED DEFAULT NULL,
+    verif_date timestamp NULL DEFAULT NULL
+    CONSTRAINT VERIF_BY FOREIGN KEY (verif_by) REFERENCES tb_petugas(id),
     CONSTRAINT ST_DOSEN FOREIGN KEY (id_dosen) REFERENCES tb_dosen(id),
     CONSTRAINT ST_TA FOREIGN KEY (id_ta) REFERENCES tb_ta(id)
   );
@@ -193,6 +196,20 @@ $arr_sql['st_mk'] = "CREATE TABLE IF NOT EXISTS tb_st_mk (
 
     CONSTRAINT PARENT_MK FOREIGN KEY (id_mk) REFERENCES tb_mk(id),
     CONSTRAINT PARENT_ST FOREIGN KEY (id_st) REFERENCES tb_st(id)
+
+  );
+";
+
+# ============================================================
+# st_mk_kelas
+# ============================================================
+$arr_sql['st_mk_kelas'] = "CREATE TABLE IF NOT EXISTS tb_st_mk_kelas (
+    id varchar(20) NOT NULL COMMENT 'id_st id_mk id_kelas' PRIMARY KEY,
+    id_st_mk varchar(20) NOT NULL,
+    id_kelas int(11) NOT NULL,
+
+    CONSTRAINT PARENT_ST_MK FOREIGN KEY (id_st_mk) REFERENCES tb_st_mk(id),
+    CONSTRAINT PARENT_KELAS FOREIGN KEY (id_kelas) REFERENCES tb_kelas(id)
 
   );
 ";

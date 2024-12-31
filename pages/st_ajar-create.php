@@ -25,6 +25,7 @@ if ($siap_assign) {
 
 
 
+
 echo "
   <form method=post>
     <input type=hidden name=id_ta value=$dkur[id_ta]>
@@ -40,24 +41,28 @@ echo "
     <ul class=hideit id=dosen_selected>
       <li><b>Nama:</b> <span id=nama_dosen_selected>Iin, M.Kom</span></li>
       <li><b>NIDN:</b> <span id=nidn_dosen_selected>12345678</span></li>
-      <li class=hideita><input name=id_dosen id=id_dosen></li>
+      <li class=hideit><input name=id_dosen id=id_dosen></li>
     </ul>
 
     <div class='row' id=list_dosen>
       <div class='col-sm-12'>
         <div class='wadah gradasi-hijau'>
-          <div class='mb1 f12'>Pilih salah satu Dosen:</div>
           $list_dosen
         </div>
       </div>
     </div>
 
     <div id=pilih_mk class=hideit>
-      <p>Untuk mengampu matakuliah sebagai berikut:</p>
+      $untuk_mengampu
+
+      <!-- ==================================== -->
+      <!-- LIST MK SELECTED -->
+      <!-- ==================================== -->
+      <div id=list_mk_selected>list_mk_selected</div>
+
       <div class=row id=list_mk>
         <div class='col-sm-12'>
           <div class='wadah gradasi-toska'>
-            <div class='mb1 f12'>Ketik dan Pilihan MK Prodi semester $Ganjil:</div>
             $list_mk
             <div class='blok_btn hideit'>
               <button class='btn btn-primary w-100 mt2' name=btn_create_st id=btn_create_st>Create Surat Tugas</button>
@@ -85,12 +90,25 @@ echo "
       if (gelar_belakang) nama_dosen += ', ' + gelar_belakang;
       console.log(aksi, id, nama_dosen, nidn);
 
+      $('#list_mk_selected').html(
+        $('#list_mk__' + id).html()
+      );
+
+
       $('#id_dosen').val(id);
       $('#nama_dosen_selected').text(nama_dosen);
       $('#nidn_selected').text(nidn);
       $('#list_dosen').slideUp();
       $('#dosen_selected').slideDown();
       $('#pilih_mk').slideDown();
+
+      // id_mks
+      let id_mks = $('#id_mks__' + id).text().split(',');
+      console.log(id_mks);
+      id_mks.forEach((id_mk) => {
+        $('#div_mk__' + id_mk).hide();
+      })
+
 
 
     });

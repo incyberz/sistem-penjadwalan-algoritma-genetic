@@ -53,7 +53,8 @@ foreach ($kolom['Field'] as $key => $field) {
 # ============================================================
 # TAMPIL DATA
 # ============================================================
-include 'crud-tampil_data.php';
+$file = "crud-$tb.php";
+include file_exists("pages/$file") ? $file : 'crud-tampil_data.php';
 
 # ============================================================
 # ADD DATA

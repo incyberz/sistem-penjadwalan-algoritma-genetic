@@ -17,9 +17,13 @@ if (!$id_prodi) {
     <div class='flexy wadah mt2'>$list</div>
   ";
 } else {
-  $s = "SELECT a.*,
-  (SELECT CONCAT(jenjang,'-',nama) FROM tb_prodi WHERE id=a.id_prodi) Prodi 
-  FROM tb_kurikulum a WHERE a.id_prodi=$id_prodi";
+  $s = "SELECT 
+  a.*,
+  b.*,
+  CONCAT(b.jenjang,'-',b.nama) as Prodi 
+  FROM tb_kurikulum a 
+  JOIN tb_prodi b ON a.id_prodi=b.id 
+  WHERE a.id_prodi=$id_prodi";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   $divs = '';
   $Prodi = '';
@@ -36,6 +40,11 @@ if (!$id_prodi) {
         <a class='btn btn-sm btn-success' href='?st_ajar&id_kurikulum=$d[id]'>Buat Surat Tugas</a>
       </div>
     ";
+
+    # ============================================================
+    # CEK MK
+    # ============================================================
+    $jumlah_semester = $d['jumlah_semester'];
 
     $divs .= "
       <div class='col-md-6'>

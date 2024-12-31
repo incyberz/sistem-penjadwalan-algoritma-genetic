@@ -1,7 +1,7 @@
 <?php
 $arr_info_tambahan = [
   'ta' => [
-    'nama' => "dari \"$awal_ta\" s.d \"$akhir_ta\"",
+    'nama' => "dari \"$min_ta_ganjil\" s.d \"$max_ta_genap\"",
     'awal' => 'biasanya awal September di tahun tersebut',
     'akhir' => 'biasanya di akhir Agustus di tahun berikutnya',
   ],

@@ -6,6 +6,7 @@ foreach ($arr_tb_master as $tb) {
 ?>
 <header>
   <h1>Sistem Penjadwalan</h1>
+  <p>TA Aktif: <?= $ta_aktif ?> | <?= $Ganjil ?></p>
   <nav>
     <ul>
       <li><a href="?">Home</a></li>

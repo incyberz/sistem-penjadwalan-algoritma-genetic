@@ -22,7 +22,7 @@ if ($field_key == 'MUL') { // select
 
   $input_th .= "
     <th>
-      <select class='form-control' name='$field'>
+      <select class='form-control' name='$field' id='add_$field' >
         <option value=''>- pilih $sub_tb -</option>
         $option
       </select>
@@ -44,7 +44,7 @@ if ($field_key == 'MUL') { // select
 
   $input_th .= "
     <th>
-      <select class='form-control' name='$field'>
+      <select class='form-control' name='$field' id='add_$field' >
         $option
       </select>
       <div class='left f10 abu miring normal ml1 mt1 mb2'>$required_icon pilih salah satu</div>
@@ -93,7 +93,7 @@ if ($field_key == 'MUL') { // select
 
   $input_th .= "
     <th>
-      <input $required $maxlength class='form-control upper' $type $min name='$field' placeholder='$field $tb_info' value='$value' />
+      <input $required $maxlength class='form-control upper' $type $min name='$field' id='add_$field' placeholder='$field $tb_info' value='$value' />
       <div class='left f10 abu miring normal ml1 mt1 mb2'>$req_info $length_info $info_tambahan</div>
     </th>
   ";
