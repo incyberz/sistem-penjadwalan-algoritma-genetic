@@ -1,20 +1,33 @@
 <?php
-$sub_data = '<div class="f10 abu">sub data</div>';
-$th_jadwal = "<th class=f12>$sub_data Kelas</th>";
-$sql_count = ",(SELECT COUNT(1) FROM tb_kelas WHERE id_prodi=a.id) count";
-
-$th_jadwal = '';
-$sql_count = '';
-
 # ============================================================
-# MASTER OF TB JADWAL
+# SUB DATA HANDLER
 # ============================================================
-if ($tb == 'kelas' || $tb == 'mk' || $tb == 'dosen' || $tb == 'ruang') {
-  $th_jadwal = "<th class=f12>$sub_data Jadwal</th>";
-  $sql_count = ",(SELECT COUNT(1) FROM tb_jadwal WHERE id_$tb=a.id) count";
+$th_subdata = '';
+$sql_subdata = '';
+$arr_subdata = [
+  'kelas' => 'jadwal',
+  // 'mk' => 'st_mk', // spesialisasi tampilan UI
+  'dosen' => 'jadwal',
+  'ruang' => 'jadwal',
+  'ta' => 'kurikulum',
+  'prodi' => 'kurikulum',
+  'kurikulum' => 'mk',
+  'petugas' => 'st',
+];
+if (key_exists($tb, $arr_subdata)) {
+  $th_subdata = "
+    <th class=f12>
+      <div class='f10 abu'>sub data</div>
+      <span id=span_sub_data class=proper>$arr_subdata[$tb]</span>
+    </th>
+  ";
+  $sql_subdata = ",(SELECT COUNT(1) FROM tb_$arr_subdata[$tb] WHERE id_$tb=a.id) count";
 }
 
-$sql = "SELECT a.* $sql_count 
+# ============================================================
+# MAIN SELECT
+# ============================================================
+$sql = "SELECT a.* $sql_subdata 
 FROM tb_$tb a";
 echolog($sql);
 $result = $conn->query($sql);
@@ -35,11 +48,11 @@ while ($row = $result->fetch_assoc()) {
   }
 
   $sub_count = $row['count'] ?? '';
-  $td_count = $th_jadwal ? "<td>$sub_count</td>" : '';
+  $td_count = $th_subdata ? "<td>$sub_count</td>" : '';
   if (!isset($row['id'])) $row['id'] = $row[$tb];
 
   $btn_delete = "<span class='btn-transparan btn_delete' id=btn_delete__$row[id]>$img_delete</span>";
-  $btn_delete_disabled = !$th_jadwal ? '' : "<span class='btn-transparan' onclick='alert(`Tidak bisa menghapus karena ada $row[count] sub-data.`)'>$img_delete_disabled</span>";
+  $btn_delete_disabled = !$th_subdata ? '' : "<span class='btn-transparan' onclick='alert(`Tidak bisa menghapus karena ada $row[count] sub-data.`)'>$img_delete_disabled</span>";
   $btn = $sub_count ? $btn_delete_disabled : $btn_delete;
 
   $tr .= "
@@ -70,7 +83,7 @@ echo "
     <thead>
       <th>No</th>
       $th
-      $th_jadwal
+      $th_subdata
       <th>Aksi</th>
     </thead>
     $tr

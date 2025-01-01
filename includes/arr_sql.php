@@ -176,7 +176,7 @@ $arr_sql['st'] = "CREATE TABLE IF NOT EXISTS tb_st (
     id_dosen int(11) NOT NULL,
     id_ta SMALLINT(5) NOT NULL,
     tanggal timestamp NOT NULL DEFAULT current_timestamp(),
-    id_user int(11) NOT NULL,
+    id_petugas int(11) NOT NULL,
     pernah_save_kelas tinyint(1) UNSIGNED DEFAULT NULL,
     verif_by int(11) UNSIGNED DEFAULT NULL,
     verif_date timestamp NULL DEFAULT NULL

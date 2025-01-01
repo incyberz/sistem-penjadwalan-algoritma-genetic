@@ -1,14 +1,18 @@
 <?php
 $sql_ganjil = $is_ganjil ? " (a.semester % 2 = 1) " : " (a.semester % 2 = 0) ";
 $s = "SELECT a.*,
-b.singkatan as prodi 
+c.id as id_prodi,
+c.singkatan as prodi 
 FROM tb_mk a 
-JOIN tb_prodi b ON a.id_prodi=b.id
-WHERE 1 
--- AND a.id_prodi=$dkur[id_prodi] -- all prodi 
-AND $sql_ganjil -- atau genap 
-ORDER BY a.id_prodi, a.semester 
+JOIN tb_kurikulum b ON a.id_kurikulum=b.id
+JOIN tb_prodi c ON b.id_prodi=c.id
+-- WHERE 1 
+-- AND $sql_ganjil -- atau genap 
+ORDER BY c.id, a.semester 
 ";
+echo '<pre>';
+var_dump($s);
+echo '</pre>';
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 if (mysqli_num_rows($q)) {
   $last_smt = '';

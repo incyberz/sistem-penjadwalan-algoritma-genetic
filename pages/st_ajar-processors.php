@@ -6,14 +6,14 @@ if (isset($_POST['btn_create_st'])) {
     id_dosen,
     id_ta,
     tanggal,
-    id_user
+    id_petugas
   ) VALUES (
     '$id_st',
     $_POST[id_dosen],
     $_POST[id_ta],
     CURRENT_TIMESTAMP,
-    $id_user
-  ) ON DUPLICATE KEY UPDATE id_user=$id_user";
+    $id_petugas
+  ) ON DUPLICATE KEY UPDATE id_petugas=$id_petugas";
   echolog($s);
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 

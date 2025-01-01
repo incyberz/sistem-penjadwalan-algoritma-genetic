@@ -33,13 +33,14 @@ d.sks,
 c.nidn, 
 c.id as id_dosen,
 c.nama as nama_dosen,
-e.singkatan as prodi,
-e.id as id_prodi  
+f.singkatan as prodi,
+f.id as id_prodi  
 FROM tb_st a 
 JOIN tb_st_mk b ON a.id=b.id_st 
 JOIN tb_dosen c ON a.id_dosen=c.id 
 JOIN tb_mk d ON b.id_mk=d.id
-JOIN tb_prodi e ON d.id_prodi=e.id
+JOIN tb_kurikulum e ON d.id_kurikulum=e.id
+JOIN tb_prodi f ON e.id_prodi=f.id
 WHERE a.id = '$id_st' 
 ORDER BY e.id, d.semester 
 ";
@@ -209,7 +210,7 @@ echo "
       <div class='offset-md-8 col-md-4 mt1 mb2'>
         <b class=f12>Total:</b>
         <span class='darkblue f24' id=total_sks>0</span> SKS 
-        <input id=total_sks_input name=total_sks>
+        <input type=hidden id=total_sks_input name=total_sks>
       </div>
     </div>
 
