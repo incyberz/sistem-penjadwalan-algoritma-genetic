@@ -27,6 +27,7 @@ $arr_sql['prodi'] = "CREATE TABLE IF NOT EXISTS tb_prodi (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nama VARCHAR(100) NOT NULL UNIQUE,
     singkatan VARCHAR(3) NOT NULL UNIQUE,
+    fakultas SET('FKOM', 'FEBI', 'FKIP', 'FAPERTA') NOT NULL,
     jenjang SET('D3', 'S1', 'S2', 'S3') NOT NULL,
     jumlah_semester SET('6','8') NOT NULL
   );
@@ -55,7 +56,7 @@ $arr_sql['mk'] = "CREATE TABLE IF NOT EXISTS tb_mk (
   id_prodi INT NOT NULL,
   kode VARCHAR(10) NOT NULL UNIQUE,     
   nama VARCHAR(100) NOT NULL,           
-  semester SET('2', '3', '4', '5', '6') NOT NULL,
+  sks SET('1', '2', '3', '4', '5', '6') NOT NULL,
   semester SET('1', '2', '3', '4', '5', '6', '7', '8') NOT NULL,
   deskripsi TEXT NULL,                     
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
@@ -109,6 +110,20 @@ $arr_sql['ruang'] = "CREATE TABLE IF NOT EXISTS tb_ruang (
 ";
 
 # ============================================================
+# sesi
+# ============================================================
+$arr_sql['sesi'] = "CREATE TABLE IF NOT EXISTS tb_sesi (
+  id SMALLINT UNSIGNED PRIMARY KEY,
+  nama VARCHAR(100) NOT NULL,
+  awal TIME NOT NULL,
+  akhir TIME NOT NULL,
+  shift SET('R', 'NR') NOT NULL,
+  is_break BOOLEAN NULL DEFAULT NULL, -- true = waktu shalat
+  info VARCHAR(100) NULL DEFAULT NULL
+  );
+";
+
+# ============================================================
 # kelas
 # ============================================================
 $arr_sql['kelas'] = "CREATE TABLE IF NOT EXISTS tb_kelas (
@@ -149,26 +164,6 @@ $arr_sql['petugas'] = "CREATE TABLE IF NOT EXISTS tb_petugas (
 
 
 # ============================================================
-# jadwal
-# ============================================================
-$arr_sql['jadwal'] = "CREATE TABLE IF NOT EXISTS tb_jadwal (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    id_kelas INT NOT NULL,
-    id_mk INT NOT NULL,
-    id_dosen INT NOT NULL,
-    id_ruang INT NOT NULL,
-    kode_hari TINYINT UNSIGNED NOT NULL CHECK (kode_hari BETWEEN 0 AND 6),
-    jam_mulai TIME NOT NULL,
-    jam_selesai TIME NOT NULL,
-    FOREIGN KEY (id_kelas) REFERENCES tb_kelas(id) ON DELETE RESTRICT,
-    FOREIGN KEY (id_mk) REFERENCES tb_mk(id) ON DELETE RESTRICT,
-    FOREIGN KEY (id_dosen) REFERENCES tb_dosen(id) ON DELETE RESTRICT,
-    FOREIGN KEY (id_ruang) REFERENCES tb_ruang(id) ON DELETE RESTRICT,
-    CHECK (jam_mulai < jam_selesai)
-  );
-";
-
-# ============================================================
 # st
 # ============================================================
 $arr_sql['st'] = "CREATE TABLE IF NOT EXISTS tb_st (
@@ -179,7 +174,7 @@ $arr_sql['st'] = "CREATE TABLE IF NOT EXISTS tb_st (
     id_petugas int(11) NOT NULL,
     pernah_save_kelas tinyint(1) UNSIGNED DEFAULT NULL,
     verif_by int(11) UNSIGNED DEFAULT NULL,
-    verif_date timestamp NULL DEFAULT NULL
+    verif_date timestamp NULL DEFAULT NULL,
     CONSTRAINT VERIF_BY FOREIGN KEY (verif_by) REFERENCES tb_petugas(id),
     CONSTRAINT ST_DOSEN FOREIGN KEY (id_dosen) REFERENCES tb_dosen(id),
     CONSTRAINT ST_TA FOREIGN KEY (id_ta) REFERENCES tb_ta(id)
@@ -211,5 +206,46 @@ $arr_sql['st_mk_kelas'] = "CREATE TABLE IF NOT EXISTS tb_st_mk_kelas (
     CONSTRAINT PARENT_ST_MK FOREIGN KEY (id_st_mk) REFERENCES tb_st_mk(id),
     CONSTRAINT PARENT_KELAS FOREIGN KEY (id_kelas) REFERENCES tb_kelas(id)
 
+  );
+";
+
+
+# ============================================================
+# jadwal
+# ============================================================
+$arr_sql['jadwal'] = "CREATE TABLE IF NOT EXISTS tb_jadwal (
+    id VARCHAR(20) PRIMARY KEY, -- as id_st_mk_kelas
+    id_ruang INT NOT NULL,
+    id_sesi_at_book SMALLINT UNSIGNED NOT NULL,
+    weekday TINYINT UNSIGNED NOT NULL,
+    jam_mulai TIME NOT NULL,
+    jam_selesai TIME NOT NULL,
+    assign_by INT NOT NULL,
+    assign_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT JADWAL_ID FOREIGN KEY (id) REFERENCES tb_st_mk_kelas(id) ON DELETE RESTRICT,
+    CONSTRAINT JADWAL_RUANG FOREIGN KEY (id_ruang) REFERENCES tb_ruang(id) ON DELETE RESTRICT,
+    CONSTRAINT JADWAL_SESI FOREIGN KEY (id_sesi_at_book) REFERENCES tb_sesi(id) ON DELETE RESTRICT,
+    CONSTRAINT JADWAL_JAM_MULAI CHECK (jam_mulai < jam_selesai),
+    CONSTRAINT JADWAL_WEEKDAY CHECK (weekday BETWEEN 0 AND 6)
+  );
+";
+
+# ============================================================
+# pemakaian_ruang
+# ============================================================
+$arr_sql['pemakaian_ruang'] = "CREATE TABLE IF NOT EXISTS tb_pemakaian_ruang (
+    id VARCHAR(20) PRIMARY KEY, -- as id_st_mk_kelas
+    id_ruang INT NOT NULL,
+    id_sesi_at_book SMALLINT UNSIGNED NOT NULL, 
+    weekday TINYINT UNSIGNED NOT NULL,
+    jam_mulai TIME NOT NULL,
+    jam_selesai TIME NOT NULL,
+    assign_by INT NOT NULL,
+    assign_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT JADWAL_ID FOREIGN KEY (id) REFERENCES tb_st_mk_kelas(id) ON DELETE RESTRICT,
+    CONSTRAINT JADWAL_RUANG FOREIGN KEY (id_ruang) REFERENCES tb_ruang(id) ON DELETE RESTRICT,
+    CONSTRAINT JADWAL_SESI FOREIGN KEY (id_sesi_at_book) REFERENCES tb_sesi(id) ON DELETE RESTRICT,
+    CONSTRAINT JADWAL_JAM_MULAI CHECK (jam_mulai < jam_selesai),
+    CONSTRAINT JADWAL_WEEKDAY CHECK (weekday BETWEEN 0 AND 6)
   );
 ";

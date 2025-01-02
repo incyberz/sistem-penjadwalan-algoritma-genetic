@@ -2,6 +2,8 @@
 # ============================================================
 # SUB DATA HANDLER
 # ============================================================
+$note = $_GET['note'] ?? '';
+
 $th_subdata = '';
 $sql_subdata = '';
 $arr_subdata = [
@@ -29,7 +31,7 @@ if (key_exists($tb, $arr_subdata)) {
 # ============================================================
 $sql = "SELECT a.* $sql_subdata 
 FROM tb_$tb a";
-echolog($sql);
+// echolog($sql);
 $result = $conn->query($sql);
 $num_rows = $result->num_rows;
 $tr = '';
@@ -73,7 +75,8 @@ while ($row = $result->fetch_assoc()) {
 # ============================================================
 # SUB HEADER
 # ============================================================
-set_h2("tampil $tb");
+$note_info = $note ? "<span class='red'><b>Note:</b> $note</span>" : '';
+set_h2("tampil $tb", $note_info);
 
 # ============================================================
 # FINAL ECHO

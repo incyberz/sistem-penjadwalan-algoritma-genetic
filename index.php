@@ -22,7 +22,8 @@ $tahun_ini_genap = $tahun_ini . '2';
 $ta_aktif = $_SESSION['jadwal_ta_aktif'] ?? $tahun_ini_ganjil;
 $is_ganjil = $ta_aktif % 2 == 0 ? 0 : 1;
 $tahun_ta = substr($ta_aktif, 0, 4);
-$Ganjil = $is_ganjil  ? 'Ganjil' : 'Genap';
+$Gg = $is_ganjil  ? 'Ganjil' : 'Genap';
+$GG = strtoupper($Gg);
 
 
 

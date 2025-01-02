@@ -5,9 +5,6 @@ $post_shift = $_POST['shift'] ?? '';
 $post_counter = $_POST['counter'] ?? '';
 
 if (isset($_POST['btn_add_kelas'])) {
-  echo '<pre>';
-  var_dump($_POST);
-  echo '</pre>';
   if (!$_POST['id_prodi']) {
     alert('Silahkan pilih prodi.');
   } elseif (!$_POST['semester']) {

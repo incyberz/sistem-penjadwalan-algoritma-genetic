@@ -38,7 +38,7 @@ echo "
     <li><b>Whatsapp:</b> $petugas[whatsapp] </li>
     <li>
       <b>TA Aktif:</b> 
-      $tahun_ta $Ganjil 
+      $tahun_ta $Gg 
       <span class=btn_aksi id=set_ta_aktif__toggle>$img_manage</span>
     </li>
   </ul>

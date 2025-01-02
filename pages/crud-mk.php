@@ -75,10 +75,6 @@ $nav_prodi = "<div class='d-flex flex-center gap-4'>$items</div>";
 # ============================================================
 $items = '';
 
-// echo '<pre>';
-// var_dump($count_sm);
-// echo '</pre>';
-
 for ($i = 1; $i <= 8; $i++) {
 
   if ($is_ganjil and $i % 2 == 0) continue;
@@ -107,7 +103,7 @@ $nav_semester = "<div class='d-flex flex-center gap-1 mt1'>$items</div>";
 
 echo "
 <div class='gradasi-toska f12 p1'>
-  <h2 class='bold darkblue f12 tengah'>Pilihan MK TA. $tahun_ta $Ganjil</h2>
+  <h2 class='bold darkblue f12 tengah'>Pilihan MK TA. $tahun_ta $Gg</h2>
   <div id=navs class=''>
     $nav_prodi
     $nav_semester

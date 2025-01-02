@@ -1,40 +1,132 @@
 <?php
-$sql_ganjil = $is_ganjil ? " (a.semester % 2 = 1) " : " (a.semester % 2 = 0) ";
+# ============================================================
+# JUMLAH KELAS DI TIAP SEMESTER TIAP PRODI
+# ============================================================
+$rcount_kelas = [];
+
+for ($i = 1; $i <= 8; $i++) {
+  $s = "SELECT a.id ,
+  (SELECT COUNT(1) FROM tb_kelas WHERE id_prodi=a.id AND semester = '$i') count_kelas
+  FROM tb_prodi a";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  while ($d = mysqli_fetch_assoc($q)) {
+    // $id=$d['id'];
+    $rcount_kelas[$i][$d['id']] = $d['count_kelas'];
+  }
+}
+
+
+# ============================================================
+# MAIN SELECT 
+# ============================================================
+$sql_ganjil = $is_ganjil ? " (
+  a.semester = '1' 
+  OR a.semester = '3'
+  OR a.semester = '5'
+  OR a.semester = '7'
+) " : " (
+  a.semester = '2'
+  OR a.semester = '4'
+  OR a.semester = '6'
+  OR a.semester = '8'
+) ";
 $s = "SELECT a.*,
 c.id as id_prodi,
-c.singkatan as prodi 
+c.singkatan as prodi,
+(
+  SELECT COUNT(1) FROM tb_st_mk p 
+  JOIN tb_st_mk_kelas q ON q.id_st_mk=p.id -- jumlah assign ke tiap kelas
+  WHERE p.id_mk=a.id -- untuk MK yang ini
+  AND p.id_st LIKE '$ta_aktif-%' -- persen artinya semua dosen 
+  ) count_assigned 
 FROM tb_mk a 
 JOIN tb_kurikulum b ON a.id_kurikulum=b.id
 JOIN tb_prodi c ON b.id_prodi=c.id
 -- WHERE 1 
--- AND $sql_ganjil -- atau genap 
+AND $sql_ganjil -- atau genap 
 ORDER BY c.id, a.semester 
 ";
-echo '<pre>';
-var_dump($s);
-echo '</pre>';
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 if (mysqli_num_rows($q)) {
   $last_smt = '';
   while ($d = mysqli_fetch_assoc($q)) {
     $id = $d['id'];
     $separator = $last_smt != $d['semester'] ? '<hr>' : '';
+    $checked = key_exists($d['id'], $rmk) ? 'checked' : '';
+    $jumlah_kelas_assigned = $rmk[$d['id']]['jumlah_kelas'] ?? 0;
+    if ($jumlah_kelas_assigned) {
+      $disabled = 'disabled';
+      $jumlah_kelas_info = " x $jumlah_kelas_assigned kelas";
+      $blue = 'blue bold';
+    } else {
+      $disabled = '';
+      $jumlah_kelas_info = '';
+      $blue = '';
+    }
+
+
+    # ============================================================
+    # JIKA JUMLAH KELAS SUDAH MAX MAKA DISABLED (SUDAH DIALOKASIKAN)
+    # ============================================================
+    $max_assigned = $rcount_kelas[$d['semester']][$d['id_prodi']];
+    if (!$max_assigned) {
+      $disabled = 'disabled';
+      $pesan = "Belum ada kelas di prodi $d[prodi] semester $d[semester]";
+      $sudah_teralokasi = "<a target=_blank href='?crud&tb=kelas&note=$pesan' onclick='return confirm(`Buat kelas di Tab baru?`)'><span class=red>$pesan</span></a>";
+      $abu = 'abu';
+    } elseif ($max_assigned == $d['count_assigned']) {
+      $sudah_teralokasi = "<span class='green'>( sudah teralokasi $img_check )</span>";
+      $disabled = 'disabled';
+      $abu = 'abu';
+      $abu = $blue ? $blue :  'abu miring';
+    } else {
+      $mk_available++;
+      $disabled = ''; // masih boleh diceklis
+      $sudah_teralokasi = '';
+      $abu = '';
+    }
+
     $list_mk .= "
       $separator
       <div id=div_mk__$id>
-        <label class=label_mk>
-          <input class=check_mk type='checkbox' name='id_mk[$id]'> $d[prodi]-SM$d[semester] - $d[nama] - $d[sks] SKS
+        <label class='label_mk $abu $blue '>
+          <input class=check_mk type='checkbox' name='id_mk[$id]' $checked $disabled> 
+          $d[prodi]-SM$d[semester] - $d[nama] - $d[sks] SKS $jumlah_kelas_info | $d[count_assigned] of $max_assigned assigned $sudah_teralokasi
         </label>
       </div>  
     ";
     $last_smt = $d['semester'];
   }
+
+  $mk_available_info = $mk_available ? "<div class='mb1 mt2 blue bold'>Ceklis MK yang akan diberikan:</div>" : "
+    <div class='mb1 mt2 red bold'>
+      <a href='?st_ajar&id_kurikulum=$id_kurikulum'>$img_prev</a>
+      Maaf, belum ada MK yang available | 
+      <a href='?crud&tb=mk'>Manage MK</a>
+    </div>
+  ";
+
+  # ============================================================
+  # FINAL ECHO
+  # ============================================================
   $list_mk = "
-    <div class='mb1 f12'>Ceklis MK yang akan diberikan:</div>
-    $list_mk
+
+      <div id=pilih_mk class=hideita>
+      $untuk_mengampu
+
+      <div class=row id=list_mk>
+        <div class='col-sm-12'>
+          <div class='wadah gradasi-toska'>
+            $mk_available_info
+            $list_mk
+          </div>
+        </div>
+      </div>
+    </div>
+
   ";
 } else {
-  $pesan_error = alert("Belum ada satupun MK di prodi [$dkur[nama_prodi]] semester [$Ganjil]<hr><a href='?crud&tb=mk'>Buat Pilihan MK</a>", 'danger', '', false);
+  $pesan_error = alert("Belum ada satupun MK di prodi [$kurikulum[nama_prodi]] semester [$Gg]<hr><a href='?crud&tb=mk'>Buat Pilihan MK</a>", 'danger', '', false);
   $list_mk .= $pesan_error;
   $siap_assign = false;
 }

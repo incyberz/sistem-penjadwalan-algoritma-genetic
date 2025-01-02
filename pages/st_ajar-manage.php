@@ -5,6 +5,7 @@ $id_ta = $arr[0];
 $id_dosen = $arr[1];
 if ($id_ta < 1 || $id_dosen < 1) die("Invalid value: id_ta: $id_ta, id_dosen: $id_dosen, ");
 
+
 # ============================================================
 # ST-MANAGE-PROCESSORS
 # ============================================================
@@ -47,9 +48,8 @@ ORDER BY e.id, d.semester
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $num_rows = mysqli_num_rows($q);
 $divs = '';
-$id_dosen = '';
-$nama_dosen = '';
-$nidn = '';
+$nama_dosen = '-';
+$nidn = '-';
 $pernah_save_kelas = '';
 $i = 0;
 $arr_valid_check = [];
@@ -181,7 +181,7 @@ if ($pernah_save_kelas) {
 # ============================================================
 # FINAL ECHO
 # ============================================================
-set_h2("Manage Surat Tugas", $dkur['nama']);
+set_h2("Manage Surat Tugas", "Tahun Ajar $tahun_ta $Gg ");
 set_title("$nama_dosen - Surat Tugas");
 
 echo "
@@ -215,7 +215,7 @@ echo "
     </div>
 
     <div class='f12 abu mb2'>
-      <a href='?st_ajar&id_kurikulum=2&id_dosen=$id_dosen'>$img_add Tambah MK</a>
+      <a href='?st_ajar&id_kurikulum=$id_kurikulum&id_dosen=$id_dosen'>$img_add Tambah MK</a>
     </div>
     $btn_simpan
     $btn_verif
