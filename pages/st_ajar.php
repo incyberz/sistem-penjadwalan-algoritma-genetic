@@ -89,7 +89,7 @@ if ($aksi) {
     $id_st = $_GET['id_st'] ?? udef('id_st');
     $id_mk = $_GET['id_mk'] ?? udef('id_mk');
     $s = "DELETE FROM tb_st_mk WHERE id_st = '$id_st' AND id_mk='$id_mk'";
-    echolog($s);
+
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
     jsurl("?st_ajar&id_kurikulum=2&aksi=manage&id_st=$id_st");
   } else {

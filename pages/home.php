@@ -1,5 +1,5 @@
 <?php
-$img_manage = img_icon('manage');
+$show_config = $_GET['show_config'] ?? null;
 
 if (isset($_POST['btn_set_ta'])) {
   echolog("Setting ke TA. $_POST[btn_set_ta]");
@@ -31,6 +31,7 @@ while ($d = mysqli_fetch_assoc($q)) {
 
 
 $petugas['nama'] = strtolower($petugas['nama']);
+$hideit = $show_config ? '' : 'hideit';
 echo "
   <h1>Welcome <span id='nama_user' class='proper'>$petugas[nama]</span>!!!</h1>
   <ul>
@@ -42,7 +43,7 @@ echo "
       <span class=btn_aksi id=set_ta_aktif__toggle>$img_manage</span>
     </li>
   </ul>
-  <form method=post id='set_ta_aktif' class='hideit mt2 wadah gradasi-toska'>
+  <form method=post id='set_ta_aktif' class='$hideit mt2 wadah gradasi-toska'>
     <h3>Set TA Aktif</h3>
     <div class=row>
       $div_ta

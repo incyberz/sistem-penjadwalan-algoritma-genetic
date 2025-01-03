@@ -37,5 +37,21 @@
     display: inline-block;
     padding: 3px 8px;
     min-width: 100px;
+    color: green;
+    font-weight: bold;
+  }
+
+  .ruang_terpakai {
+    color: gray;
+    font-weight: normal;
+    font-style: italic;
+  }
+
+  .nav_kelas_active {
+    background: linear-gradient(#dff, #bfb);
+  }
+
+  .nav_kelas:hover {
+    background: linear-gradient(#cfc, #afa);
   }
 </style>

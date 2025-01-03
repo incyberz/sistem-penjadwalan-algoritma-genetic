@@ -2,14 +2,12 @@
 # ============================================================
 # SUB DATA HANDLER
 # ============================================================
-$note = $_GET['note'] ?? '';
-
 $th_subdata = '';
 $sql_subdata = '';
 $arr_subdata = [
-  'kelas' => 'jadwal',
+  'kelas' => 'st_mk_kelas',
   // 'mk' => 'st_mk', // spesialisasi tampilan UI
-  'dosen' => 'jadwal',
+  'dosen' => 'st',
   'ruang' => 'jadwal',
   'ta' => 'kurikulum',
   'prodi' => 'kurikulum',
@@ -31,7 +29,7 @@ if (key_exists($tb, $arr_subdata)) {
 # ============================================================
 $sql = "SELECT a.* $sql_subdata 
 FROM tb_$tb a";
-// echolog($sql);
+
 $result = $conn->query($sql);
 $num_rows = $result->num_rows;
 $tr = '';
@@ -75,6 +73,7 @@ while ($row = $result->fetch_assoc()) {
 # ============================================================
 # SUB HEADER
 # ============================================================
+$note = $_GET['note'] ?? '';
 $note_info = $note ? "<span class='red'><b>Note:</b> $note</span>" : '';
 set_h2("tampil $tb", $note_info);
 

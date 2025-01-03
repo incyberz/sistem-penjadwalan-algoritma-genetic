@@ -34,7 +34,7 @@ for ($i = 2024; $i <= $max_ta; $i++) {
         '$arr[awal]',
         '$arr[akhir]'
       )";
-      echolog($s);
+
       $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
     }
   }

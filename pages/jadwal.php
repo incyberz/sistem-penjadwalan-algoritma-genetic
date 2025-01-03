@@ -2,20 +2,24 @@
 # ============================================================
 # JADWAL PER FAKULTAS
 # ============================================================
-$fakultas = 'FKOM';
-$semester = 1;
-$shift = 'R';
+$fakultas = $_GET['fakultas'] ?? 'FKOM';
+$semester = $_GET['semester'] ?? 1;
+$shift = $_GET['shift'] ?? 'R';
 $SHIFT = $shift == 'R' ? 'REGULER' : 'NON-REGULER';
 include 'jadwal-functions.php';
 include 'jadwal-styles.php';
 include 'jadwal-processors.php';
 set_title("JADWAL " . strtoupper($fakultas));
 
+$KAMPUS = strtoupper($nama_kampus);
+$FAK = strtoupper($rfakultas[$fakultas]);
+
 echo "
   <div class='tengah gradasi-toska p-3'>
-    <h1>FAKULTAS KOMPUTER UNIVERSITAS MA'SOEM</h1>
+    <h1>$FAK $KAMPUS</h1>
     <h2>JADWAL MATA KULIAH $tahun_ta $GG</h2>
     <h3>KELAS $SHIFT SEMESTER $semester</h3>
+    <h4>D3-KA</h4>
   </div>
 ";
 
@@ -38,29 +42,20 @@ if (!mysqli_num_rows($q)) {
   alert("$pesan | <a href='?crud&tb=kelas&note=$pesan'>Manage Kelas</a>");
   exit;
 }
+$nav_kelas = '';
+$nav_kelas_active = 'nav_kelas_active';
+$nav_kelas_pertama = null;
 while ($d = mysqli_fetch_assoc($q)) {
   $rkelas[$d['id']] = $d;
+  $nav_kelas_pertama = $nav_kelas_pertama ?? $d['nama_kelas'];
+  $nav_kelas .= "<div class='bordered br5 p1 px-2 nav_kelas $nav_kelas_active pointer' id=nav_kelas__$d[id]><span>$d[nama_kelas]</span></div>";
+  $nav_kelas_active = '';
 }
+$nav_kelas = "<div class='flexy flex-center mt4'>$nav_kelas</div>";
 $col = intval(12 / count($rkelas));
 if ($col < 3) $col = 3;
 
-# ============================================================
-# SENIN PERTAMA PERKULIAHAN + ARRAY HARI
-# ============================================================
-$senin_pertama = '2025-2-3';
-if (date('w', strtotime($senin_pertama)) != 1) die(alert("Weekday Senin Pertama harus bernilai 1 (hari Senin)."));
 
-$rhari = [];
-for ($i = 0; $i < 5; $i++) {
-  $date = date('Y-m-d', strtotime("+$i day", strtotime($senin_pertama)));
-  $rhari[$date] = [
-    'weekday' => date('w', strtotime($date)),
-    'nama_hari' => nama_hari($date),
-    'tanggal' => date('d', strtotime($date)),
-    'bulan' => nama_bulan($date),
-    'tahun' => date('Y', strtotime($date))
-  ];
-}
 
 
 # ============================================================
@@ -80,26 +75,20 @@ while ($d = mysqli_fetch_assoc($q)) {
 # ============================================================
 # DATA RUANG
 # ============================================================
-$opt_ruang = '';
-$radio_ruang = '';
-$s = "SELECT * FROM tb_ruang";
-$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-$rruang = [];
-if (!mysqli_num_rows($q)) {
-  die(alert("Belum ada Data Ruang Perkuliahan. | <a href='?crud&tb=ruang'>Manage Ruang</a>"));
-}
-while ($d = mysqli_fetch_assoc($q)) {
-  $rruang[$d['id']] = $d;
-  $opt_ruang .= "<option value='$d[id]'>$d[nama]</option>";
-  $radio_ruang .= "
-    <label class=label_ruang>
-      <div>
-        <input required type=radio name=id_ruang value=$d[id]>
-        R.$d[nama]
-      </div>
-    </label>
-  ";
-}
+include 'includes/rruang.php';
+if (!$rruang) die(alert("Belum ada Data Ruang Perkuliahan. | <a href='?crud&tb=ruang'>Manage Ruang</a>"));
+
+# ============================================================
+# DATA PEMAKAIAN RUANG DI TA INI
+# ============================================================
+$rpenjadwalan = [];
+$rpemakaian = []; // ruang
+include 'jadwal-pemakaian_ruang.php';
+
+
+
+
+
 
 
 
@@ -112,6 +101,7 @@ foreach ($rhari as $date => $v) {
     <h4 class='darkblue nama_hari p1 tengah'>$v[nama_hari]</h4>
   ";
   $cols = '';
+  $hideit_kelas = '';
   foreach ($rkelas as $id_kelas => $arr_kelas) {
     $kelas = $arr_kelas['nama_kelas'];
 
@@ -123,7 +113,8 @@ foreach ($rhari as $date => $v) {
     a.id,
     d.nama as nama_mk,
     d.sks,
-    e.nama as nama_dosen
+    e.nama as nama_dosen,
+    (SELECT 1 FROM tb_jadwal WHERE id=a.id) sudah_terjadwal
 
     FROM tb_st_mk_kelas a 
     JOIN tb_st_mk b ON a.id_st_mk=b.id 
@@ -133,23 +124,26 @@ foreach ($rhari as $date => $v) {
     JOIN tb_kelas f ON a.id_kelas=f.id 
     JOIN tb_kurikulum g ON d.id_kurikulum=g.id 
     JOIN tb_prodi h ON g.id_prodi=h.id 
+    LEFT JOIN tb_jadwal i ON a.id=i.id 
     WHERE 1 
     AND d.semester = '$semester' 
     AND f.nama = '$kelas' 
     AND f.shift = '$shift' 
     AND h.fakultas = '$fakultas' 
+    AND i.id is null 
 
 
     ORDER BY nama_mk";
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
     // $rst_mk_kelas = [];
-    if (!mysqli_num_rows($q)) {
-      die(alert("Belum ada Data Surat Tugas Perkuliahan detail. | <a href='?st_ajar'>Manage Surat Tugas</a>"));
+    $num_rows_pilihan_mk = mysqli_num_rows($q);
+    if (!$num_rows_pilihan_mk) {
+      // die(alert("Belum ada Data Surat Tugas Perkuliahan detail untuk semester [$semester] kelas [$kelas-$shift] fakultas [$fakultas]. | <a href='?st_ajar'>Manage Surat Tugas</a>"));
+      // tidak apa2 habis mungkin di prodi lain se-fakultas masih ada 
     }
     while ($d = mysqli_fetch_assoc($q)) {
-      // $rst_mk_kelas[$d['id']] = $d;
       $radio_st_mk_kelas .= "
-        <label class=label_mk_dosen>
+        <label class='label_mk_dosen'>
           <div>
             <input required type=radio name=id_radio value=$d[id]__$d[sks]>
             $d[nama_mk]
@@ -172,39 +166,131 @@ foreach ($rhari as $date => $v) {
       $awal = date('H:i', strtotime($arr_sesi['awal']));
       $akhir = date('H:i', strtotime($arr_sesi['akhir']));
       if ($arr_sesi['is_break']) {
+        # ============================================================
+        # SESI BREAK
+        # ============================================================
         $tr .= "
           <tr class='gradasi-kuning'>
             <td colspan=100%>
               <div class='tengah abu miring'>
-                $arr_sesi[info]
+                Break: $arr_sesi[info]
               </div>
             </td>
           </tr>
         ";
       } else {
-        $tr .= "
-          <tr>
-            <td>$awal - $akhir</td>
-            <td>
-              <div>
-                <button class='toggle_book btn btn-success btn-sm w-100' id=toggle_book__$arr_kelas[id]__$v[weekday]__$id_sesi>Book Sesi $id_sesi</button>
-                <form method=post class='hideit wadah mt2 gradasi-kuning form_book' id=form_book__$arr_kelas[id]__$v[weekday]__$id_sesi>
-                  <div class='mb2'>
-                    <div class='bold f12 mb2'>Pilihan MK:</div>
-                    $radio_st_mk_kelas
+        # ============================================================
+        # SESI NORMAL
+        # ============================================================
+
+        # ============================================================
+        # CEK JIKA SESI SUDAH TERPAKAI 
+        # ============================================================
+        $terpakai = $rpenjadwalan[$v['weekday']][$id_kelas][$id_sesi] ?? null;
+        if ($terpakai) {
+          # ============================================================
+          # SUDAH TERPAKAI
+          # ============================================================
+          if ($terpakai['id_sesi'] == $terpakai['id_sesi_at_book']) {
+            $jam_mulai = date('H:i', strtotime($terpakai['jam_mulai']));
+            $jam_selesai = date('H:i', strtotime($terpakai['jam_selesai']));
+            $tr .= "
+              <tr>
+                <td>$jam_mulai - $jam_selesai</td>
+                <td>
+                  $terpakai[nama_mk]
+                  <div class='abu miring f14'>$terpakai[nama_lengkap_dosen]</div>
+                </td>
+                <td>$terpakai[nama_ruang]</td>
+              </tr>
+            ";
+          }
+          // exit;
+        } elseif (
+          !$rsesi[$id_sesi]['bookable']
+          || ($v['weekday'] == 5 and ($id_sesi == 5 or $id_sesi == 7)) // jumat
+        ) {
+          # ============================================================
+          # BOOKABLE FALSE
+          # ============================================================
+          $tr .= "
+              <tr>
+                <td>$awal - $akhir</td>
+                <td class=tengah>
+                  <i class='f12 abu'>unbookable</i>
+                </td>
+                <td>-</td>
+              </tr>
+            ";
+        } else {
+
+          # ============================================================
+          # RADIO RUANG HARUS LOOP DISINI
+          # ============================================================
+          $radio_ruang = '';
+          foreach ($rruang as $id_ruang => $arr_ruang) {
+            // apakah ruangan ini sudah terpakai di hari senin sesi 12
+            $id_ruang_terpakai = $rpemakaian[$v['weekday']][$id_ruang][$id_sesi]['id_ruang'] ?? null;
+            if ($id_ruang_terpakai == $id_ruang) {
+              $ruang_terpakai = 'ruang_terpakai';
+              $disabled = 'disabled';
+            } else {
+              $ruang_terpakai = '';
+              $disabled = '';
+            }
+            $radio_ruang .= "
+              <label class='label_ruang $ruang_terpakai'>
+                <div>
+                  <input required type=radio name=id_ruang value=$arr_ruang[id] $disabled />
+                  R.$arr_ruang[nama]
+                </div>
+              </label>
+            ";
+          }
+
+          if (!$num_rows_pilihan_mk) {
+            # ============================================================
+            # PILIHAN MK HABIS
+            # ============================================================
+            $pesan = "Pilihan MK dan Surat Tugas untuk kelas [ $kelas ] habis";
+            $tr .= "
+              <tr>
+                <td>$awal - $akhir</td>
+                <td>
+                  <span class='abu f12 miring'>$pesan | <a target=_blank href='?crud&tb=mk&note=$pesan'>Add</a></span>
+                </td>
+                <td>?</td>
+              </tr>
+            ";
+          } else {
+            # ============================================================
+            # BOLEH BOOKING
+            # ============================================================
+            $tr .= "
+              <tr>
+                <td>$awal - $akhir</td>
+                <td>
+                  <div>
+                    <button class='toggle_book btn btn-success btn-sm w-100' id=toggle_book__$arr_kelas[id]__$v[weekday]__$id_sesi>Book Sesi $id_sesi</button>
+                    <form method=post class='hideit wadah mt2 gradasi-kuning form_book' id=form_book__$arr_kelas[id]__$v[weekday]__$id_sesi>
+                      <div class='mb2'>
+                        <div class='bold f12 mb2'>Pilihan MK:</div>
+                        $radio_st_mk_kelas
+                      </div>
+                      <div class='mb2 blok_radio_ruang'>
+                        <div class='bold f12 mb1'>Ruang:</div>
+                        $radio_ruang
+                      </div>
+                      <button class='btn btn-primary w-100 mb2' name=btn_book value='$v[weekday]__$id_sesi'>Book</button>
+                      <div class=tengah><span class='btn_cancel pointer darkred'>Cancel</span></div>
+                    </form>
                   </div>
-                  <div class='mb2 blok_radio_ruang'>
-                    <div class='bold f12 mb1'>Ruang:</div>
-                    $radio_ruang
-                  </div>
-                  <button class='btn btn-primary w-100 mb2' name=btn_book value='$v[weekday]__$id_sesi'>Book</button>
-                  <div class=tengah><span class='btn_cancel pointer darkred'>Cancel</span></div>
-                </form>
-              </div>
-            </td>
-            <td>?</td>
-          </tr>
-        ";
+                </td>
+                <td>?</td>
+              </tr>
+            ";
+          }
+        } // END IF BOLEH BOOKING
       } // non break sesi
     } // end foreach $rsesi
 
@@ -213,7 +299,7 @@ foreach ($rhari as $date => $v) {
 
     $cols .= "
       <div class='col-$col'>
-        <div class=blok_jadwal>
+        <div class='$hideit_kelas blok_kelas blok_kelas__$id_kelas'>
           <table class='table table-hover'>
             <thead>
               <th width=20%>WAKTU</th>
@@ -225,12 +311,18 @@ foreach ($rhari as $date => $v) {
         </div>      
       </div>      
     ";
+    $hideit_kelas = 'hideit';
   }
   $blok_jadwal .= "<div class=row>$cols</div>";
 }
 
-
-echo $blok_jadwal;
+# ============================================================
+# FINAL ECHO
+# ============================================================
+echo "
+  $nav_kelas
+  $blok_jadwal
+";
 ?>
 <script>
   $(function() {
@@ -247,6 +339,19 @@ echo $blok_jadwal;
     $('.btn_cancel').click(function() {
       $('.toggle_book').prop('disabled', 0);
       $('.form_book').slideUp();
+    });
+    $('.nav_kelas').click(function() {
+      let tid = $(this).prop('id');
+      let rid = tid.split('__');
+      let aksi = rid[0];
+      let id = rid[1];
+      console.log(aksi, id);
+
+      // $('.toggle_book').prop('disabled', 0);
+      $('.blok_kelas').slideUp();
+      $('.blok_kelas__' + id).slideDown();
+      $('.nav_kelas').removeClass('nav_kelas_active');
+      $(this).addClass('nav_kelas_active');
     });
   })
 </script>

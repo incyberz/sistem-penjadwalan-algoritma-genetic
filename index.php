@@ -8,22 +8,9 @@ if (!isset($_SESSION['jadwal_username'])) $_SESSION['jadwal_username'] = 'yunita
 if (!isset($_SESSION['jadwal_ta_aktif'])) $_SESSION['jadwal_ta_aktif'] = 20241;
 
 # ============================================================
-# APLIKASI PENJADWALAN KULIAH
+# CONFIGIRATION FILE
 # ============================================================
-$min_ta = 2024;
-$max_ta = 2030;
-$min_ta_ganjil = $min_ta . '1';
-$max_ta_genap = $max_ta . '2';
-
-$tahun_ini = date('Y');
-$tahun_ini_ganjil = $tahun_ini . '1';
-$tahun_ini_genap = $tahun_ini . '2';
-
-$ta_aktif = $_SESSION['jadwal_ta_aktif'] ?? $tahun_ini_ganjil;
-$is_ganjil = $ta_aktif % 2 == 0 ? 0 : 1;
-$tahun_ta = substr($ta_aktif, 0, 4);
-$Gg = $is_ganjil  ? 'Ganjil' : 'Genap';
-$GG = strtoupper($Gg);
+include 'config.php';
 
 
 
@@ -31,7 +18,6 @@ $GG = strtoupper($Gg);
 # INCLUDES
 # ============================================================
 include 'conn.php';
-include 'config.php';
 include 'includes/jadwal_styles.php';
 include 'includes/arr_sql.php';
 include 'includes/arr_tb_master.php';
@@ -77,7 +63,7 @@ try {
   # ============================================================
   echolog('<b class="darkblue f20">UPDATING TABLES</b><hr>');
   foreach ($arr_sql as $key => $sql) {
-    echolog($sql);
+
     $conn->query($sql);
   }
   alert("Tables created successfully. | <a href='?'>Back to Home</a>", 'success');
@@ -105,7 +91,7 @@ if ($username) include 'pages/user.php';
 </head>
 
 <body>
-  <div class="container" style="position: relative;">
+  <div class="container">
     <?php include 'pages/header.php'; ?>
     <main>
       <section>

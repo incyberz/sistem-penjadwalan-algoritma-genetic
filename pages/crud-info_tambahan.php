@@ -17,14 +17,14 @@ $arr_info_tambahan = [
     'kapasitas' => 'biasanya tidak > 40 mhs',
   ],
   'dosen' => [
-    'nama' => 'hanya diperbolehkan A-Z (abaikan titik, petik, dll)', // add script JS to whatsapp ZZZ
-    'whatsapp' => 'awali dengan "628..."', // add script JS to whatsapp ZZZ
+    'nama' => 'hanya diperbolehkan A-Z (abaikan titik, petik, dll)',
+    'whatsapp' => 'awali dengan "628..."',
   ],
   'petugas' => [
-    'nama' => 'hanya diperbolehkan A-Z (abaikan titik, gelar, dll)', // add script JS to whatsapp ZZZ
-    'username' => 'hanya a-z dan 0-9', // add script JS to whatsapp ZZZ
-    'whatsapp' => 'awali dengan "628..."', // add script JS to whatsapp ZZZ
-    'role' => 'pilihan: AKD, KEU, atau PIM', // add script JS to whatsapp ZZZ
+    'nama' => 'hanya diperbolehkan A-Z (abaikan titik, gelar, dll)',
+    'username' => 'hanya a-z dan 0-9',
+    'whatsapp' => 'awali dengan "628..."',
+    'role' => 'pilihan: AKD, KEU, atau PIM',
   ],
   'ruang' => [
     'nama' => 'biasanya dg <b>format:</b> GEDUNG-LANTAI-COUNTER, <b>misal:</b> B-3-01',

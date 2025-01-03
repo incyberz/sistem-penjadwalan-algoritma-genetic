@@ -45,7 +45,7 @@ if (mysqli_num_rows($q)) {
       $s2 = "SELECT b.id,b.nama as nama_mk FROM tb_st_mk a 
       JOIN tb_mk b ON a.id_mk=b.id 
       WHERE a.id_st='$d[id_st]'";
-      // echolog($s2);
+      // 
       $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
       $li = '';
       while ($d2 = mysqli_fetch_assoc($q2)) {

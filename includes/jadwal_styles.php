@@ -20,6 +20,10 @@
     letter-spacing: .3px;
   }
 
+  body,
+  header {
+    position: relative;
+  }
 
   header nav {
     position: sticky;

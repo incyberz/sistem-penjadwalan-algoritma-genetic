@@ -29,7 +29,7 @@ if (isset($_POST['btn_create_st'])) {
         '$id_st',
         $id_mk
       ) ON DUPLICATE KEY UPDATE id_mk=$id_mk, id_st='$id_st'";
-      echolog($s);
+
       $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
     }
   }

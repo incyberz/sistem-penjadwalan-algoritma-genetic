@@ -101,14 +101,18 @@ for ($i = 1; $i <= 8; $i++) {
 }
 $nav_semester = "<div class='d-flex flex-center gap-1 mt1'>$items</div>";
 
+$note = $_GET['note'] ?? '';
+$note_info = $note ? "<div class='red tengah'><b>Note:</b> $note</div>" : '';
+
 echo "
-<div class='gradasi-toska f12 p1'>
-  <h2 class='bold darkblue f12 tengah'>Pilihan MK TA. $tahun_ta $Gg</h2>
-  <div id=navs class=''>
-    $nav_prodi
-    $nav_semester
+  $note_info
+  <div class='gradasi-toska f12 p1'>
+    <h2 class='bold darkblue f12 tengah'>Pilihan MK TA. $tahun_ta $Gg</h2>
+    <div id=navs class=''>
+      $nav_prodi
+      $nav_semester
+    </div>
   </div>
-</div>
 ";
 
 # ============================================================

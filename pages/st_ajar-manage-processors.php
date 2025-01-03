@@ -40,19 +40,19 @@ if (isset($_POST['btn_simpan_st'])) {
       '$id_dosen'
     ) ON DUPLICATE KEY UPDATE id_kelas=$id_kelas";
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-    // echolog($s);
+    // 
     // exit;
   }
 
 
   $s = "SELECT id_st FROM tb_st_mk WHERE id='$id_st_mk'";
-  echolog($s);
+
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   $d = mysqli_fetch_assoc($q);
   $id_st = $d['id_st'];
 
   $s = "UPDATE tb_st SET pernah_save_kelas=1 WHERE id='$id_st'";
-  echolog($s);
+
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   jsurl();
 }

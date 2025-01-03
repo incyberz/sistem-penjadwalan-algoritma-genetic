@@ -45,7 +45,7 @@ if (isset($_POST['btn_add_kelas'])) {
       '$_POST[shift]',
       $counter_or_null
     ) ON DUPLICATE KEY UPDATE created_at = CURRENT_TIMESTAMP";
-    echolog($s2);
+
     $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
     jsurl();
   }

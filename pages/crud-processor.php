@@ -21,7 +21,7 @@ if (isset($_POST['btn_save'])) {
   try {
     // Eksekusi query SQL
     $sql = "INSERT INTO tb_$tb ($koloms) VALUES ($isis)";
-    echolog($sql);
+
     $conn->query($sql);
     alert("Data berhasil disimpan.", 'success');
     jsurl();

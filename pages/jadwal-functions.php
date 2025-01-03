@@ -11,27 +11,3 @@ function blok_jadwal($last_semester, $thead, $tr_mk)
     </div>
   ";
 }
-
-function nama_hari($date)
-{
-  $arr = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-  return $arr[date('w', strtotime($date))];
-}
-function nama_bulan($date)
-{
-  $arr = [
-    'Januari',
-    'Februari',
-    'Maret',
-    'April',
-    'Mei',
-    'Juni',
-    'Juli',
-    'Agustus',
-    'September',
-    'Oktober',
-    'November',
-    'Desember'
-  ];
-  return $arr[intval(date('m', strtotime($date))) - 1];
-}

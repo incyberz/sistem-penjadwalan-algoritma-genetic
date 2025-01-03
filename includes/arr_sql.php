@@ -119,6 +119,7 @@ $arr_sql['sesi'] = "CREATE TABLE IF NOT EXISTS tb_sesi (
   akhir TIME NOT NULL,
   shift SET('R', 'NR') NOT NULL,
   is_break BOOLEAN NULL DEFAULT NULL, -- true = waktu shalat
+  bookable BOOLEAN NULL DEFAULT TRUE,
   info VARCHAR(100) NULL DEFAULT NULL
   );
 ";
@@ -234,18 +235,11 @@ $arr_sql['jadwal'] = "CREATE TABLE IF NOT EXISTS tb_jadwal (
 # pemakaian_ruang
 # ============================================================
 $arr_sql['pemakaian_ruang'] = "CREATE TABLE IF NOT EXISTS tb_pemakaian_ruang (
-    id VARCHAR(20) PRIMARY KEY, -- as id_st_mk_kelas
+    id VARCHAR(30) PRIMARY KEY, -- as id_st_mk_kelas + id_sesi
+    id_st_mk_kelas VARCHAR(20) NOT NULL, 
     id_ruang INT NOT NULL,
-    id_sesi_at_book SMALLINT UNSIGNED NOT NULL, 
-    weekday TINYINT UNSIGNED NOT NULL,
-    jam_mulai TIME NOT NULL,
-    jam_selesai TIME NOT NULL,
-    assign_by INT NOT NULL,
-    assign_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT JADWAL_ID FOREIGN KEY (id) REFERENCES tb_st_mk_kelas(id) ON DELETE RESTRICT,
-    CONSTRAINT JADWAL_RUANG FOREIGN KEY (id_ruang) REFERENCES tb_ruang(id) ON DELETE RESTRICT,
-    CONSTRAINT JADWAL_SESI FOREIGN KEY (id_sesi_at_book) REFERENCES tb_sesi(id) ON DELETE RESTRICT,
-    CONSTRAINT JADWAL_JAM_MULAI CHECK (jam_mulai < jam_selesai),
-    CONSTRAINT JADWAL_WEEKDAY CHECK (weekday BETWEEN 0 AND 6)
+    id_sesi SMALLINT UNSIGNED NOT NULL, 
+    CONSTRAINT PEMAKAIAN_ST_MK_KELAS FOREIGN KEY (id_st_mk_kelas) REFERENCES tb_st_mk_kelas(id) ON DELETE RESTRICT,
+    CONSTRAINT PEMAKAIAN_RUANG FOREIGN KEY (id_ruang) REFERENCES tb_ruang(id) ON DELETE RESTRICT
   );
 ";
