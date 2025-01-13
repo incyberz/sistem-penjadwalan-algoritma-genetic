@@ -11,16 +11,22 @@ $s = "SELECT a.*,
   SELECT COUNT(1) FROM tb_st_mk p 
   JOIN tb_st q ON p.id_st=q.id 
   WHERE q.id_dosen=a.id 
-  AND q.id_ta = $ta_aktif) count_mk,
+  AND q.id_ta = $ta_aktif) count_kumk,
 (
-  SELECT SUM(r.sks) FROM tb_st_mk p 
+  SELECT SUM(t.sks) FROM tb_st_mk p 
   JOIN tb_st q ON p.id_st=q.id 
-  JOIN tb_mk r ON p.id_mk=r.id 
+  JOIN tb_kumk r ON p.id_kumk=r.id 
   JOIN tb_st_mk_kelas s ON s.id_st_mk=p.id 
+  JOIN tb_mk t ON r.id_mk=t.id 
   WHERE q.id_dosen=a.id 
   AND q.id_ta = $ta_aktif) sum_sks
 
 FROM tb_dosen a WHERE $sql_id_dosen";
+
+// echo '<pre>';
+// var_dump($s);
+// echo '</pre>';
+// exit;
 
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 if (mysqli_num_rows($q)) {
@@ -41,9 +47,11 @@ if (mysqli_num_rows($q)) {
 
     $this_list_mk = '';
     $id_mks = '';
-    if ($d['count_mk']) {
-      $s2 = "SELECT b.id,b.nama as nama_mk FROM tb_st_mk a 
-      JOIN tb_mk b ON a.id_mk=b.id 
+    if ($d['count_kumk']) {
+      $s2 = "SELECT c.id,c.nama as nama_mk 
+      FROM tb_st_mk a 
+      JOIN tb_kumk b ON a.id_kumk=b.id 
+      JOIN tb_mk c ON b.id_mk=c.id 
       WHERE a.id_st='$d[id_st]'";
       // 
       $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
@@ -55,7 +63,7 @@ if (mysqli_num_rows($q)) {
       $this_list_mk = "<ul>$li</ul>";
     }
 
-    $count_mk = $d['count_mk'] ? "<span class='blue bold'><span id=count_mk__$d[id]>$d[count_mk]</span> MK</span>" : '-';
+    $count_kumk = $d['count_kumk'] ? "<span class='blue bold'><span id=count_mk__$d[id]>$d[count_kumk]</span> MK</span>" : '-';
     $sum_sks = $d['sum_sks'] ? "<span class='blue bold'><span id=sum_sks__$d[id]>$d[sum_sks]</span> SKS</span>" : '-';
 
     $list_dosen .= "
@@ -67,7 +75,7 @@ if (mysqli_num_rows($q)) {
           </a>
         </td>
         <td><span class='$blue'>$homebase</span></td>
-        <td>$count_mk</td>
+        <td>$count_kumk</td>
         <td>$sum_sks</td>
       </tr>  
     ";

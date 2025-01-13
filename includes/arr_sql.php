@@ -5,6 +5,27 @@
 $arr_sql = [];
 
 # ============================================================
+# DATA SETS
+# ============================================================
+$rset = [
+  'fakultas' => $rfakultas,
+  'jenjang' => $rjenjang,
+  'role' => $rrole,
+  'shift' => $rshift
+];
+$dataset = [];
+foreach ($rset as $set => $arr) {
+  $dataset[$set] = '';
+  foreach ($arr as $key => $value) {
+    if ($key) {
+      $koma = $dataset[$set] ? ',' : '';
+      $dataset[$set] .= "$koma'$key'";
+    }
+  }
+}
+
+
+# ============================================================
 # ta
 # ============================================================
 $arr_sql['ta'] = "CREATE TABLE IF NOT EXISTS tb_ta (
@@ -27,8 +48,8 @@ $arr_sql['prodi'] = "CREATE TABLE IF NOT EXISTS tb_prodi (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nama VARCHAR(100) NOT NULL UNIQUE,
     singkatan VARCHAR(3) NOT NULL UNIQUE,
-    fakultas SET('FKOM', 'FEBI', 'FKIP', 'FAPERTA') NOT NULL,
-    jenjang SET('D3', 'S1', 'S2', 'S3') NOT NULL,
+    fakultas SET($dataset[fakultas]) NOT NULL,
+    jenjang SET($dataset[jenjang]) NOT NULL,
     jumlah_semester SET('6','8') NOT NULL
   );
 ";
@@ -79,6 +100,7 @@ $arr_sql['dosen'] = "CREATE TABLE IF NOT EXISTS tb_dosen (
   id_prodi INT NULL DEFAULT NULL, -- NULL = DOSEN LB
   whatsapp VARCHAR(14) UNIQUE NOT NULL,
   alamat TEXT,
+  status TINYINT(1) NULL DEFAULT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
@@ -117,7 +139,7 @@ $arr_sql['sesi'] = "CREATE TABLE IF NOT EXISTS tb_sesi (
   nama VARCHAR(100) NOT NULL,
   awal TIME NOT NULL,
   akhir TIME NOT NULL,
-  shift SET('R', 'NR') NOT NULL,
+  shift SET($dataset[shift]) NOT NULL,
   is_break BOOLEAN NULL DEFAULT NULL, -- true = waktu shalat
   bookable BOOLEAN NULL DEFAULT TRUE,
   info VARCHAR(100) NULL DEFAULT NULL
@@ -132,16 +154,15 @@ $arr_sql['kelas'] = "CREATE TABLE IF NOT EXISTS tb_kelas (
   nama VARCHAR(50) NOT NULL UNIQUE,
   kapasitas TINYINT UNSIGNED NOT NULL DEFAULT 40,
   id_prodi INT NOT NULL,
-  angkatan SMALLINT(4) UNSIGNED NOT NULL,
+  id_ta SMALLINT(5) NOT NULL,
   semester SET('1', '2', '3', '4', '5', '6', '7', '8') NOT NULL,
-  shift SET('R', 'NR') NOT NULL,
+  shift SET($dataset[shift]) NOT NULL,
   counter SET('A', 'B', 'C', 'D', 'E') NULL DEFAULT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-  CONSTRAINT KAPASITAS_KELAS CHECK (kapasitas <= 50), 
-  CONSTRAINT ANGKATAN_KELAS CHECK (angkatan BETWEEN 2020 AND 2030), 
-
-  FOREIGN KEY (id_prodi) REFERENCES tb_prodi(id) ON DELETE RESTRICT
+  CONSTRAINT KAPASITAS_KELAS CHECK (kapasitas <= 500), -- AULA > 40 
+  CONSTRAINT TA_KELAS FOREIGN KEY (id_ta) REFERENCES tb_ta(id) ON DELETE RESTRICT,
+  CONSTRAINT PRODI_KELAS FOREIGN KEY (id_prodi) REFERENCES tb_prodi(id) ON DELETE RESTRICT
   );
 ";
 
@@ -155,7 +176,7 @@ $arr_sql['petugas'] = "CREATE TABLE IF NOT EXISTS tb_petugas (
   password varchar(200) DEFAULT NULL,
   created_at timestamp NOT NULL DEFAULT current_timestamp(),
   whatsapp varchar(14) NOT NULL,
-  role SET('AKD', 'KEU', 'PIM') NOT NULL,
+  role SET($dataset[role]) NOT NULL,
   image varchar(100) DEFAULT NULL,
   CONSTRAINT chk_username CHECK (username REGEXP '^[a-z0-9]+$'),
   CONSTRAINT chk_whatsapp CHECK (whatsapp LIKE '628%'),
@@ -168,7 +189,7 @@ $arr_sql['petugas'] = "CREATE TABLE IF NOT EXISTS tb_petugas (
 # st
 # ============================================================
 $arr_sql['st'] = "CREATE TABLE IF NOT EXISTS tb_st (
-    id varchar(20) NOT NULL COMMENT 'id_ta id_dosen' PRIMARY KEY,
+    id varchar(20) NOT NULL COMMENT 'TA DS' PRIMARY KEY,
     id_dosen int(11) NOT NULL,
     id_ta SMALLINT(5) NOT NULL,
     tanggal timestamp NOT NULL DEFAULT current_timestamp(),
@@ -186,7 +207,7 @@ $arr_sql['st'] = "CREATE TABLE IF NOT EXISTS tb_st (
 # st_mk
 # ============================================================
 $arr_sql['st_mk'] = "CREATE TABLE IF NOT EXISTS tb_st_mk (
-    id varchar(20) NOT NULL COMMENT 'id_st id_mk' PRIMARY KEY,
+    id varchar(20) NOT NULL COMMENT 'TA DS KU MK' PRIMARY KEY,
     id_st varchar(20) NOT NULL,
     id_mk int(11) NOT NULL,
 
@@ -200,10 +221,12 @@ $arr_sql['st_mk'] = "CREATE TABLE IF NOT EXISTS tb_st_mk (
 # st_mk_kelas
 # ============================================================
 $arr_sql['st_mk_kelas'] = "CREATE TABLE IF NOT EXISTS tb_st_mk_kelas (
-    id varchar(20) NOT NULL COMMENT 'id_st id_mk id_kelas' PRIMARY KEY,
+    id varchar(20) NOT NULL COMMENT 'TA DS KU MK KLS' PRIMARY KEY,
     id_st_mk varchar(20) NOT NULL,
     id_kelas int(11) NOT NULL,
-
+    unique_check VARCHAR(30) NOT NULL COMMENT 'TA-MK-Kelas' UNIQUE,
+    id_dosen INT NOT NULL,
+    CONSTRAINT PARENT_DOSEN FOREIGN KEY (id_dosen) REFERENCES tb_dosen(id),
     CONSTRAINT PARENT_ST_MK FOREIGN KEY (id_st_mk) REFERENCES tb_st_mk(id),
     CONSTRAINT PARENT_KELAS FOREIGN KEY (id_kelas) REFERENCES tb_kelas(id)
 
@@ -239,6 +262,7 @@ $arr_sql['pemakaian_ruang'] = "CREATE TABLE IF NOT EXISTS tb_pemakaian_ruang (
     id_st_mk_kelas VARCHAR(20) NOT NULL, 
     id_ruang INT NOT NULL,
     id_sesi SMALLINT UNSIGNED NOT NULL, 
+    unik_dosen VARCHAR(30) NOT NULL COMMENT 'TA-Dosen-W-S' UNIQUE,
     CONSTRAINT PEMAKAIAN_ST_MK_KELAS FOREIGN KEY (id_st_mk_kelas) REFERENCES tb_st_mk_kelas(id) ON DELETE RESTRICT,
     CONSTRAINT PEMAKAIAN_RUANG FOREIGN KEY (id_ruang) REFERENCES tb_ruang(id) ON DELETE RESTRICT
   );

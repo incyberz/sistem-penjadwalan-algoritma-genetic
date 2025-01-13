@@ -15,7 +15,7 @@
   }
 
   div a:hover {
-    text-decoration: underline;
+    text-decoration: none;
     color: darkblue;
     letter-spacing: .3px;
   }
@@ -26,11 +26,9 @@
   }
 
   header nav {
-    position: sticky;
-    top: 0;
     background: linear-gradient(#efe, #cfc);
     padding: 10px 0;
-    border-radius: 5px;
+    /* border-radius: 5px; */
   }
 
   header nav ul {
@@ -128,6 +126,11 @@
 
   .section-title p {
     margin: 15px 0 0 0;
+  }
+
+  .transparan {
+    background: none !important;
+    border: none !important;
   }
 
 

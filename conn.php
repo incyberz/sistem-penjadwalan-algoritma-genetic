@@ -2,6 +2,7 @@
 # ============================================================
 # DATABASE CONNECTION
 # ============================================================
+date_default_timezone_set("Asia/Jakarta");
 $is_live = $_SERVER['SERVER_NAME'] == 'localhost' ? 0 : 1;
 
 if ($is_live) {

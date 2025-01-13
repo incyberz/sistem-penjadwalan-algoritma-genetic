@@ -10,7 +10,9 @@ include 'st_ajar-list_kelas.php';
 $list_mk = '';
 $list_dosen = '';
 $blok_dosen = '<div class="tengah bold mb2">Buat Surat Tugas untuk:</div>';
+
 $btn_create = '';
+
 if ($pesan_error) {
   echo $pesan_error;
 } else if ($id_dosen) {
@@ -19,6 +21,8 @@ if ($pesan_error) {
   # LIST mk
   # ============================================================
   include 'st_ajar-list_mk.php';
+  $disabled_mk_unavailable = $mk_available ? '' : 'disabled';
+  $disabled_mk_unavailable_info = $mk_available ? '' : 'Tidak ada MK available';
 
   $blok_dosen = "
     <input type=hidden name=id_ta value=$kurikulum[id_ta]>
@@ -39,7 +43,8 @@ if ($pesan_error) {
 
   $btn_create = "
     <div class='blok_btn'>
-      <button class='btn btn-primary w-100 mt2' name=btn_create_st id=btn_create_st $disabled>$Create Surat Tugas</button>
+      <div class='red'>$disabled_mk_unavailable_info</div>
+      <button class='btn btn-primary w-100 mt2' name=btn_create_st id=btn_create_st $disabled_mk_unavailable>$Create Surat Tugas</button>
     </div>
   ";
 } else {
@@ -56,7 +61,6 @@ if ($pesan_error) {
 # ============================================================
 # FINAL ECHO
 # ============================================================
-$disabled = $mk_available ? '' : 'disabled';
 echo "
   <form method=post>
     $blok_dosen

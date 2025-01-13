@@ -12,7 +12,7 @@ foreach ($arr_tb_master as $tb) {
   TA Aktif: <?= $ta_aktif ?> | <?= $Gg ?>
   <a href="?home&show_config=1"><?= $img_manage ?></a>
 </div>
-<header style="position: sticky; top:0">
+<header style="position: sticky; top:0;z-index:99; border-bottom: solid 1px #ccc">
   <nav>
     <ul>
       <li><a href="?">Home</a></li>
@@ -21,6 +21,7 @@ foreach ($arr_tb_master as $tb) {
       <li><a href="?st_ajar">ST</a></li>
       <li><a href="?jadwal">Jadwal</a></li>
       <li><a href="?laper">Laper</a></li>
+      <li><a href="?">Con</a></li>
     </ul>
   </nav>
 </header>

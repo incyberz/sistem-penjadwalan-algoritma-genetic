@@ -24,20 +24,28 @@ include 'includes/arr_tb_master.php';
 
 $includes = [
   'alert',
-  'date_management',
+  'date_managements',
   'echolog',
+  'hak_akses',
   'img_icon',
   'insho_styles',
   'jsurl',
+  'key2kolom',
+  'nama_hari',
+  'nama_bulan',
   'set_h2',
   'udef',
 ];
+foreach ($includes as $v) {
+  $file = "includes/$v.php";
+  if (file_exists($file)) {
+    include $file;
+  } elseif (file_exists("../$file")) {
+    include "../$file"; // at htdocs or main server
 
-foreach ($includes as $file) {
-  $path = $is_live ? "includes/$file.php" : "../includes/$file.php";
-  $live = $is_live ? 'live' : 'local';
-  if (!file_exists($path)) die("<hr>File [ $file ] is required for $live server.<hr>");
-  include $path;
+  } else {
+    die("<b style=color:red>File include [ $v ] diperlukan untuk menjalankan sistem.</b>");
+  }
 }
 
 
@@ -56,17 +64,17 @@ try {
     }
   }
 } catch (Exception $e) {  // Tangkap dan tampilkan error
-  echo $e->getMessage();
+  echo '<div style="color:red;padding:15px"><b>' . $e->getMessage() . '</b></div>';
 
   # ============================================================
   # CREATE TABLES
   # ============================================================
-  echolog('<b class="darkblue f20">UPDATING TABLES</b><hr>');
+  echolog('<b class="darkblue f20 p2 mt4">PERFORM AUTOMATIC UPDATING TABLES</b><hr>');
   foreach ($arr_sql as $key => $sql) {
 
     $conn->query($sql);
   }
-  alert("Tables created successfully. | <a href='?'>Back to Home</a>", 'success');
+  alert("<div style='padding:15px;color:green'>Tables created successfully. | <a href='?'>Back to Home</a></div>", 'success');
   exit;
 }
 

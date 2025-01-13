@@ -27,26 +27,31 @@ while ($d = mysqli_fetch_assoc($q)) {
 # ============================================================
 $s = "SELECT a.* ,
 b.id as id_st_mk,
-d.id as id_mk,
-d.nama as nama_mk,
-d.semester,
-d.sks,
+e.id as id_mk,
+e.nama as nama_mk,
+e.semester,
+e.sks,
 c.nidn, 
 c.id as id_dosen,
 c.nama as nama_dosen,
-f.singkatan as prodi,
-f.id as id_prodi  
+g.singkatan as prodi,
+g.id as id_prodi  
 FROM tb_st a 
 JOIN tb_st_mk b ON a.id=b.id_st 
 JOIN tb_dosen c ON a.id_dosen=c.id 
-JOIN tb_mk d ON b.id_mk=d.id
-JOIN tb_kurikulum e ON d.id_kurikulum=e.id
-JOIN tb_prodi f ON e.id_prodi=f.id
+JOIN tb_kumk d ON d.id=b.id_kumk
+JOIN tb_mk e ON d.id_mk=e.id
+JOIN tb_kurikulum f ON d.id_kurikulum=f.id
+JOIN tb_prodi g ON f.id_prodi=g.id
 WHERE a.id = '$id_st' 
-ORDER BY e.id, d.semester 
+ORDER BY f.id, e.semester 
 ";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $num_rows = mysqli_num_rows($q);
+// echo '<pre>';
+// var_dump($s);
+// echo '</pre>';
+// exit;
 $divs = '';
 $nama_dosen = '-';
 $nidn = '-';
@@ -65,14 +70,14 @@ while ($d = mysqli_fetch_assoc($q)) {
   # LIST KELAS
   # ============================================================
   $list_kelas = '';
-  $pra_unique_check = "$id_ta-$d[id_mk]-"; // TA-MK-
+  $pra_unique_check = "$id_ta-$d[id_mk]-"; // TA-MK-Kelas
 
   $sub_select_nama_dosen = "SELECT p.nama FROM tb_dosen p
     JOIN tb_st_mk_kelas q ON p.id=q.id_dosen
-    WHERE unique_check = CONCAT('$pra_unique_check',a.id)";
+    WHERE q.unique_check = CONCAT('$pra_unique_check',a.id)";
   $sub_select_id_dosen = "SELECT p.id FROM tb_dosen p
     JOIN tb_st_mk_kelas q ON p.id=q.id_dosen
-    WHERE unique_check = CONCAT('$pra_unique_check',a.id)";
+    WHERE q.unique_check = CONCAT('$pra_unique_check',a.id)";
 
   # ============================================================
   $s2 = "SELECT a.*,

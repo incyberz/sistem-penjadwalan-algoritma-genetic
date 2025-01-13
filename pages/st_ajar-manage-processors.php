@@ -20,10 +20,11 @@ if (isset($_POST['btn_simpan_st'])) {
     $d = explode('-', $id); // TA-DOSEN-MK-KELAS
     $TA = $d[0];
     $DOSEN = $d[1];
-    $MK = $d[2];
-    $KELAS = $d[3];
-    $id_st_mk = "$TA-$DOSEN-$MK";
-    $unique_check = "$TA-$MK-$KELAS"; // TA-MK-KELAS
+    $KUR = $d[2];
+    $MK = $d[3];
+    $KELAS = $d[4];
+    $id_st_mk = "$TA-$DOSEN-$KUR-$MK";
+    $unique_check = "$TA-$KUR-$MK-$KELAS"; // TA-MK-KELAS
     $id_kelas = $KELAS;
     $id_dosen = $DOSEN;
     $s = "INSERT INTO tb_st_mk_kelas (
@@ -39,6 +40,10 @@ if (isset($_POST['btn_simpan_st'])) {
       '$unique_check',
       '$id_dosen'
     ) ON DUPLICATE KEY UPDATE id_kelas=$id_kelas";
+    echo '<pre>';
+    var_dump($s);
+    echo '</pre>';
+    exit;
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
     // 
     // exit;

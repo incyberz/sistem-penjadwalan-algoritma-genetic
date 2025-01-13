@@ -24,8 +24,9 @@ set_title('Pilihan MK');
 # NAV PRODI
 # ============================================================
 $items = '';
-$sub_select = "SELECT COUNT(1) FROM tb_mk p 
+$sub_select = "SELECT COUNT(1) FROM tb_kumk p 
 JOIN tb_kurikulum q ON p.id_kurikulum=q.id 
+JOIN tb_mk r ON p.id_mk=r.id 
 WHERE q.id_ta = $ta_aktif AND q.id_prodi=a.id AND p.semester =";
 
 $s = "SELECT a.*,
@@ -120,14 +121,15 @@ echo "
 # ============================================================
 $s = "SELECT 
 a.*,
-c.id as id_prodi,  
-c.singkatan as prodi,
+d.id as id_prodi,  
+d.singkatan as prodi,
 (SELECT COUNT(1) FROM tb_st_mk WHERE id_$tb=a.id) count_st_mk  
 FROM tb_mk a 
-JOIN tb_kurikulum b ON a.id_kurikulum=b.id 
-JOIN tb_prodi c ON b.id_prodi=c.id 
-WHERE b.id_ta = $ta_aktif 
-ORDER BY a.id_kurikulum, a.semester, a.nama";
+JOIN tb_kumk b ON a.id=b.id_mk 
+JOIN tb_kurikulum c ON b.id_kurikulum=c.id 
+JOIN tb_prodi d ON c.id_prodi=d.id 
+WHERE c.id_ta = $ta_aktif 
+ORDER BY b.id_kurikulum, b.semester, a.nama";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $num_rows = mysqli_num_rows($q);
 $tr_mk = '';

@@ -17,4 +17,13 @@
   .ruang_terisi {
     background: yellow !important
   }
+
+  .sesi_break {
+    background: #ddd !important;
+  }
+
+  .filtered_ruang {
+    color: blue !important;
+    font-weight: bold !important;
+  }
 </style>

@@ -22,25 +22,30 @@ if (isset($_POST['btn_add_kelas'])) {
       die(alert("Input Semester melebihi jumlah semester pada prodi ini. | <a href='?crud&tb=kelas'>Coba lagi</a>"));
     }
 
-    $angkatan = intval($ta_aktif / 10) - intval($_POST['semester'] / 2);
+    // $angkatan = intval($ta_aktif / 10) - intval($_POST['semester'] / 2);
     $_counter = $_POST['counter'] ? "-$_POST[counter]" : '';
     $counter_or_null = $_POST['counter'] ? "'$_POST[counter]'" : 'NULL';
 
-    $nama = "$prodi[jenjang]-$prodi[singkatan]-$angkatan-SM$_POST[semester]-$_POST[shift]$_counter";
+    # ============================================================
+    # RULE LABEL KELAS
+    # ============================================================
+    // D3-KA-5-R-A-20241
+    // $nama = "$prodi[jenjang]-$prodi[singkatan]-$angkatan-SM$_POST[semester]-$_POST[shift]$_counter";
+    $nama = "$prodi[jenjang]-$prodi[singkatan]-$_POST[semester]-$_POST[shift]$_counter-$ta_aktif";
 
 
     // add kelas tahun ganjil
     $s2 = "INSERT INTO tb_kelas (
       nama,
       id_prodi,
-      angkatan,
+      id_ta,
       semester,
       shift,
       counter
     ) VALUES (
       '$nama',
       '$_POST[id_prodi]',
-      '$angkatan',
+      '$ta_aktif',
       '$_POST[semester]',
       '$_POST[shift]',
       $counter_or_null

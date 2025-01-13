@@ -6,54 +6,33 @@ $fakultas = $_GET['fakultas'] ?? 'FKOM';
 $semester = $_GET['semester'] ?? 1;
 $shift = $_GET['shift'] ?? 'R';
 $SHIFT = $shift == 'R' ? 'REGULER' : 'NON-REGULER';
+
+# ============================================================
+# GET VALIDATIONS
+# ============================================================
+if (!key_exists($fakultas, $rfakultas))
+  die(alert("Fakultas [$fakultas] tidak ada di dalam system. | <a href='?'>Konfigurasi</a>"));
+if (!key_exists($shift, $rshift))
+  die(alert("Shift Kelas [$shift] tidak ada di dalam system. | <a href='?'>Konfigurasi</a>"));
+
 include 'jadwal-functions.php';
 include 'jadwal-styles.php';
 include 'jadwal-processors.php';
 set_title("JADWAL " . strtoupper($fakultas));
 
-$KAMPUS = strtoupper($nama_kampus);
-$FAK = strtoupper($rfakultas[$fakultas]);
+# ============================================================
+# HAK AKSES
+# ============================================================
+$hak = [];
+$hak['delete_jadwal'] = hak_akses('delete_jadwal', $petugas['role']);
+$hak['book_jadwal'] = hak_akses('book_jadwal', $petugas['role']);
+$hak['barter_jadwal'] = hak_akses('barter_jadwal', $petugas['role']);
 
-echo "
-  <div class='tengah gradasi-toska p-3'>
-    <h1>$FAK $KAMPUS</h1>
-    <h2>JADWAL MATA KULIAH $tahun_ta $GG</h2>
-    <h3>KELAS $SHIFT SEMESTER $semester</h3>
-    <h4>D3-KA</h4>
-  </div>
-";
 
 # ============================================================
-# ARRAY KELAS PER SEMESTER PER SHIFT
+# CUSTOM HEADER AND NAVIGATIONS
 # ============================================================
-$rkelas = [];
-$s = "SELECT
-a.id, 
-a.nama as nama_kelas 
-FROM tb_kelas a 
-join tb_prodi b ON a.id_prodi=b.id 
-WHERE b.fakultas='$fakultas' 
-AND a.semester = '$semester' 
-AND a.shift = '$shift'
-";
-$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-if (!mysqli_num_rows($q)) {
-  $pesan = "Belum ada Data Kelas untuk semester [$semester] kelas [$SHIFT] fakultas [$fakultas].";
-  alert("$pesan | <a href='?crud&tb=kelas&note=$pesan'>Manage Kelas</a>");
-  exit;
-}
-$nav_kelas = '';
-$nav_kelas_active = 'nav_kelas_active';
-$nav_kelas_pertama = null;
-while ($d = mysqli_fetch_assoc($q)) {
-  $rkelas[$d['id']] = $d;
-  $nav_kelas_pertama = $nav_kelas_pertama ?? $d['nama_kelas'];
-  $nav_kelas .= "<div class='bordered br5 p1 px-2 nav_kelas $nav_kelas_active pointer' id=nav_kelas__$d[id]><span>$d[nama_kelas]</span></div>";
-  $nav_kelas_active = '';
-}
-$nav_kelas = "<div class='flexy flex-center mt4'>$nav_kelas</div>";
-$col = intval(12 / count($rkelas));
-if ($col < 3) $col = 3;
+include 'jadwal-navigations.php';
 
 
 
@@ -97,10 +76,11 @@ include 'jadwal-pemakaian_ruang.php';
 # ============================================================
 $blok_jadwal = '';
 foreach ($rhari as $date => $v) {
+  $nama_hari = nama_hari($date);
   $blok_jadwal .= "
-    <h4 class='darkblue nama_hari p1 tengah'>$v[nama_hari]</h4>
+    <h4 class='darkblue nama_hari p1 tengah'>$nama_hari</h4>
   ";
-  $cols = '';
+  $div_blok_kelas = '';
   $hideit_kelas = '';
   foreach ($rkelas as $id_kelas => $arr_kelas) {
     $kelas = $arr_kelas['nama_kelas'];
@@ -194,11 +174,17 @@ foreach ($rhari as $date => $v) {
           if ($terpakai['id_sesi'] == $terpakai['id_sesi_at_book']) {
             $jam_mulai = date('H:i', strtotime($terpakai['jam_mulai']));
             $jam_selesai = date('H:i', strtotime($terpakai['jam_selesai']));
+            $delete_jadwal = !$hak['delete_jadwal'] ? '' : "
+              <form method=post class='m0 p0 inline '>
+                <button class=transparan name=btn_delete_jadwal value=$terpakai[id_st_mk_kelas] onclick='return confirm(`Hapus Jadwal ini?`)'>$img_delete</button>
+              </form>
+            ";
+            $sks_info = "<div class='f12 miring abu'>( $terpakai[sks] SKS )</div>";
             $tr .= "
               <tr>
-                <td>$jam_mulai - $jam_selesai</td>
+                <td>$jam_mulai - $jam_selesai$sks_info</td>
                 <td>
-                  $terpakai[nama_mk]
+                  $terpakai[nama_mk] $delete_jadwal
                   <div class='abu miring f14'>$terpakai[nama_lengkap_dosen]</div>
                 </td>
                 <td>$terpakai[nama_ruang]</td>
@@ -234,15 +220,21 @@ foreach ($rhari as $date => $v) {
             if ($id_ruang_terpakai == $id_ruang) {
               $ruang_terpakai = 'ruang_terpakai';
               $disabled = 'disabled';
+              $nama_ruang_show = "
+                <a target=_blank href='?laper&id_ruang=$id_ruang&weekday=$v[weekday]' onclick='return confirm(`Ruangan ini terpakai?\n\nKlik OK untuk melihat Laporan Pemakaian Ruangan ini.`)'>
+                  <span class='f10 red'>R.$arr_ruang[nama]</span>
+                </a>
+              ";
             } else {
               $ruang_terpakai = '';
               $disabled = '';
+              $nama_ruang_show = "R.$arr_ruang[nama]";
             }
             $radio_ruang .= "
               <label class='label_ruang $ruang_terpakai'>
                 <div>
                   <input required type=radio name=id_ruang value=$arr_ruang[id] $disabled />
-                  R.$arr_ruang[nama]
+                  $nama_ruang_show
                 </div>
               </label>
             ";
@@ -252,12 +244,19 @@ foreach ($rhari as $date => $v) {
             # ============================================================
             # PILIHAN MK HABIS
             # ============================================================
-            $pesan = "Pilihan MK dan Surat Tugas untuk kelas [ $kelas ] habis";
+            $pesan = "Pilihan MK di Surat Tugas untuk kelas [ $kelas ] habis";
+            $s3 = "SELECT id FROM tb_kurikulum WHERE id_prodi=$arr_kelas[id_prodi] AND id_ta=$ta_aktif";
+            $q3 = mysqli_query($cn, $s3) or die(mysqli_error($cn));
+            $d3 = mysqli_fetch_assoc($q3);
+            $id_kurikulum = $d3['id'];
+
+
+
             $tr .= "
               <tr>
                 <td>$awal - $akhir</td>
                 <td>
-                  <span class='abu f12 miring'>$pesan | <a target=_blank href='?crud&tb=mk&note=$pesan'>Add</a></span>
+                  <span class='abu f12 miring'>$pesan | <a target=_blank href='?st_ajar&id_kurikulum=$id_kurikulum&note=$pesan'>Add Surat Tugas</a></span>
                 </td>
                 <td>?</td>
               </tr>
@@ -278,11 +277,11 @@ foreach ($rhari as $date => $v) {
                         $radio_st_mk_kelas
                       </div>
                       <div class='mb2 blok_radio_ruang'>
-                        <div class='bold f12 mb1'>Ruang:</div>
+                        <div class='bold f12 mb1 green'>Ruang Available:</div>
                         $radio_ruang
                       </div>
                       <button class='btn btn-primary w-100 mb2' name=btn_book value='$v[weekday]__$id_sesi'>Book</button>
-                      <div class=tengah><span class='btn_cancel pointer darkred'>Cancel</span></div>
+                      <div class=tengah><span class='btn btn-secondary w-100 btn_cancel pointer darkred'>Cancel</span></div>
                     </form>
                   </div>
                 </td>
@@ -294,33 +293,34 @@ foreach ($rhari as $date => $v) {
       } // non break sesi
     } // end foreach $rsesi
 
-
-    $col = 12; // aborted old code
-
-    $cols .= "
-      <div class='col-$col'>
-        <div class='$hideit_kelas blok_kelas blok_kelas__$id_kelas'>
-          <table class='table table-hover'>
-            <thead>
-              <th width=20%>WAKTU</th>
-              <th>$kelas</th>
-              <th width=15%>RUANG</th>
-            </thead>
-            $tr
-          </table>
-        </div>      
+    $div_blok_kelas .= "
+      <div class='$hideit_kelas blok_kelas blok_kelas__$id_kelas'>
+        <table class='table table-hover'>
+          <thead>
+            <th width=20%>WAKTU</th>
+            <th>$kelas</th>
+            <th width=15%>RUANG</th>
+          </thead>
+          $tr
+        </table>
       </div>      
     ";
     $hideit_kelas = 'hideit';
   }
-  $blok_jadwal .= "<div class=row>$cols</div>";
+
+  $blok_jadwal .= "
+    <div class=blok_jadwal>
+      $div_blok_kelas
+    </div>
+  ";
 }
 
 # ============================================================
 # FINAL ECHO
 # ============================================================
+$info_pilihan_mk = $num_rows_pilihan_mk ? alert("Masih ada $num_rows_pilihan_mk Surat Tugas yang belum di-assign.", 'info') : '';
 echo "
-  $nav_kelas
+  $info_pilihan_mk
   $blok_jadwal
 ";
 ?>

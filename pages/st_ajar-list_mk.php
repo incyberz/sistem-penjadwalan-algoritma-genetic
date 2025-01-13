@@ -10,7 +10,6 @@ for ($i = 1; $i <= 8; $i++) {
   FROM tb_prodi a";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   while ($d = mysqli_fetch_assoc($q)) {
-    // $id=$d['id'];
     $rcount_kelas[$i][$d['id']] = $d['count_kelas'];
   }
 }
@@ -30,30 +29,36 @@ $sql_ganjil = $is_ganjil ? " (
   OR a.semester = '6'
   OR a.semester = '8'
 ) ";
-$s = "SELECT a.*,
-c.id as id_prodi,
-c.singkatan as prodi,
+$s = "SELECT 
+a.id as id_mk,
+a.nama as nama_mk,
+a.sks,
+a.semester,
+b.id as id_kumk, 
+d.id as id_prodi,
+d.singkatan as prodi,
 (
   SELECT COUNT(1) FROM tb_st_mk p 
   JOIN tb_st_mk_kelas q ON q.id_st_mk=p.id -- jumlah assign ke tiap kelas
-  WHERE p.id_mk=a.id -- untuk MK yang ini
+  WHERE p.id_kumk=b.id -- untuk KU-MK yang ini
   AND p.id_st LIKE '$ta_aktif-%' -- persen artinya semua dosen 
   ) count_assigned 
 FROM tb_mk a 
-JOIN tb_kurikulum b ON a.id_kurikulum=b.id
-JOIN tb_prodi c ON b.id_prodi=c.id
+JOIN tb_kumk b ON a.id=b.id_mk
+JOIN tb_kurikulum c ON b.id_kurikulum=c.id
+JOIN tb_prodi d ON c.id_prodi=d.id
 -- WHERE 1 
 AND $sql_ganjil -- atau genap 
-ORDER BY c.id, a.semester 
+ORDER BY d.id, b.semester 
 ";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 if (mysqli_num_rows($q)) {
   $last_smt = '';
   while ($d = mysqli_fetch_assoc($q)) {
-    $id = $d['id'];
+    $id_kumk = $d['id_kumk'];
     $separator = $last_smt != $d['semester'] ? '<hr>' : '';
-    $checked = key_exists($d['id'], $rmk) ? 'checked' : '';
-    $jumlah_kelas_assigned = $rmk[$d['id']]['jumlah_kelas'] ?? 0;
+    $checked = key_exists($id_kumk, $rkumk) ? 'checked' : '';
+    $jumlah_kelas_assigned = $rkumk[$id_kumk]['jumlah_kelas'] ?? 0;
     if ($jumlah_kelas_assigned) {
       $disabled = 'disabled';
       $jumlah_kelas_info = " x $jumlah_kelas_assigned kelas";
@@ -88,10 +93,10 @@ if (mysqli_num_rows($q)) {
 
     $list_mk .= "
       $separator
-      <div id=div_mk__$id>
+      <div id=div_mk__$id_kumk>
         <label class='label_mk $abu $blue '>
-          <input class=check_mk type='checkbox' name='id_mk[$id]' $checked $disabled> 
-          $d[prodi]-SM$d[semester] - $d[nama] - $d[sks] SKS $jumlah_kelas_info | $d[count_assigned] of $max_assigned assigned $sudah_teralokasi
+          <input class=check_mk type='checkbox' name='id_kumk[$id_kumk]' $checked $disabled> 
+          $d[prodi]-SM$d[semester] - $d[nama_mk] - $d[sks] SKS $jumlah_kelas_info | $d[count_assigned] of $max_assigned assigned $sudah_teralokasi
         </label>
       </div>  
     ";

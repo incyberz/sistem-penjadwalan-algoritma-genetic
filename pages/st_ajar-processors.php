@@ -17,18 +17,18 @@ if (isset($_POST['btn_create_st'])) {
   echolog('Processing...');
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 
-  if (isset($_POST['id_mk'])) {
-    foreach ($_POST['id_mk'] as $id_mk => $value) {
-      $id = "$id_st-$id_mk";
+  if (isset($_POST['id_kumk'])) {
+    foreach ($_POST['id_kumk'] as $id_kumk => $value) {
+      $id = "$id_st-$id_kumk";
       $s = "INSERT INTO tb_st_mk (
         id,
         id_st,
-        id_mk
+        id_kumk
       ) VALUES (
         '$id',
         '$id_st',
-        $id_mk
-      ) ON DUPLICATE KEY UPDATE id_mk=$id_mk, id_st='$id_st'";
+        '$id_kumk'
+      ) ON DUPLICATE KEY UPDATE id_kumk='$id_kumk', id_st='$id_st'";
 
       $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
     }

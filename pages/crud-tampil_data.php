@@ -11,7 +11,7 @@ $arr_subdata = [
   'ruang' => 'jadwal',
   'ta' => 'kurikulum',
   'prodi' => 'kurikulum',
-  'kurikulum' => 'mk',
+  'kurikulum' => 'kumk',
   'petugas' => 'st',
 ];
 if (key_exists($tb, $arr_subdata)) {

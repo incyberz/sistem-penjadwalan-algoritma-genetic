@@ -30,11 +30,10 @@ $siap_assign = true;
 $pesan_error = '';
 $mk_available = 0;
 
-
 # ============================================================
 # DATA DOSEN + DATA ST/MK SEBELUMNYA
 # ============================================================
-$rmk = [];
+$rkumk = [];
 $Create = 'Create';
 if ($id_dosen) {
   $s = "SELECT a.*,
@@ -52,10 +51,11 @@ if ($id_dosen) {
     # ============================================================
     $s = "SELECT a.*,
     (SELECT COUNT(1) FROM tb_st_mk_kelas WHERE id_st_mk=a.id) jumlah_kelas 
-    FROM tb_st_mk a WHERE a.id_st='$dosen[id_st]'";
+    FROM tb_st_mk a 
+    WHERE a.id_st='$dosen[id_st]'";
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
     while ($d = mysqli_fetch_assoc($q)) {
-      $rmk[$d['id_mk']] = ['jumlah_kelas' => $d['jumlah_kelas']];
+      $rkumk[$d['id_kumk']] = ['jumlah_kelas' => $d['jumlah_kelas']];
     }
   }
 }

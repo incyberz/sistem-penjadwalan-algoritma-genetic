@@ -47,6 +47,26 @@
     font-style: italic;
   }
 
+  .nav_hover {
+    cursor: pointer;
+    transition: .2s;
+  }
+
+  .nav_hover:hover {
+    color: blue;
+    /* font-weight: bold; */
+    letter-spacing: .5px;
+    text-decoration: underline;
+  }
+
+  .nav_jadwal {
+    cursor: pointer;
+    border: solid 1px #ccc;
+    padding: 5px 12px;
+    border-radius: 5px;
+  }
+
+  .nav_aktif,
   .nav_kelas_active {
     background: linear-gradient(#dff, #bfb);
   }

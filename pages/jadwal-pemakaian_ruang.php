@@ -8,6 +8,7 @@ b.id_sesi_at_book,
 d.id as id_kelas,
 d.nama as nama_kelas,
 f.nama as nama_mk,
+f.sks,
 CONCAT(COALESCE(h.gelar_depan,''),' ',h.nama,', ',COALESCE(h.gelar_belakang,'')) as nama_lengkap_dosen,
 i.nama as nama_ruang
 

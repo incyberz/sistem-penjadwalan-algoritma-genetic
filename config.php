@@ -2,7 +2,6 @@
 # ============================================================
 # KONFIGURASI PENJADWALAN KULIAH
 # ============================================================
-date_default_timezone_set("Asia/Jakarta");
 
 # ============================================================
 # IDENTITAS KAMPUS
@@ -17,10 +16,37 @@ $rfakultas = [
   'FAPERTA' => 'Fakultas Pertanian',
 ];
 
-$rjenjang = [
-  'D3' => 'Diploma III',
-  'S1' => 'Sarjana',
+$rrole = [
+  'AKD' => 'Staf Akademik',
+  'KEU' => 'Staf Keuangan',
+  'PIM' => 'Kaprodi / Pimpinan',
 ];
+
+$rjenjang = [
+  'D3' => [
+    'title' => 'Diploma III',
+    'jumlah_semester' => 6,
+  ],
+  'S1' => [
+    'title' => 'Sarjana',
+    'jumlah_semester' => 8,
+  ],
+];
+
+$rshift = [
+  'R' => [
+    'title' => 'Reguler',
+    'jam_awal' => '7:30',
+    'jam_akhir' => '17:00',
+  ],
+  'NR' => [
+    'title' => 'Non Reguler',
+    'jam_awal' => '17:20',
+    'jam_akhir' => '21:45',
+  ],
+];
+
+
 
 # ============================================================
 # TAHUN AJAR
@@ -59,38 +85,8 @@ for ($i = $weekday_start; $i <= $weekday_end; $i++) {
   $date = date('Y-m-d', strtotime("+$jeda day", strtotime($senin_pertama)));
   $rhari[$date] = [
     'weekday' => date('w', strtotime($date)),
-    'nama_hari' => nama_hari($date),
     'tanggal' => date('d', strtotime($date)),
-    'bulan' => nama_bulan($date),
+    'bulan' => date('m', strtotime($date)),
     'tahun' => date('Y', strtotime($date))
   ];
-}
-
-
-# ============================================================
-# GLOBAL FUNCTIONS
-# ============================================================
-
-function nama_hari($date)
-{
-  $arr = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-  return $arr[date('w', strtotime($date))];
-}
-function nama_bulan($date)
-{
-  $arr = [
-    'Januari',
-    'Februari',
-    'Maret',
-    'April',
-    'Mei',
-    'Juni',
-    'Juli',
-    'Agustus',
-    'September',
-    'Oktober',
-    'November',
-    'Desember'
-  ];
-  return $arr[intval(date('m', strtotime($date))) - 1];
 }

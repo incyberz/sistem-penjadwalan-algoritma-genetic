@@ -1,4 +1,15 @@
 <?php
+if (isset($_POST['btn_delete_jadwal'])) {
+  $id_st_mk_kelas = $_POST['btn_delete_jadwal'];
+
+  $s = "DELETE FROM tb_pemakaian_ruang WHERE id_st_mk_kelas='$id_st_mk_kelas'";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+
+  $s = "DELETE FROM tb_jadwal WHERE id='$id_st_mk_kelas'";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+
+  jsurl();
+}
 if (isset($_POST['btn_book'])) {
   $id_ruang = $_POST['id_ruang'];
 
@@ -39,51 +50,11 @@ if (isset($_POST['btn_book'])) {
 
   if (in_array($id_dosen, $id_dosens)) {
     # ============================================================
-    # GET NAMA-NAMA FIELD
+    # GET DATA KONFLIK | UNIQUE DOSEN
     # ============================================================
-    $s = "SELECT 
-    e.nama as nama_mk,
-    d.nama as nama_dosen,  
-    f.nama as nama_kelas  
-    FROM tb_st_mk_kelas a 
-    JOIN tb_st_mk b ON a.id_st_mk=b.id 
-    JOIN tb_st c ON b.id_st=c.id 
-    JOIN tb_dosen d ON c.id_dosen=d.id 
-    JOIN tb_mk e ON b.id_mk=e.id 
-    JOIN tb_kelas f ON a.id_kelas=f.id 
-    WHERE a.id='$id_st_mk_kelas'";
-    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-    $d = mysqli_fetch_assoc($q);
-
-    $arr = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    $nama_hari = $arr[$weekday];
-
-    $s = "SELECT 
-    a.id_sesi,
-    b.nama as nama_ruang  
-    FROM tb_pemakaian_ruang a 
-    JOIN tb_ruang b ON a.id_ruang=b.id 
-    WHERE a.id='$id_jadwal-$id_sesi'";
-    // 
-    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-    // $rsesi = [];
-    while ($d2 = mysqli_fetch_assoc($q)) {
-      $nama_ruang = $d2['nama_ruang'];
-      // array_push($rsesi, $d2['id_sesi']);
-    }
-
-    // $id_sesies = join(', ', $rsesi);
-
-
-
-    alert("Di hari $nama_hari sesi $id_sesi, 
-      Dosen <b>$d[nama_dosen]</b> sedang aktif mengajar di: 
-        <ul>
-          <li><b>Ruang:</b> $nama_ruang</li>
-          <li><b>MK:</b> $d[nama_mk]</li>
-          <li><b>Kelas:</b> $d[nama_kelas]</li>
-        </ul>
-    ");
+    $unik_dosen = "$ta_aktif-$id_dosen-$weekday-$id_sesi";
+    $d = [];
+    include 'show_konflik_dosen.php';
     // exit;
   } else {
     # ============================================================
@@ -93,13 +64,15 @@ if (isset($_POST['btn_book'])) {
     # ============================================================
     # INSERTS MULTIPLE PEMAKAIAN RUANG SESUAI JUMLAH SKS MK
     # ============================================================
-    echolog('multiple insert pemakaian ruang...');
+    echolog('perform multiple insert pemakaian ruang sesuai SKS-MK...');
     $last_id_sesi = '';
     $ada_error = 0;
+    $j = 0;
     for ($i = $id_sesi; $i < $id_sesi + $sks; $i++) {
+      $j++;
       if ($i == 6) $i = 7; // shalat dzuhur
       if ($i == 13) $i = 14; // shalat magrib
-      echolog("id_sesi terpakai: $i");
+      echolog("inserting SKS ke : $j...");
       $id = "$id_st_mk_kelas-$i";
 
       $unik_dosen = 'TA-Dosen-W-S';
@@ -108,8 +81,10 @@ if (isset($_POST['btn_book'])) {
       $s = "SELECT 1 FROM tb_pemakaian_ruang WHERE unik_dosen='$unik_dosen'";
       $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
       if (mysqli_num_rows($q)) {
-        alert("Dosen tidak dapat mengajar di 2 ruang berbeda pada hari dan sesi yang sama (dosen tersebut belum selesai mengajar). Silahkan booking pada sesi lainnya!");
+        include 'show_konflik_dosen.php';
         $ada_error = 1;
+        // exit;
+        break;
       }
     }
 

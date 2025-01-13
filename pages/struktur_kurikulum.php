@@ -63,16 +63,17 @@ if (!$id_prodi) {
   # ============================================================
   $s = "SELECT 
   a.*,
-  c.id as id_prodi,  
-  c.singkatan as prodi,
+  d.id as id_prodi,  
+  d.singkatan as prodi,
   (SELECT COUNT(1) FROM tb_st_mk WHERE id_mk=a.id) count_st_mk  
   FROM tb_mk a 
-  JOIN tb_kurikulum b ON a.id_kurikulum=b.id 
-  JOIN tb_prodi c ON b.id_prodi=c.id 
+  JOIN tb_kumk b ON a.id=b.id_mk 
+  JOIN tb_kurikulum c ON b.id_kurikulum=c.id 
+  JOIN tb_prodi d ON c.id_prodi=d.id 
   -- WHERE b.id_ta = $ta_aktif 
-  WHERE b.id_ta LIKE '$tahun_ta%' 
-  AND b.id_prodi = $id_prodi 
-  ORDER BY  a.semester, a.nama";
+  WHERE c.id_ta LIKE '$tahun_ta%' 
+  AND c.id_prodi = $id_prodi 
+  ORDER BY  b.semester, a.nama";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   $num_rows = mysqli_num_rows($q);
   $tr_mk = '';
