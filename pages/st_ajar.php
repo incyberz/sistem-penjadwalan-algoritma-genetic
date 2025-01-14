@@ -78,7 +78,7 @@ $kurikulum = mysqli_fetch_assoc($q);
 $Tahun = intval($kurikulum['id_ta'] / 10);
 include 'includes/arr_bulan_romawi.php';
 $bulan_romawi = $arr_bulan_romawi[date('m')];
-$untuk_mengampu = "<p>Untuk mengampu matakuliah di <b>TA. $Tahun $Gg</b> sebagai berikut:</p>";
+$untuk_mengampu = "<p>Untuk mengampu matakuliah di <b>TA. $kurikulum[id_ta]</b> sebagai berikut:</p>";
 
 
 if ($aksi) {

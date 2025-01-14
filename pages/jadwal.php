@@ -3,9 +3,22 @@
 # JADWAL PER FAKULTAS
 # ============================================================
 $fakultas = $_GET['fakultas'] ?? 'FKOM';
-$semester = $_GET['semester'] ?? 1;
+$semester = $_GET['semester'] ?? $default_semester;
 $shift = $_GET['shift'] ?? 'R';
 $SHIFT = $shift == 'R' ? 'REGULER' : 'NON-REGULER';
+
+# ============================================================
+# MELIHAT JADWAL LAMA
+# ============================================================
+$get_id_kurikulum = $_GET['id_kurikulum'] ?? '';
+if ($get_id_kurikulum) {
+  $s = "SELECT * FROM tb_kurikulum WHERE id=$get_id_kurikulum";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  $kurikulum = mysqli_fetch_assoc($q);
+  $ta_aktif = $kurikulum['id_ta']; // replace UI dengan request id_kurikulum lama
+  $semester = $ta_aktif % 2 == 0 ? 2 : 1;
+  echo "<div class='p2 tengah bg-yellow darkblue f30'>JADWAL LAMA DI TA. $ta_aktif</div>";
+}
 
 # ============================================================
 # GET VALIDATIONS
@@ -32,7 +45,7 @@ $hak['barter_jadwal'] = hak_akses('barter_jadwal', $petugas['role']);
 # ============================================================
 # CUSTOM HEADER AND NAVIGATIONS
 # ============================================================
-include 'jadwal-navigations.php';
+include 'jadwal-nav_header.php';
 
 
 
@@ -75,6 +88,8 @@ include 'jadwal-pemakaian_ruang.php';
 # MAIN BLOK JADWAL
 # ============================================================
 $blok_jadwal = '';
+$rkumk_count = [];
+$rnama_kelas = [];
 foreach ($rhari as $date => $v) {
   $nama_hari = nama_hari($date);
   $blok_jadwal .= "
@@ -84,6 +99,7 @@ foreach ($rhari as $date => $v) {
   $hideit_kelas = '';
   foreach ($rkelas as $id_kelas => $arr_kelas) {
     $kelas = $arr_kelas['nama_kelas'];
+    $rnama_kelas[$id_kelas] = $kelas;
 
     # ============================================================
     # DATA AVAILABLE ST-DETAIL | UNSIGNED JADWAL
@@ -99,10 +115,11 @@ foreach ($rhari as $date => $v) {
     FROM tb_st_mk_kelas a 
     JOIN tb_st_mk b ON a.id_st_mk=b.id 
     JOIN tb_st c ON b.id_st=c.id 
-    JOIN tb_mk d ON b.id_mk=d.id 
+    JOIN tb_kumk d2 ON b.id_kumk=d2.id 
+    JOIN tb_mk d ON d2.id_mk=d.id 
     JOIN tb_dosen e ON c.id_dosen=e.id 
     JOIN tb_kelas f ON a.id_kelas=f.id 
-    JOIN tb_kurikulum g ON d.id_kurikulum=g.id 
+    JOIN tb_kurikulum g ON d2.id_kurikulum=g.id 
     JOIN tb_prodi h ON g.id_prodi=h.id 
     LEFT JOIN tb_jadwal i ON a.id=i.id 
     WHERE 1 
@@ -116,8 +133,9 @@ foreach ($rhari as $date => $v) {
     ORDER BY nama_mk";
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
     // $rst_mk_kelas = [];
-    $num_rows_pilihan_mk = mysqli_num_rows($q);
-    if (!$num_rows_pilihan_mk) {
+    $kumk_count = mysqli_num_rows($q);
+    $rkumk_count[$id_kelas] = $kumk_count;
+    if (!$kumk_count) {
       // die(alert("Belum ada Data Surat Tugas Perkuliahan detail untuk semester [$semester] kelas [$kelas-$shift] fakultas [$fakultas]. | <a href='?st_ajar'>Manage Surat Tugas</a>"));
       // tidak apa2 habis mungkin di prodi lain se-fakultas masih ada 
     }
@@ -240,7 +258,7 @@ foreach ($rhari as $date => $v) {
             ";
           }
 
-          if (!$num_rows_pilihan_mk) {
+          if (!$kumk_count) {
             # ============================================================
             # PILIHAN MK HABIS
             # ============================================================
@@ -318,10 +336,24 @@ foreach ($rhari as $date => $v) {
 # ============================================================
 # FINAL ECHO
 # ============================================================
-$info_pilihan_mk = $num_rows_pilihan_mk ? alert("Masih ada $num_rows_pilihan_mk Surat Tugas yang belum di-assign.", 'info') : '';
+$script = '';
+foreach ($rkumk_count as $id_kelas => $count) {
+  if ($count) {
+    $script .= "
+      $('#kumk_count__$id_kelas').show();
+      $('#kumk_count__$id_kelas').text($count);
+    ";
+  } else {
+    $script .= "
+      $('#kumk_count__$id_kelas').hide();
+      $('#kumk_count__$id_kelas').text('0');
+    ";
+  }
+}
+if ($script) $script = "<script>$(function() {;$script})</script>";
 echo "
-  $info_pilihan_mk
   $blok_jadwal
+  $script
 ";
 ?>
 <script>
@@ -333,12 +365,14 @@ echo "
       let id_kelas = rid[1];
       let weekday = rid[2];
       let id_sesi = rid[3];
-      $('#form_book__' + id_kelas + '__' + weekday + '__' + id_sesi).slideToggle();
+      $('#form_book__' + id_kelas + '__' + weekday + '__' + id_sesi).slideDown();
       $('.toggle_book').prop('disabled', 1);
+      $('#nav_kelas').slideUp();
     });
     $('.btn_cancel').click(function() {
       $('.toggle_book').prop('disabled', 0);
       $('.form_book').slideUp();
+      $('#nav_kelas').slideDown();
     });
     $('.nav_kelas').click(function() {
       let tid = $(this).prop('id');

@@ -40,10 +40,10 @@ if (isset($_POST['btn_simpan_st'])) {
       '$unique_check',
       '$id_dosen'
     ) ON DUPLICATE KEY UPDATE id_kelas=$id_kelas";
-    echo '<pre>';
-    var_dump($s);
-    echo '</pre>';
-    exit;
+    // echo '<pre>';
+    // var_dump($s);
+    // echo '</pre>';
+    // exit;
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
     // 
     // exit;

@@ -65,6 +65,7 @@ $is_ganjil = $ta_aktif % 2 == 0 ? 0 : 1;
 $tahun_ta = substr($ta_aktif, 0, 4);
 $Gg = $is_ganjil  ? 'Ganjil' : 'Genap';
 $GG = strtoupper($Gg);
+$default_semester = $ta_aktif % 2 == 0 ? 2 : 1;
 
 
 # ============================================================

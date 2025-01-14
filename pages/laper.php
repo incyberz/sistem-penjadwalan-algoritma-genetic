@@ -52,8 +52,13 @@ foreach ($rhari as $date => $v) {
       } else {
         $nama_kelas = $rpemakaian[$v['weekday']][$id_ruang][$sesi['id']]['nama_kelas'] ?? '';
         if ($nama_kelas) {
-          $t = explode('-', $nama_kelas);
-          $counter = isset($t[5]) ? "-$t[5]" : '';
+          $tmp = str_replace("-$ta_aktif", '', $nama_kelas);
+          $t = explode('-', $tmp);
+          // echo '<pre>';
+          // var_dump($t);
+          // echo '</pre>';
+          // exit;
+          $counter = isset($t[4]) ? "-$t[4]" : '';
           $smt = str_replace('SM', '', $t[3]);
           $nama_kls = $nama_kelas ? "$t[1]/$smt$counter" : '-';
           $ruang_terisi = 'ruang_terisi';

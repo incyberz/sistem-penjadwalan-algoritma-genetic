@@ -52,7 +52,8 @@ AND $sql_ganjil -- atau genap
 ORDER BY d.id, b.semester 
 ";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-if (mysqli_num_rows($q)) {
+$kumk_count = mysqli_num_rows($q);
+if ($kumk_count) {
   $last_smt = '';
   while ($d = mysqli_fetch_assoc($q)) {
     $id_kumk = $d['id_kumk'];

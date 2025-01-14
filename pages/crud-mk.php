@@ -190,7 +190,8 @@ echo "
   $(function() {
     let prodi = $('#prodi_pertama').text();
     let id_prodi = $('#id_prodi_pertama').text();
-    let semester = '1';
+    let ta_aktif = parseInt($('#ta_aktif').text());
+    let semester = ta_aktif % 2 == 0 ? 2 : 1;
     $('.tr_mk__' + id_prodi + '__' + semester).show();
     $('.count_sm__' + id_prodi).show();
 

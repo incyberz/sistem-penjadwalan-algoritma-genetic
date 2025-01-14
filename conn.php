@@ -5,13 +5,12 @@
 date_default_timezone_set("Asia/Jakarta");
 $is_live = $_SERVER['SERVER_NAME'] == 'localhost' ? 0 : 1;
 
+$db_server = 'localhost';
 if ($is_live) {
-  $db_server = 'localhost';
-  $db_user = 'pesc7881_insho';
-  $db_pass = "hasd2q'qC3D}+Hzj@TT";
-  $db_name = 'pesc7d3881_dipa';
+  $db_user = "mmcclini_admin";
+  $db_pass = "MMC-Clinic2024";
+  $db_name = "mmcclini_jadwal";
 } else {
-  $db_server = 'localhost';
   $db_user = 'root';
   $db_pass = '';
   $db_name = 'db_jadwal';

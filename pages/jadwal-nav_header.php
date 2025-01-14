@@ -74,11 +74,16 @@ $nav_kelas_pertama = null;
 while ($d = mysqli_fetch_assoc($q)) {
   $rkelas[$d['id']] = $d;
   $nav_kelas_pertama = $nav_kelas_pertama ?? $d['nama_kelas'];
-  $nav_kelas .= "<div class='nav_jadwal nav_kelas $nav_kelas_active' id=nav_kelas__$d[id]><span>$d[nama_kelas]</span></div>";
+  $nav_kelas .= "
+    <div class='nav_jadwal nav_kelas $nav_kelas_active' id=nav_kelas__$d[id]>
+      <span>$d[nama_kelas]</span>
+      <span id=kumk_count__$d[id] class='kumk_count'>0</span>
+    </div>
+  ";
   $nav_kelas_active = '';
 }
 
 
 echo "
-  <div class='flexy flex-center mt4'>$nav_kelas</div>
+  <div class='flexy flex-center mt4' id=nav_kelas>$nav_kelas</div>
 ";

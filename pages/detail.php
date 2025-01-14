@@ -13,6 +13,7 @@
 <?php
 $get_tb = $_GET['tb'] ?? udef('tb');
 $get_id = $_GET['id'] ?? udef('id');
+set_title("Detail $get_tb");
 
 if (!key_exists($get_tb, $arr_sql)) udef("tb=$get_tb");
 

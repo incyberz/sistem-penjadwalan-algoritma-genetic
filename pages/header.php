@@ -7,9 +7,9 @@ foreach ($arr_tb_master as $tb) {
 }
 ?>
 <h1 class="tengah">Sistem Penjadwalan Akademik</h1>
-<div class="tengah f12 abu miring">dengan Algoritma Natural Artificial Intelligence</div>
+<div class="tengah f12 abu miring">Aplikasi Hibah Penelitian: Scheduling System dengan Algoritma Natural Artificial Intelligence</div>
 <div class="tengah bold mt2 mb1">
-  TA Aktif: <?= $ta_aktif ?> | <?= $Gg ?>
+  TA Aktif: <span id="ta_aktif"><?= $ta_aktif ?></span> | <span id="Gg"><?= $Gg ?></span>
   <a href="?home&show_config=1"><?= $img_manage ?></a>
 </div>
 <header style="position: sticky; top:0;z-index:99; border-bottom: solid 1px #ccc">

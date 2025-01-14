@@ -74,4 +74,18 @@
   .nav_kelas:hover {
     background: linear-gradient(#cfc, #afa);
   }
+
+  .kumk_count {
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+    text-align: center;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: bold;
+    vertical-align: bottom;
+    /* padding-top: 5px; */
+  }
 </style>

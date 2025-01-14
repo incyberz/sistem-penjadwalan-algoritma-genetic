@@ -78,12 +78,30 @@ $arr_sql['mk'] = "CREATE TABLE IF NOT EXISTS tb_mk (
   kode VARCHAR(10) NOT NULL UNIQUE,     
   nama VARCHAR(100) NOT NULL,           
   sks SET('1', '2', '3', '4', '5', '6') NOT NULL,
-  semester SET('1', '2', '3', '4', '5', '6', '7', '8') NOT NULL,
+  semester SET('1', '2', '3', '4', '5', '6', '7', '8') NOT NULL COMMENT 'rekomendasi',
+  no tinyint(3) UNSIGNED DEFAULT NULL,
   deskripsi TEXT NULL,                     
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
   FOREIGN KEY (id_prodi) REFERENCES tb_prodi(id) ON DELETE RESTRICT
+  )
+";
+
+# ============================================================
+# kumk
+# ============================================================
+$arr_sql['kumk'] = "CREATE TABLE IF NOT EXISTS tb_kumk 
+  (
+    id varchar(20) NOT NULL COMMENT 'KU-MK' PRIMARY KEY,
+    id_kurikulum int(11) NOT NULL,
+    id_mk int(11) NOT NULL,
+    no tinyint(3) UNSIGNED DEFAULT NULL,
+    assign_date timestamp NOT NULL DEFAULT current_timestamp(),
+    semester set('1','2','3','4','5','6','7','8') NOT NULL COMMENT 'assignment',
+
+    CONSTRAINT tb_kumk_KURIKULUM FOREIGN KEY (id_kurikulum) REFERENCES tb_kurikulum (id),
+    CONSTRAINT tb_kumk_MK FOREIGN KEY (id_mk) REFERENCES tb_mk (id)
   )
 ";
 

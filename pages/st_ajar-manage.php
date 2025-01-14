@@ -27,6 +27,7 @@ while ($d = mysqli_fetch_assoc($q)) {
 # ============================================================
 $s = "SELECT a.* ,
 b.id as id_st_mk,
+d.id as id_kumk,
 e.id as id_mk,
 e.nama as nama_mk,
 e.semester,
@@ -35,7 +36,12 @@ c.nidn,
 c.id as id_dosen,
 c.nama as nama_dosen,
 g.singkatan as prodi,
-g.id as id_prodi  
+g.id as id_prodi,
+(
+  SELECT COUNT(1) FROM tb_jadwal p 
+  JOIN tb_st_mk_kelas q ON p.id=q.id 
+  JOIN tb_st_mk r ON q.id_st_mk=r.id 
+  WHERE r.id=b.id) count_jadwal  
 FROM tb_st a 
 JOIN tb_st_mk b ON a.id=b.id_st 
 JOIN tb_dosen c ON a.id_dosen=c.id 
@@ -90,8 +96,13 @@ while ($d = mysqli_fetch_assoc($q)) {
   $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
   if (mysqli_num_rows($q2)) {
     while ($d2 = mysqli_fetch_assoc($q2)) {
-      $id_st_mk_kelas = "$id_st-$d[id_mk]-$d2[id]";
+      $id_st_mk_kelas = "$id_st-$d[id_kumk]-$d2[id]";
       $checked = in_array($id_st_mk_kelas, $arr_id_st_mk_kelas) ? 'checked' : '';
+      // echo '<pre>';
+      // var_dump($id_st_mk_kelas);
+      // var_dump($arr_id_st_mk_kelas);
+      // echo '</pre>';
+      // exit;
       if ($checked) {
         $jumlah_check++;
         $arr_valid_check[$d['id_st_mk']] = 1;
@@ -107,10 +118,17 @@ while ($d = mysqli_fetch_assoc($q)) {
         $miring_abu = '';
       }
 
+      $sudah_terjadwal_info = '';
+      if ($d['count_jadwal']) {
+        $sudah_terjadwal_info =  "<a href='?jadwal&id_kurikulum=$id_kurikulum'><i>(sudah terjadwal)</i></a>";
+        $disabled = 'disabled';
+      }
+
       $list_kelas .= "
         <div>
           <label class='$miring_abu'>
-            <input class=kelas type=checkbox id=kelas__$d2[id]__$d[id_st_mk] name='$d[id_st_mk]-$d2[id]'  value='$d[id_st_mk]__$d2[id]' $checked $disabled /> $d2[nama] $dosen_pengampu
+            <input class=kelas type=checkbox id=kelas__$d2[id]__$d[id_st_mk] name='$d[id_st_mk]-$d2[id]'  value='$d[id_st_mk]__$d2[id]' $checked $disabled /> 
+            $d2[nama] $dosen_pengampu $sudah_terjadwal_info
           </label>
         </div>
       ";

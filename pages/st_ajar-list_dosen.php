@@ -38,7 +38,7 @@ if (mysqli_num_rows($q)) {
       $blue =  'blue bold';
       $homebase = "homebase $d[homebase]";
     } elseif ($d['homebase']) {
-      $blue = 'green bold';
+      $blue = 'darkblue ';
       $homebase = "$d[homebase]";
     } else {
       $blue = 'abu miring';
