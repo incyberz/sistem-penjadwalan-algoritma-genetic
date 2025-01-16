@@ -8,13 +8,16 @@ $mode_edit = $mode == 'edit' ? 1 : 0;
 $img_drop = img_icon('drop');
 $img_drop_disabled = img_icon('drop_disabled');
 $MKDU_badge = "<span class=mkdu_badge>MKDU</span>";
+$rmk = []; // array MK Struktur Kurikulum
+$view_semester = $_GET['view_semester'] ?? ''; // untuk menyimpan session editing semester
+echo "<span class=hideit id=view_semester>$view_semester</span>";
 
 include 'struktur_kurikulum-styles.php';
 include 'struktur_kurikulum-processors.php';
 
 $not_mode = $mode_edit ? 'view' : 'edit';
 $Not_Mode = $mode_edit ? 'Mode View' : 'Mode Editing';
-$nav_mode = "<i class='f14 abu'>Go to</i> <a href='?struktur_kurikulum&id_prodi=$id_prodi&mode=$not_mode'>$Not_Mode</a>";
+$nav_mode = " <a href='?struktur_kurikulum&id_prodi=$id_prodi&mode=$not_mode&view_semester=$view_semester'>$img_prev $Not_Mode</a>";
 
 $d_kur = [];
 if (!$id_prodi) {
@@ -70,94 +73,21 @@ if (!$id_prodi) {
   for ($semester = 1; $semester <= $prodi['jumlah_semester']; $semester++) {
     $nav_semester .= $mode_edit ? "<div class=nav_semester_item id=nav_semester_item__$semester>Semester $semester</div>" : '';
     # ============================================================
-    # MAIN SELECT MK | ALL SEMESTER | THIS PRODI | GANJIL GENAP
+    # MAIN SELECT MK | THIS SEMESTER | THIS PRODI | GANJIL GENAP
     # ============================================================
-    $s = "SELECT 
-    a.id as id_mk,
-    a.sks,
-    b.id as id_kumk,
-    b.semester,
-    a.nama as nama_mk,
-    a.id_prodi,  
-    c.id as id_kurikulum,
-    d.singkatan as prodi,
-    (SELECT COUNT(1) FROM tb_st_mk WHERE id_kumk=b.id) count_st,
-    ( 
-      SELECT p.id FROM tb_st p 
-      JOIN tb_st_mk q ON p.id=q.id_st 
-      WHERE q.id_kumk=b.id LIMIT 1) id_st_pertama  
-    FROM tb_mk a 
-    JOIN tb_kumk b ON a.id=b.id_mk 
-    JOIN tb_kurikulum c ON b.id_kurikulum=c.id 
-    JOIN tb_prodi d ON c.id_prodi=d.id 
-    -- WHERE b.id_ta = $ta_aktif 
-    WHERE c.id_ta LIKE '$tahun_ta%' 
-    AND c.id_prodi = $id_prodi 
-    AND b.semester = '$semester'
-    ORDER BY  b.semester, a.nama";
-    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-    $num_rows = mysqli_num_rows($q);
     $tr_mk = '';
     $sum_sks = 0;
-    if (!$num_rows) {
-      // echolog("Tidak ada MK di semester $semester");
-      $tr_mk .= "
-        <tr>
-          <td colspan=100%><div class='alert alert-danger tengah'>Belum ada data MK di semester $semester</div></td>
-        </tr>
-      ";
-    } else {
-      $i = 0;
-      while ($d = mysqli_fetch_assoc($q)) {
-        $i++;
-        $sum_sks += $d['sks'];
-        $total_sks += $d['sks'];
+    include 'struktur_kurikulum-tr_mk.php';
 
-        $last_semester = $d['semester'];
-
-        $dosen_pengampu = 'ZZZ';
-        $dosen_pengampu = '-';
-
-        $link_to_st = '';
-        $form_drop = '';
-        if ($mode_edit) {
-          if ($d['count_st']) {
-            $form_drop = "
-              <span onclick='alert(`Tidak dapat Drop karena sudah ada $d[count_st] Surat Tugas`)'>$img_drop_disabled</span>
-            ";
-            $link_to_st = " | <a href='?st_ajar&id_kurikulum=$d[id_kurikulum]&aksi=manage&id_st=$d[id_st_pertama]'>Surat Tugas ($d[count_st])</a>";
-          } else {
-            $form_drop = "
-              <form method=post class='d-inline'>
-                <button class='transparan' name=btn_drop_mk value=$d[id_kumk] onclick='return confirm(`Drop MK ini?`)'>
-                  $img_drop
-                </button>
-              </form>
-            ";
-          }
-        }
-
-        $MKDU = $d['id_prodi'] ? '' : $MKDU_badge;
-
-        $tr_mk .= "
-          <tr class='hideita tr_mk tr_mk__$d[prodi] tr_mk__$d[id_prodi]__$d[semester]' id=tr_mk__$d[id_kumk]>
-            <td>$i</td>
-            <td>$form_drop $d[nama_mk] $MKDU $link_to_st</td>
-            <td>$d[sks]</td>
-            <td>$dosen_pengampu</td>
-          </tr>
-        ";
-      } // end while
-      // add last tr to tb
-      // $tb_kurikulum .= tb_kurikulum($semester, $thead,  $tr_mk, $sum_sks, $mode, $id_kurikulum);
-
-    }
     $col = 6; // akan berganti ke-12 saat mode edit
     $blok_add_mk = ''; // akan terisi saat mode edit
     if ($mode_edit) {
-      include 'struktur_kurikulum-mode_edit.php';
+      include 'struktur_kurikulum-blok_assign_or_add.php';
     }
 
+    # ============================================================
+    # CREATE TABLE TB KURIKULUM
+    # ============================================================
     $tb = "
       <h4 class='darkblue mt2'>Semester $semester</h4>
       <table class='table table-hover table-striped'>
@@ -172,7 +102,7 @@ if (!$id_prodi) {
 
     // jika mode edit, maka tambahkan blok edit semester
     if ($mode_edit) $tb = "
-      <div class='hideita wadah gradasi-toska mt2 blok_edit_semester' id=blok_edit_semester__$semester>
+      <div class='hideit wadah gradasi-toska mt2 blok_edit_semester' id=blok_edit_semester__$semester>
         $tb
         $blok_add_mk
       </div>
@@ -200,8 +130,8 @@ if (!$id_prodi) {
   $nav_semester = !$nav_semester ? '' : "
     <div style='position:fixed; bottom:0;left:0;right:0; background:white; z-index:1000;border-top:solid 1px #ccc;'>
       <div class='flexy flex-center tengah mb2 mt2'>
-        $nav_semester
         <div>$nav_mode</div>
+        $nav_semester
       </div>
     </div>
   ";
@@ -224,8 +154,10 @@ if (!$id_prodi) {
 ?>
 <script>
   $(function() {
-    $('#blok_edit_semester__1').fadeIn();
-    $('#nav_semester_item__1').addClass('nav_semester_active');
+    let view_semester = $('#view_semester').text();
+    view_semester = view_semester ? view_semester : 1;
+    $('#blok_edit_semester__' + view_semester).fadeIn();
+    $('#nav_semester_item__' + view_semester).addClass('nav_semester_active');
 
     $('.nav_semester_item').click(function() {
       let tid = $(this).prop('id');

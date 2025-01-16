@@ -1,8 +1,5 @@
 <?php
 if (isset($_POST['btn_assign_mk'])) {
-  echo '<pre>';
-  var_dump($_POST);
-  echo '</pre>';
   $t = explode('-', $_POST['btn_assign_mk']);
   $id_prodi = $t[0] ?? udef('value[0]');
   $id_kurikulum = $t[1] ?? udef('value[1]');
@@ -27,22 +24,16 @@ if (isset($_POST['btn_assign_mk'])) {
       mysqli_query($cn, $s) or die(mysqli_error($cn));
     }
   }
-  jsurl();
 }
 if (isset($_POST['btn_drop_mk'])) {
   $s = "DELETE FROM tb_kumk WHERE id='$_POST[btn_drop_mk]'";
   mysqli_query($cn, $s) or die(mysqli_error($cn));
-  jsurl();
 }
 if (isset($_POST['btn_hapus_mk'])) {
   $s = "DELETE FROM tb_mk WHERE id='$_POST[btn_hapus_mk]'";
   mysqli_query($cn, $s) or die(mysqli_error($cn));
-  jsurl();
 }
 if (isset($_POST['btn_tambah_mk'])) {
-  echo '<pre>';
-  var_dump($_POST);
-  echo '</pre>';
   $t = explode('-', $_POST['btn_tambah_mk']);
   $id_prodi = $t[0];
   $id_kurikulum = $t[1];
@@ -63,8 +54,6 @@ if (isset($_POST['btn_tambah_mk'])) {
     $kode = "MK-$id_prodi-$semester-$new_no";
   }
 
-
-
   $s = "INSERT INTO tb_mk (
     id_prodi,
     kode,
@@ -82,5 +71,9 @@ if (isset($_POST['btn_tambah_mk'])) {
   )";
 
   mysqli_query($cn, $s) or die(mysqli_error($cn));
-  jsurl();
+}
+
+if ($_POST) {
+  $view_semester = $semester ?? $view_semester; // replace view_semester with $semester if $semester is set
+  jsurl("?struktur_kurikulum&id_prodi=$id_prodi&mode=$mode&view_semester=$view_semester");
 }
