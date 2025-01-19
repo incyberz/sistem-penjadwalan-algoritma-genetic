@@ -49,6 +49,7 @@ JOIN tb_kurikulum c ON b.id_kurikulum=c.id
 JOIN tb_prodi d ON c.id_prodi=d.id
 -- WHERE 1 
 AND $sql_ganjil -- atau genap 
+AND d.fakultas = '$kurikulum[fakultas]'
 ORDER BY d.id, b.semester 
 ";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
@@ -104,7 +105,9 @@ if ($kumk_count) {
     $last_smt = $d['semester'];
   }
 
-  $mk_available_info = $mk_available ? "<div class='mb1 mt2 blue bold'>Ceklis MK yang akan diberikan:</div>" : "
+  $mk_available_info = $mk_available ? "
+    <div class='mb1 mt2 blue bold'>Ceklis MK yang akan diberikan:</div>
+  " : "
     <div class='mb1 mt2 red bold'>
       <a href='?st_ajar&id_kurikulum=$id_kurikulum'>$img_prev</a>
       Maaf, belum ada MK yang available | 
@@ -123,6 +126,7 @@ if ($kumk_count) {
       <div class=row id=list_mk>
         <div class='col-sm-12'>
           <div class='wadah gradasi-toska'>
+            <h3>List MK Fakultas $kurikulum[fakultas]</h3>
             $mk_available_info
             $list_mk
           </div>

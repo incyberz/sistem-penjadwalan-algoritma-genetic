@@ -11,11 +11,7 @@ a.nama as nama_mk,
 a.id_prodi,  
 c.id as id_kurikulum,
 d.singkatan as prodi,
-(SELECT COUNT(1) FROM tb_st_mk WHERE id_kumk=b.id) count_st,
-( 
-  SELECT p.id FROM tb_st p 
-  JOIN tb_st_mk q ON p.id=q.id_st 
-  WHERE q.id_kumk=b.id LIMIT 1) id_st_pertama  
+(SELECT COUNT(1) FROM tb_st_mk WHERE unik_kumk=CONCAT(b.id,'-','$shift')) count_st
 FROM tb_mk a 
 JOIN tb_kumk b ON a.id=b.id_mk 
 JOIN tb_kurikulum c ON b.id_kurikulum=c.id 
@@ -44,17 +40,57 @@ if (!$num_rows) {
 
     $last_semester = $d['semester'];
 
-    $dosen_pengampu = '-';
-    include 'struktur_kurikulum-tr_mk-dosen_pengampu.php';
-
     $link_to_st = '';
+    if ($d['count_st']) {
+      $s2 = "SELECT 
+      a.id as id_st, 
+      c.id as id_dosen, 
+      c.nama as dosen_pengampu 
+      FROM tb_st a 
+      JOIN tb_st_mk b ON b.id_st=a.id 
+      JOIN tb_dosen c ON a.id_dosen=c.id 
+      WHERE b.unik_kumk='$d[id_kumk]-$shift'
+      ";
+      $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
+      $d2 = mysqli_fetch_assoc($q2);
+      $d['dosen_pengampu'] = $d2['dosen_pengampu'];
+      $d['id_dosen'] = $d2['id_dosen'];
+      $d['id_st'] = $d2['id_st'];
+      $link_to_st = "<a onclick='return confirm(`Cek Surat Tugas?`)' href='?st_ajar&id_kurikulum=$d[id_kurikulum]&aksi=manage&id_st=$d[id_st]'>$img_next</a>";
+    } else {
+      $d['dosen_pengampu'] = '-';
+      $d['id_dosen'] = null;
+      $d['id_st'] = null;
+    }
+
+    if ($mode_edit) {
+      if ($rkelas) {
+        $dosen_pengampu = "
+          <div class='flexy flex-between'>
+            <div>
+              <span id=dosen_pengampu__$d[id_kumk]>$d[dosen_pengampu]</span>
+              <span class=btn_aksi id=blok_edit_dosen_pengampu$d[id_kumk]__toggle>$img_edit</span> 
+            </div>
+            <div>
+              $link_to_st
+            </div>
+          </div>
+        ";
+        include 'struktur_kurikulum-tr_mk-blok_edit_dosen_pengampu.php';
+        $dosen_pengampu .= $blok_edit_dosen_pengampu;
+      } else {
+        $dosen_pengampu = '<i class="red f12">belum bisa assign</i>';
+      }
+    } else {
+      $dosen_pengampu = $d['dosen_pengampu'];
+    }
+
     $form_drop = '';
     if ($mode_edit) {
       if ($d['count_st']) {
         $form_drop = "
           <span onclick='alert(`Tidak dapat Drop karena sudah ada $d[count_st] Surat Tugas`)'>$img_drop_disabled</span>
         ";
-        $link_to_st = " | <a href='?st_ajar&id_kurikulum=$d[id_kurikulum]&aksi=manage&id_st=$d[id_st_pertama]'>Surat Tugas ($d[count_st])</a>";
       } else {
         $form_drop = "
           <form method=post class='d-inline'>
@@ -71,7 +107,7 @@ if (!$num_rows) {
     $tr_mk .= "
       <tr class='hideita tr_mk tr_mk__$d[prodi] tr_mk__$d[id_prodi]__$d[semester]' id=tr_mk__$d[id_kumk]>
         <td>$i</td>
-        <td>$form_drop $d[nama_mk] $MKDU $link_to_st</td>
+        <td>$form_drop $d[nama_mk] $MKDU </td>
         <td>$d[sks]</td>
         <td>$dosen_pengampu</td>
       </tr>

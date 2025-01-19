@@ -1,6 +1,6 @@
 <?php
 if (isset($_POST['btn_create_st'])) {
-  $id_st = "$_POST[id_ta]-$id_dosen";
+  $id_st = "$ta_aktif-$id_dosen";
   $s = "INSERT INTO tb_st (
     id,
     id_dosen,

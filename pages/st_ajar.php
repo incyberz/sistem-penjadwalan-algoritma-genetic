@@ -66,9 +66,11 @@ include 'st_ajar-processors.php';
 # ============================================================
 # DATA KURIKULUM
 # ============================================================
-$s = "SELECT a.*,
+$s = "SELECT a.*,b.fakultas,
 (SELECT nama FROM tb_prodi WHERE id=a.id_prodi) nama_prodi  
-FROM tb_kurikulum a WHERE a.id = $id_kurikulum";
+FROM tb_kurikulum a 
+JOIN tb_prodi b ON a.id_prodi=b.id 
+WHERE a.id = $id_kurikulum";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $kurikulum = mysqli_fetch_assoc($q);
 

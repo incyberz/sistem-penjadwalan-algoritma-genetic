@@ -7,3 +7,4 @@ if (!$petugas) {
   // die("User [$username] tidak ada.");
 }
 $id_petugas = $petugas['id'];
+echo "<span class=hideit id=id_petugas>$id_petugas</span>";

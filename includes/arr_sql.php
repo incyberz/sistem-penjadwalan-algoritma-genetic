@@ -227,10 +227,11 @@ $arr_sql['st'] = "CREATE TABLE IF NOT EXISTS tb_st (
 $arr_sql['st_mk'] = "CREATE TABLE IF NOT EXISTS tb_st_mk (
     id varchar(20) NOT NULL COMMENT 'TA DS KU MK' PRIMARY KEY,
     id_st varchar(20) NOT NULL,
-    id_mk int(11) NOT NULL,
+    id_kumk varchar(20) NOT NULL,
+    unik_kumk varchar(20) NOT NULL UNIQUE,
 
-    CONSTRAINT PARENT_MK FOREIGN KEY (id_mk) REFERENCES tb_mk(id),
-    CONSTRAINT PARENT_ST FOREIGN KEY (id_st) REFERENCES tb_st(id)
+    CONSTRAINT tb_st_mk__kumk FOREIGN KEY (id_kumk) REFERENCES tb_kumk(id),
+    CONSTRAINT tb_st_mk__st FOREIGN KEY (id_st) REFERENCES tb_st(id)
 
   );
 ";

@@ -31,6 +31,18 @@
   }
 
   .nav_semester_active {
-    background: lightskyblue;
+    background: yellow;
+    border: solid 2px blue;
+  }
+
+  .item_list_dosen {
+    transition: .3s;
+    cursor: pointer;
+    padding: 5px;
+  }
+
+  .item_list_dosen:hover {
+    background: yellow;
+    letter-spacing: .5px;
   }
 </style>

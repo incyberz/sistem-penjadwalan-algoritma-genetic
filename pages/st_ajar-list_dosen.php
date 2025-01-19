@@ -11,6 +11,14 @@ $s = "SELECT a.*,
   SELECT COUNT(1) FROM tb_st_mk p 
   JOIN tb_st q ON p.id_st=q.id 
   WHERE q.id_dosen=a.id 
+  AND q.id_ta = $ta_aktif) count_kumk_old,
+(
+  SELECT COUNT(1) FROM tb_st_mk p 
+  JOIN tb_st q ON p.id_st=q.id 
+  JOIN tb_kumk r ON p.id_kumk=r.id 
+  JOIN tb_st_mk_kelas s ON s.id_st_mk=p.id 
+  JOIN tb_mk t ON r.id_mk=t.id 
+  WHERE q.id_dosen=a.id 
   AND q.id_ta = $ta_aktif) count_kumk,
 (
   SELECT SUM(t.sks) FROM tb_st_mk p 

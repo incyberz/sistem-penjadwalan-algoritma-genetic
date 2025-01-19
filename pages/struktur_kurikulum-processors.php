@@ -75,5 +75,5 @@ if (isset($_POST['btn_tambah_mk'])) {
 
 if ($_POST) {
   $view_semester = $semester ?? $view_semester; // replace view_semester with $semester if $semester is set
-  jsurl("?struktur_kurikulum&id_prodi=$id_prodi&mode=$mode&view_semester=$view_semester");
+  jsurl("?struktur_kurikulum&id_prodi=$id_prodi&mode=$mode&view_semester=$view_semester&shift=$shift");
 }

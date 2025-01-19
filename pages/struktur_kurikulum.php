@@ -3,38 +3,56 @@
 # STRUKTUR KURIKULUM
 # ============================================================
 $id_prodi = $_GET['id_prodi'] ?? '';
+$shift = $_GET['shift'] ?? '';
 $mode = $_GET['mode'] ?? 'view';
 $mode_edit = $mode == 'edit' ? 1 : 0;
 $img_drop = img_icon('drop');
 $img_drop_disabled = img_icon('drop_disabled');
 $MKDU_badge = "<span class=mkdu_badge>MKDU</span>";
 $rmk = []; // array MK Struktur Kurikulum
-$view_semester = $_GET['view_semester'] ?? ''; // untuk menyimpan session editing semester
-echo "<span class=hideit id=view_semester>$view_semester</span>";
+$get_semester = ($_GET['semester'] ?? null) ? $_GET['semester'] : $default_semester; // untuk menyimpan session editing semester
+echo "<span class=hideit id=semester>$get_semester</span>";
+$img_next = img_icon('next');
 
 include 'struktur_kurikulum-styles.php';
 include 'struktur_kurikulum-processors.php';
 
 $not_mode = $mode_edit ? 'view' : 'edit';
 $Not_Mode = $mode_edit ? 'Mode View' : 'Mode Editing';
-$nav_mode = " <a href='?struktur_kurikulum&id_prodi=$id_prodi&mode=$not_mode&view_semester=$view_semester'>$img_prev $Not_Mode</a>";
+$nav_mode = " <a href='?struktur_kurikulum&id_prodi=$id_prodi&mode=$not_mode&semester=$get_semester&shift=$shift'>$img_prev $Not_Mode</a>";
 
-$d_kur = [];
-if (!$id_prodi) {
+
+if (!$id_prodi || !$shift) {
   # ============================================================
   # WAJIB PILIH PRODI
   # ============================================================
-  $s = "SELECT * FROM tb_prodi ORDER BY jenjang, nama";
-  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-  $list = '';
-  while ($d = mysqli_fetch_assoc($q)) {
-    $list .= "<div class='bordered br5 p2 gradasi-hijau'><a href='?struktur_kurikulum&id_prodi=$d[id]'>$d[jenjang] - $d[nama]</a></div>";
+  $div_shifts = '';
+  $col = round(12 / count($rshift));
+  foreach ($rshift as $key => $value) {
+    # code...
+    $s = "SELECT * FROM tb_prodi ORDER BY fakultas,jenjang, nama";
+    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+    $list = '';
+    while ($d = mysqli_fetch_assoc($q)) {
+      $list .= "<div><a class='btn btn-primary w-100 mb2' href='?struktur_kurikulum&id_prodi=$d[id]&shift=$key'>$d[fakultas] - $d[jenjang] - $d[nama] - $value[title]</a></div>";
+    }
+    $div_shifts .= "
+      <div class=col-$col>
+        <div>Kelas $value[title]:</div>
+        <div class='wadah mt2'>$list</div>
+      </div>
+    ";
   }
+
+  set_h2('Pilih Kurikulum');
   echo "
-    <div>Struktur Kurikulum untuk prodi:</div>
-    <div class='flexy wadah mt2'>$list</div>
+    <div class=row>$div_shifts</div>
   ";
 } else {
+  echo "
+  <span class=hideit id=id_prodi>$id_prodi</span>
+  <span class=hideit id=shift>$shift</span>
+  ";
 
   # ============================================================
   # STRUKTUR KURIKULUM GANJIL GENAP
@@ -70,10 +88,66 @@ if (!$id_prodi) {
   $tb_kurikulum = '';
   $total_sks = 0;
   $nav_semester = '';
+  if ($mode_edit) {
+    for ($semester = 1; $semester <= $prodi['jumlah_semester']; $semester++) {
+      if ($ta_aktif % 2 != $semester % 2) continue;
+      $nav_semester_active = $semester == $get_semester ? 'nav_semester_active' : '';
+      $nav_semester .= "
+        <div class='nav_semester_item $nav_semester_active' >
+          <a href='?struktur_kurikulum&id_prodi=$id_prodi&mode=edit&shift=$shift&semester=$semester'>Semester $semester</a>
+        </div>
+      ";
+    }
+  }
+
+
   for ($semester = 1; $semester <= $prodi['jumlah_semester']; $semester++) {
-    $nav_semester .= $mode_edit ? "<div class=nav_semester_item id=nav_semester_item__$semester>Semester $semester</div>" : '';
+    // semester lain tidak diproses saat mode edit
+    if ($mode_edit and $get_semester != $semester) continue;
+
     # ============================================================
-    # MAIN SELECT MK | THIS SEMESTER | THIS PRODI | GANJIL GENAP
+    # GET KELASS IN THIS SEMESTER | THIS PRODI | THIS TA
+    # ============================================================
+    $kelass = null;
+    $id_kelass = null;
+    $blok_kelass = null;
+    $rkelas = [];
+    if ($mode == 'edit') {
+      $s = "SELECT 
+      id as id_kelas, 
+      nama as kelas 
+      FROM tb_kelas 
+      WHERE semester='$semester' 
+      AND id_prodi=$id_prodi 
+      AND id_ta=$ta_aktif 
+      AND shift='$shift' 
+      ";
+      $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+      if (!mysqli_num_rows($q)) {
+        $pesan = "Belum bisa assign Dosen Pengampu karena belum ada kelas di: semester [$semester] prodi [$prodi[nama]] kelas [$shift] TA. [$ta_aktif].";
+        $blok_kelass = "<div class='alert alert-danger'>$pesan | <a href='?crud&tb=kelas&note=$pesan'>Tambah</a></div>";
+      } else {
+        while ($d = mysqli_fetch_assoc($q)) {
+          $rkelas[$d['kelas']] = $d;
+          $koma = $kelass ? ', ' : '';
+          $kelass .= "$koma$d[kelas]";
+          $id_kelass .= "$koma$d[id_kelas]";
+        }
+        $blok_kelass = "
+          <div class='alert alert-info'>
+            <b>Kelas Aktif:</b> 
+            <span id=kelass>$kelass</span>
+            <span id=id_kelass class=hideit>$id_kelass</span>
+          </div>
+        ";
+      }
+    }
+
+
+
+
+    # ============================================================
+    # MAIN SELECT MK | THIS SEMESTER | THIS PRODI | THIS TA
     # ============================================================
     $tr_mk = '';
     $sum_sks = 0;
@@ -90,6 +164,7 @@ if (!$id_prodi) {
     # ============================================================
     $tb = "
       <h4 class='darkblue mt2'>Semester $semester</h4>
+      $blok_kelass
       <table class='table table-hover table-striped'>
         $thead
         $tr_mk
@@ -102,7 +177,7 @@ if (!$id_prodi) {
 
     // jika mode edit, maka tambahkan blok edit semester
     if ($mode_edit) $tb = "
-      <div class='hideit wadah gradasi-toska mt2 blok_edit_semester' id=blok_edit_semester__$semester>
+      <div class=' wadah gradasi-toska mt2 blok_edit_semester' id=blok_edit_semester__$semester>
         $tb
         $blok_add_mk
       </div>
@@ -136,6 +211,9 @@ if (!$id_prodi) {
     </div>
   ";
 
+  $shift_title = $rshift[$shift]['title'];
+  $Ganjil = $ta_aktif % 2 == 0 ? 'Genap' : 'Ganjil';
+  $editing_info = $mode_edit ? "- <span class=brown>Editing Semester $Ganjil</span> <a href='?home&show_config=1' onclick='return confirm(`Ganti Tahun Ajar?`)'>$img_manage</a>" : '';
   echo "
     <div class='tengah mb2'>
       $nav_mode
@@ -143,6 +221,7 @@ if (!$id_prodi) {
     <div class='tengah gradasi-toska p-3'>
       <h2>STRUKTUR KURIKULUM</h2>
       <h3>$prodi[nama] $tahun_ta</h3>
+      <h4>Kelas $shift_title $editing_info</h4>
     </div>
     $nav_semester
     <div class=row>  
@@ -154,21 +233,26 @@ if (!$id_prodi) {
 ?>
 <script>
   $(function() {
-    let view_semester = $('#view_semester').text();
-    view_semester = view_semester ? view_semester : 1;
-    $('#blok_edit_semester__' + view_semester).fadeIn();
-    $('#nav_semester_item__' + view_semester).addClass('nav_semester_active');
+    let id_prodi = $('#id_prodi').text();
+    let id_petugas = $('#id_petugas').text();
+    let shift = $('#shift').text();
+    let semester = $('#semester').text();
+    let kelass = $('#kelass').text(); // kelas2 aktif di semester tsb
+    let id_kelass = $('#id_kelass').text(); // id_kelas2 aktif di semester tsb
+    // semester = semester ? semester : 1;
+    // $('#blok_edit_semester__' + semester).fadeIn();
+    // $('#nav_semester_item__' + semester).addClass('nav_semester_active');
 
-    $('.nav_semester_item').click(function() {
-      let tid = $(this).prop('id');
-      let rid = tid.split('__');
-      let aksi = rid[0];
-      let id = rid[1];
-      $('.blok_edit_semester').hide();
-      $('.nav_semester_item').removeClass('nav_semester_active');
-      $(this).addClass('nav_semester_active');
-      $('#blok_edit_semester__' + id).fadeIn();
-    });
+    // $('.nav_semester_item').click(function() {
+    //   let tid = $(this).prop('id');
+    //   let rid = tid.split('__');
+    //   let aksi = rid[0];
+    //   let id = rid[1];
+    //   $('.blok_edit_semester').hide();
+    //   $('.nav_semester_item').removeClass('nav_semester_active');
+    //   $(this).addClass('nav_semester_active');
+    //   $('#blok_edit_semester__' + id).fadeIn();
+    // });
     $('.cbmk').click(function() {
       // cbmk_id = "cbmk-$d2[id_prodi]-$id_kurikulum-$semester-$d2[id_mk]";
       //            0     1             2            3            4
@@ -198,6 +282,67 @@ if (!$id_prodi) {
       } else {
         $('#btn_assign_mk-' + semester).prop('disabled', 1);
       }
-    })
-  })
+    });
+
+    $('.keyword').keyup(function() {
+      let tid = $(this).prop('id');
+      let rid = tid.split('__');
+      let aksi = rid[0];
+      let id_kumk = rid[1];
+      let id_dosen = rid[2]; // optional
+      if ($(this).val().trim().length < 3) {
+        $('#list_dosen__' + id_kumk).hide();
+
+      } else {
+
+        let keyword = $(this).val().trim();
+        // console.log(aksi, id_kumk);
+
+        $.ajax({
+          url: 'pages/struktur_kurikulum-ajax_dosen.php?keyword=' + keyword +
+            '&id_dosen=' + id_dosen +
+            '&id_prodi=' + id_prodi +
+            '&id_kumk=' + id_kumk,
+          success: function(a) {
+            $('#list_dosen__' + id_kumk).show();
+            $('#list_dosen__' + id_kumk).html(a);
+          }
+        })
+      }
+    });
+
+    $(document).on('click', '.item_list_dosen', function() {
+      let tid = $(this).prop('id');
+      let rid = tid.split('__');
+      let aksi = rid[0];
+      let id_dosen = rid[1];
+      let id_kumk = rid[2];
+      let nama_dosen = $('#nama_dosen__' + id_dosen + '__' + id_kumk).text();
+      // console.log(aksi, id_dosen, id_kumk, nama_dosen);
+
+      console.log(id_dosen, id_kumk, id_petugas);
+      if (id_dosen && id_kumk && id_petugas) {
+        let y = confirm(`Set MK ini ke dosen: [ ${nama_dosen} ] ?`);
+        if (y) {
+          $.ajax({
+            url: `pages/struktur_kurikulum-ajax_set_dosen.php?id_dosen=${id_dosen}&id_kumk=${id_kumk}&id_petugas=${id_petugas}&shift=${shift}&id_kelass=${id_kelass}`,
+            success: function(a) {
+              if (a == 'sukses') {
+                location.reload();
+                // $('#dosen_pengampu__' + id_kumk).text(nama_dosen);
+                // $('#blok_edit_dosen_pengampu' + id_kumk).hide();
+
+              } else {
+                alert(a)
+              }
+            }
+          })
+        }
+
+      } else {
+        console.log(id_dosen, id_kumk, id_petugas);
+
+      }
+    });
+  });
 </script>

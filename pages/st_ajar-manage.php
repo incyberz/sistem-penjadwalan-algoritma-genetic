@@ -77,6 +77,7 @@ while ($d = mysqli_fetch_assoc($q)) {
   # ============================================================
   $list_kelas = '';
   $pra_unique_check = "$id_ta-$d[id_mk]-"; // TA-MK-Kelas
+  $pra_unique_check = "$id_ta-$d[id_kumk]-"; // TA-KUR-MK-KLS update code
 
   $sub_select_nama_dosen = "SELECT p.nama FROM tb_dosen p
     JOIN tb_st_mk_kelas q ON p.id=q.id_dosen
