@@ -1,8 +1,13 @@
 <?php
 $post_id_prodi = $_POST['id_prodi'] ?? '';
 $post_semester = $_POST['semester'] ?? '';
-$post_shift = $_POST['shift'] ?? '';
+$post_shift = $_POST['id_shift'] ?? '';
 $post_counter = $_POST['counter'] ?? '';
+
+$get_id_prodi = $_GET['id_prodi'] ?? '';
+$get_semester = $_GET['semester'] ?? '';
+$get_shift = $_GET['id_shift'] ?? '';
+$get_counter = $_GET['counter'] ?? '';
 
 if (isset($_POST['btn_add_kelas'])) {
   if (!$_POST['id_prodi']) {
@@ -30,8 +35,8 @@ if (isset($_POST['btn_add_kelas'])) {
     # RULE LABEL KELAS
     # ============================================================
     // D3-KA-5-R-A-20241
-    // $nama = "$prodi[jenjang]-$prodi[singkatan]-$angkatan-SM$_POST[semester]-$_POST[shift]$_counter";
-    $nama = "$prodi[jenjang]-$prodi[singkatan]-$_POST[semester]-$_POST[shift]$_counter-$ta_aktif";
+    // $nama = "$prodi[jenjang]-$prodi[singkatan]-$angkatan-SM$_POST[semester]-$_POST[id_shift]$_counter";
+    $nama = "$prodi[jenjang]-$prodi[singkatan]-$_POST[semester]-$_POST[id_shift]$_counter-$ta_aktif";
 
 
     // add kelas tahun ganjil
@@ -40,21 +45,24 @@ if (isset($_POST['btn_add_kelas'])) {
       id_prodi,
       id_ta,
       semester,
-      shift,
+      id_shift,
       counter
     ) VALUES (
       '$nama',
       '$_POST[id_prodi]',
       '$ta_aktif',
       '$_POST[semester]',
-      '$_POST[shift]',
+      '$_POST[id_shift]',
       $counter_or_null
     ) ON DUPLICATE KEY UPDATE created_at = CURRENT_TIMESTAMP";
+    echolog($s2);
 
     $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
     jsurl();
   }
 }
+
+
 
 $img_ontime = img_icon('ontime');
 # ============================================================
@@ -64,16 +72,22 @@ $opt_prodi = '';
 $s = "SELECT id,jenjang,singkatan FROM tb_prodi ORDER BY jenjang, singkatan";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 while ($d = mysqli_fetch_assoc($q)) {
-  $selected = $post_id_prodi == $d['id'] ? 'selected' : '';
+  $selected = ($post_id_prodi == $d['id'] || $get_id_prodi == $d['id']) ? 'selected' : '';
   $opt_prodi .= "<option $selected value=$d[id]>$d[jenjang]-$d[singkatan]</option>";
 }
 
 $opt_semester = '';
 for ($i = 1; $i <= 8; $i++) {
   if (($is_ganjil and $i % 2 != 0) || (!$is_ganjil and $i % 2 == 0)) {
-    $selected = $post_semester == $i ? 'selected' : '';
-    $opt_semester .= "<option $selected >$i</option>";
+    $selected = ($post_semester == $i || $get_semester == $i) ? 'selected' : '';
+    $opt_semester .= "<option $selected value=$i>Semester $i</option>";
   }
+}
+
+$opt_shift = '';
+foreach ($rshift as $id_shift => $arr_shift) {
+  $selected = ($post_shift == $id_shift || $get_shift == $id_shift) ? 'selected' : '';
+  $opt_shift .= "<option $selected value=$id_shift>Kelas $id_shift</option>";
 }
 
 
@@ -96,28 +110,27 @@ for ($i = 1; $i <= 8; $i++) {
     </div> -->
     <div>
       <select name="semester" id="semester" class="form-control harus_memilih">
-        <option value="">--semester--</option>
         <?= $opt_semester ?>
       </select>
     </div>
     <div>
-      <select name="shift" id="shift" class="form-control">
-        <option>R</option>
-        <option>NR</option>
+      <select name="id_shift" id="id_shift" class="form-control">
+        <?= $opt_shift ?>
       </select>
     </div>
     <div>
       <select name="counter" id="counter" class="form-control">
-        <option value="">--</option>
-        <option>A</option>
-        <option>B</option>
-        <option>C</option>
-        <option>D</option>
-        <option>E</option>
+        <option value="">(hanya 1 rombel)</option>
+        <option value=A>Kelas A</option>
+        <option value=B>Kelas B</option>
+        <option value=C>Kelas C</option>
+        <option value=D>Kelas D</option>
+        <option value=E>Kelas E</option>
       </select>
     </div>
-    <div id=div_btn class=hideit>
-      <button class="btn btn-success" name=btn_add_kelas>Add Kelas</button>
+    <div id=div_btn>
+      <button class="btn btn-primary" name=btn_add_kelas>Add Kelas</button>
+      <span class="btn btn-success ondev" name=btn_add_kelas>Add All Kelas <?= $Gg ?></span>
     </div>
 
   </div>

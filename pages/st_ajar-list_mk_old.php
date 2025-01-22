@@ -36,13 +36,8 @@ a.sks,
 a.semester,
 b.id as id_kumk, 
 d.id as id_prodi,
-d.singkatan as prodi,
-(
-  SELECT COUNT(1) FROM tb_st_mk p 
-  JOIN tb_st_mk_kelas q ON q.id_st_mk=p.id -- jumlah assign ke tiap kelas
-  WHERE p.id_kumk=b.id -- untuk KU-MK yang ini
-  AND p.id_st LIKE '$ta_aktif-%' -- persen artinya semua dosen 
-  ) count_assigned 
+d.singkatan as prodi
+
 FROM tb_mk a 
 JOIN tb_kumk b ON a.id=b.id_mk
 JOIN tb_kurikulum c ON b.id_kurikulum=c.id
@@ -109,7 +104,7 @@ if ($kumk_count) {
     <div class='mb1 mt2 blue bold'>Ceklis MK yang akan diberikan:</div>
   " : "
     <div class='mb1 mt2 red bold'>
-      <a href='?st_ajar&id_kurikulum=$id_kurikulum'>$img_prev</a>
+      <a href='?st_ajar'>$img_prev</a>
       Maaf, belum ada MK yang available | 
       <a href='?crud&tb=mk'>Manage MK</a>
     </div>

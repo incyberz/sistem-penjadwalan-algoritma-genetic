@@ -45,4 +45,23 @@
     background: yellow;
     letter-spacing: .5px;
   }
+
+  .nav_hover {
+    cursor: pointer;
+    transition: .2s;
+  }
+
+  .nav_hover:hover {
+    color: blue;
+    /* font-weight: bold; */
+    letter-spacing: .5px;
+    text-decoration: underline;
+  }
+
+  .nav_st {
+    cursor: pointer;
+    border: solid 1px #ccc;
+    padding: 5px 12px;
+    border-radius: 5px;
+  }
 </style>

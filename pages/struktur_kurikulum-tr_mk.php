@@ -11,7 +11,10 @@ a.nama as nama_mk,
 a.id_prodi,  
 c.id as id_kurikulum,
 d.singkatan as prodi,
-(SELECT COUNT(1) FROM tb_st_mk WHERE unik_kumk=CONCAT(b.id,'-','$shift')) count_st
+(
+  SELECT COUNT(1) FROM tb_st_detail 
+  WHERE id_kumk=b.id 
+  AND id_shift='$id_shift') count_st_detail
 FROM tb_mk a 
 JOIN tb_kumk b ON a.id=b.id_mk 
 JOIN tb_kurikulum c ON b.id_kurikulum=c.id 
@@ -25,9 +28,14 @@ $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $num_rows = mysqli_num_rows($q);
 if (!$num_rows) {
   // echolog("Tidak ada MK di semester $semester");
+  $masuk_mode_editing = $mode == 'edit' ? 'Silahkan Tambah dan Assign MK Baru' : " | <a href='?struktur_kurikulum&id_prodi=$id_prodi&mode=edit&semester=$semester&id_shift=$id_shift'>Masuk Mode Editing</a>";
   $tr_mk .= "
     <tr>
-      <td colspan=100%><div class='alert alert-danger tengah'>Belum ada data MK di semester $semester</div></td>
+      <td colspan=100%>
+        <div class='alert alert-danger tengah'>
+          Belum ada data MK di semester [$semester] $masuk_mode_editing 
+        </div>
+      </td>
     </tr>
   ";
 } else {
@@ -41,22 +49,23 @@ if (!$num_rows) {
     $last_semester = $d['semester'];
 
     $link_to_st = '';
-    if ($d['count_st']) {
+    if ($d['count_st_detail']) {
       $s2 = "SELECT 
       a.id as id_st, 
       c.id as id_dosen, 
       c.nama as dosen_pengampu 
       FROM tb_st a 
-      JOIN tb_st_mk b ON b.id_st=a.id 
+      JOIN tb_st_detail b ON b.id_st=a.id 
       JOIN tb_dosen c ON a.id_dosen=c.id 
-      WHERE b.unik_kumk='$d[id_kumk]-$shift'
+      WHERE b.id_kumk='$d[id_kumk]' 
+      AND b.id_shift = '$id_shift'
       ";
       $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
       $d2 = mysqli_fetch_assoc($q2);
       $d['dosen_pengampu'] = $d2['dosen_pengampu'];
       $d['id_dosen'] = $d2['id_dosen'];
       $d['id_st'] = $d2['id_st'];
-      $link_to_st = "<a onclick='return confirm(`Cek Surat Tugas?`)' href='?st_ajar&id_kurikulum=$d[id_kurikulum]&aksi=manage&id_st=$d[id_st]'>$img_next</a>";
+      $link_to_st = "<a onclick='return confirm(`Cek Surat Tugas?`)' href='?st_ajar&aksi=manage&id_st=$d[id_st]'>$img_next</a>";
     } else {
       $d['dosen_pengampu'] = '-';
       $d['id_dosen'] = null;
@@ -64,7 +73,7 @@ if (!$num_rows) {
     }
 
     if ($mode_edit) {
-      if ($rkelas) {
+      if ($rkelas_aktif) { // sudah ada kelas-kelas aktif di semester ini
         $dosen_pengampu = "
           <div class='flexy flex-between'>
             <div>
@@ -87,9 +96,9 @@ if (!$num_rows) {
 
     $form_drop = '';
     if ($mode_edit) {
-      if ($d['count_st']) {
+      if ($d['count_st_detail']) {
         $form_drop = "
-          <span onclick='alert(`Tidak dapat Drop karena sudah ada $d[count_st] Surat Tugas`)'>$img_drop_disabled</span>
+          <span onclick='alert(`Tidak dapat Drop karena sudah ada $d[count_st_detail] Surat Tugas`)'>$img_drop_disabled</span>
         ";
       } else {
         $form_drop = "

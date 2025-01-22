@@ -5,7 +5,7 @@ session_start();
 # DEBUGGING
 # ============================================================
 if (!isset($_SESSION['jadwal_username'])) $_SESSION['jadwal_username'] = 'yunita';
-if (!isset($_SESSION['jadwal_ta_aktif'])) $_SESSION['jadwal_ta_aktif'] = 20241;
+if (!isset($_SESSION['jadwal_ta_aktif'])) $_SESSION['jadwal_ta_aktif'] = 20242;
 
 # ============================================================
 # CONFIGIRATION FILE
@@ -27,6 +27,7 @@ $includes = [
   'date_managements',
   'echolog',
   'hak_akses',
+  'tanggal',
   'img_icon',
   'insho_styles',
   'jsurl',
@@ -112,3 +113,10 @@ if ($username) include 'pages/user.php';
 <?php include $is_live ? 'includes/script_btn_aksi.php' : '../includes/script_btn_aksi.php'; ?>
 
 </html>
+<script>
+  $(function() {
+    $('.ondev').click(function() {
+      alert(`Fitur ini masih dalam tahap pengembangan. Terimakasih sudah mencoba!\n\n\ninfo lanjut: silahkan hubungi developer!`)
+    })
+  })
+</script>

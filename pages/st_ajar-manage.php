@@ -1,5 +1,4 @@
 <?php
-$id_st = $_GET['id_st'] ?? udef('id_st');
 $arr = explode('-', $id_st);
 $id_ta = $arr[0];
 $id_dosen = $arr[1];
@@ -12,13 +11,53 @@ if ($id_ta < 1 || $id_dosen < 1) die("Invalid value: id_ta: $id_ta, id_dosen: $i
 include 'st_ajar-manage-processors.php';
 
 # ============================================================
-# SELECT ST-MK-KELAS IF EXISTS 
+# ST PROPERTIES 
 # ============================================================
-$s = "SELECT id FROM tb_st_mk_kelas WHERE id LIKE '$id_st%'";
+$s = "SELECT a.*,
+b.id as id_dosen,
+b.nama as nama_dosen,
+b.nidn,
+f.fakultas,
+(
+  SELECT nama FROM tb_prodi WHERE id=b.id_prodi) homebase,
+(SELECT nama FROM tb_petugas WHERE id=a.id_petugas) verifikator
+FROM tb_st a 
+JOIN tb_dosen b ON a.id_dosen=b.id
+JOIN tb_st_detail c ON a.id=c.id_st
+JOIN tb_kumk d ON c.id_kumk=d.id
+JOIN tb_kurikulum e ON d.id_kurikulum=e.id
+JOIN tb_prodi f ON e.id_prodi=f.id
+WHERE a.id = '$id_st'";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-$arr_id_st_mk_kelas = [];
-while ($d = mysqli_fetch_assoc($q)) {
-  array_push($arr_id_st_mk_kelas, $d['id']);
+$st = mysqli_fetch_assoc($q);
+if (!$st) die(alert("Data Surat Tugas dengan id [$id_st] tidak ditemukan. | <a href='?st_ajar'>Back to Rekap Surat Tugas</a>"));
+$verified = $st['verif_date'] ? 1 : 0;
+
+if ($print) {
+
+  if (!$st['verif_date']) die("Field [verif_date] is null.");
+  if (!$st['verif_by']) die("Field [verif_by] is null.");
+
+  $tahun = date('Y', strtotime($st['verif_date']));
+  $num_digit = 4;
+  $info_fakultas = $st['fakultas'];
+  $info_kampus = 'E-UM';
+
+  $rbulan_romawi = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+  $bulan_romawi = $rbulan_romawi[intval(date('m', strtotime($st['verif_date']))) - 1];
+
+  if ($st['no_st']) {
+    $no_st_zerofill = sprintf('%0' . $num_digit . 'd', $st['no_st']);
+    $nomor_st = "$no_st_zerofill/$info_fakultas/$info_kampus/$bulan_romawi/$tahun";
+  } else {
+
+    # ============================================================
+    # NEW NO SURAT TUGAS
+    # ============================================================
+    include 'st_ajar-manage-autocreate_no_st.php';
+
+    exit;
+  }
 }
 
 
@@ -26,266 +65,219 @@ while ($d = mysqli_fetch_assoc($q)) {
 # MAIN SELECT
 # ============================================================
 $s = "SELECT a.* ,
-b.id as id_st_mk,
+b.id as id_st_detail,
 d.id as id_kumk,
 e.id as id_mk,
 e.nama as nama_mk,
 e.semester,
 e.sks,
-c.nidn, 
-c.id as id_dosen,
-c.nama as nama_dosen,
 g.singkatan as prodi,
 g.id as id_prodi,
+h.nama as kelas,
+i.id as shift,
 (
   SELECT COUNT(1) FROM tb_jadwal p 
-  JOIN tb_st_mk_kelas q ON p.id=q.id 
-  JOIN tb_st_mk r ON q.id_st_mk=r.id 
-  WHERE r.id=b.id) count_jadwal  
+  WHERE p.id=b.id) count_jadwal  
 FROM tb_st a 
-JOIN tb_st_mk b ON a.id=b.id_st 
-JOIN tb_dosen c ON a.id_dosen=c.id 
+JOIN tb_st_detail b ON a.id=b.id_st 
+-- JOIN tb_dosen c ON a.id_dosen=c.id 
 JOIN tb_kumk d ON d.id=b.id_kumk
 JOIN tb_mk e ON d.id_mk=e.id
 JOIN tb_kurikulum f ON d.id_kurikulum=f.id
 JOIN tb_prodi g ON f.id_prodi=g.id
+JOIN tb_kelas h ON b.id_kelas=h.id
+JOIN tb_shift i ON h.id_shift=i.id
+-- JOIN tb_prodi h ON c.id_prodi=h.id
 WHERE a.id = '$id_st' 
-ORDER BY f.id, e.semester 
+ORDER BY 
+  e.no, 
+  e.nama, 
+  i.id DESC, -- shift
+  f.id, 
+  e.semester 
 ";
+
+// ZZZ auto-create kelas aktif ZZZ
+
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $num_rows = mysqli_num_rows($q);
-// echo '<pre>';
-// var_dump($s);
-// echo '</pre>';
-// exit;
-$divs = '';
-$nama_dosen = '-';
-$nidn = '-';
-$pernah_save_kelas = '';
+$tr = '';
 $i = 0;
-$arr_valid_check = [];
+$total_sks = 0;
+$arr_print = []; // Matakuliah SKS Program SMT KLS Jml_Kelas jml_SKS
+$rprogram = [];
+$rshift = [];
+$rkelas = [];
+$sum_sks = 0;
 while ($d = mysqli_fetch_assoc($q)) {
+
+  $mk = $d['nama_mk'];
+
   $i++;
-  $id_dosen = $d['id_dosen'];
-  $nama_dosen = $d['nama_dosen'];
-  $nidn = $d['nidn'];
-  $pernah_save_kelas = $d['pernah_save_kelas'];
+  $total_sks += $d['sks'];
 
-  $jumlah_check = 0;
-  # ============================================================
-  # LIST KELAS
-  # ============================================================
-  $list_kelas = '';
-  $pra_unique_check = "$id_ta-$d[id_mk]-"; // TA-MK-Kelas
-  $pra_unique_check = "$id_ta-$d[id_kumk]-"; // TA-KUR-MK-KLS update code
-
-  $sub_select_nama_dosen = "SELECT p.nama FROM tb_dosen p
-    JOIN tb_st_mk_kelas q ON p.id=q.id_dosen
-    WHERE q.unique_check = CONCAT('$pra_unique_check',a.id)";
-  $sub_select_id_dosen = "SELECT p.id FROM tb_dosen p
-    JOIN tb_st_mk_kelas q ON p.id=q.id_dosen
-    WHERE q.unique_check = CONCAT('$pra_unique_check',a.id)";
-
-  # ============================================================
-  $s2 = "SELECT a.*,
-  ($sub_select_id_dosen) id_dosen_pengampu,
-  ($sub_select_nama_dosen) dosen_pengampu 
-  FROM tb_kelas a
-  WHERE a.semester='$d[semester]' 
-  AND a.id_prodi = $d[id_prodi]
-  ";
-  $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
-  if (mysqli_num_rows($q2)) {
-    while ($d2 = mysqli_fetch_assoc($q2)) {
-      $id_st_mk_kelas = "$id_st-$d[id_kumk]-$d2[id]";
-      $checked = in_array($id_st_mk_kelas, $arr_id_st_mk_kelas) ? 'checked' : '';
-      // echo '<pre>';
-      // var_dump($id_st_mk_kelas);
-      // var_dump($arr_id_st_mk_kelas);
-      // echo '</pre>';
-      // exit;
-      if ($checked) {
-        $jumlah_check++;
-        $arr_valid_check[$d['id_st_mk']] = 1;
-      }
-
-      if ($d2['id_dosen_pengampu'] and $d2['id_dosen_pengampu'] != $d['id_dosen']) {
-        $disabled = 'disabled';
-        $dosen_pengampu = " | <a class='darkred miring' href='?st_ajar&id_kurikulum=$id_kurikulum&aksi=manage&id_st=$id_ta-$d2[id_dosen_pengampu]' target=_blank onclick='return confirm(`Buka Surat Tugas untuk dosen ini?`)'>$d2[dosen_pengampu]</a>";
-        $miring_abu = 'miring abu f12';
-      } else {
-        $disabled = '';
-        $dosen_pengampu = '';
-        $miring_abu = '';
-      }
-
-      $sudah_terjadwal_info = '';
-      if ($d['count_jadwal']) {
-        $sudah_terjadwal_info =  "<a href='?jadwal&id_kurikulum=$id_kurikulum'><i>(sudah terjadwal)</i></a>";
-        $disabled = 'disabled';
-      }
-
-      $list_kelas .= "
-        <div>
-          <label class='$miring_abu'>
-            <input class=kelas type=checkbox id=kelas__$d2[id]__$d[id_st_mk] name='$d[id_st_mk]-$d2[id]'  value='$d[id_st_mk]__$d2[id]' $checked $disabled /> 
-            $d2[nama] $dosen_pengampu $sudah_terjadwal_info
-          </label>
-        </div>
-      ";
-    }
-  } else {
-    $pesan_error = "Belum ada satupun kelas pada prodi [$d[prodi]]";
-    $list_kelas = "<b class=red>$pesan_error</b> | <a href='?crud&tb=kelas'>Add</a>";
+  $btn_delete = '';
+  if (!$verified) {
+    $btn_delete = "<a onclick='return confirm(`Drop MK ini?`)' href='?st_ajar&aksi=drop_mk&id_st=$id_st&id_st_detail=$d[id_st_detail]'>$img_delete</a>";
   }
-  # ============================================================
-  # END LIST KELAS
 
-
-  $gradasi = $jumlah_check ? 'hijau' : 'merah';
-
-  $btn_delete = $jumlah_check ? "<span onclick='alert(`Uncheck dahulu agar bisa di drop.`)' >$img_delete_disabled</span>" : "<a onclick='return confirm(`Drop MK ini?`)' href='?st_ajar&id_kurikulum=$id_kurikulum&aksi=drop_mk&id_st=$id_st&id_mk=$d[id_mk]'>$img_delete</a>";
-
-  $divs .= "
-  <div class='border-top p1 f14 gradasi-$gradasi'>
-    <div class=row>
-      <div class='col-md-4'>
-        <div class=row>
-          <div class=col-1>
-            $i.
-          </div>
-          <div class=col-10>
-            $d[nama_mk]
-          </div>
-        </div>
-      </div>
-      <div class='col-md-4 f12'>
-        <div class=row>
-          <div class=col-2>
-            <div class=p1>
-              $btn_delete
-            </div>
-          </div>
-          <div class=col-10>
-            <div><b>Prodi:</b> $d[prodi]</div>
-            <div><b>Semester:</b> $d[semester]</div>
-            <div><b>SKS:</b> <span id=sks__$d[id_st_mk]>$d[sks]</span></div>
-          </div>
-        </div>
-      </div>
-      <div class='col-md-4'>
-        <div class='f12 bold'>Untuk kelas:</div>
-        <div class='mt1 mb2'>
-          $list_kelas
-        </div>
-      </div>
-    </div>
-  </div>
+  $tr .= "
+    <tr>
+      <td>$i</td>
+      <td>
+        $d[nama_mk]
+        $btn_delete
+      </td>
+      <td>$d[prodi]</td>
+      <td>$d[semester]</td>
+      <td><span id=sks__$d[id_st_detail]>$d[sks]</span></td>
+      <td>$d[shift] - $d[kelas]</td>
+    </tr>
   ";
+
+  if ($print) {
+
+    if (!isset($rprogram[$mk])) $rprogram[$mk] = [];
+    if (!in_array($d['prodi'], $rprogram[$mk])) array_push($rprogram[$mk], $d['prodi']);
+
+    if (!isset($rshift[$mk])) $rshift[$mk] = [];
+    if (!in_array($d['shift'], $rshift[$mk])) array_push($rshift[$mk], $d['shift']);
+
+    if (!isset($rkelas[$mk])) $rkelas[$mk] = [];
+    if (!in_array($d['kelas'], $rkelas[$mk])) array_push($rkelas[$mk], $d['kelas']);
+
+    $programs = join(', ', $rprogram[$mk]);
+    $shifts = join(', ', $rshift[$mk]);
+    $kelass = join(', ', $rkelas[$mk]);
+    $count_kelas = count($rkelas[$mk]);
+    $sum_sks = $d['sks'] * $count_kelas;
+
+    $arr_print[$mk] = [
+      'sks' => $d['sks'],
+      'programs' => $programs,
+      'semester' => $d['semester'],
+      'shifts' => $shifts,
+      'count_kelas' => $count_kelas,
+      'sum_sks' => $sum_sks,
+    ];
+  }
 }
 
-# ============================================================
-# BTN SIMPAN
-# ============================================================
-$btn_simpan = $pesan_error ? "<div class='alert alert-danger'>Belum bisa simpan.</div>" : "<div id=div_btn class=hideit><button class='btn btn-primary w-100' name=btn_simpan_st>Simpan Surat Tugas</button></div>";
+
 
 # ============================================================
 # BTN VERIF
 # ============================================================
-$count = count($arr_valid_check);
-$valid_info = "<i class=red>$count of $num_rows valid rows</i>";
 $btn_verif = '';
-if ($pernah_save_kelas) {
-  $btn_verif = "<div class='f12 red mt4'>belum bisa verifikasi Surat Tugas. | $valid_info</div>";
-  if ($count == $num_rows) {
-    $btn_verif = "<div class='f12 green mt4'>ALL ROWS VALID $img_check</div>";
-  }
-}
+$all_users = "<span class='consolas darkred'>all-users | all-roles $img_warning</span> ~ 
+          <span class='blue pointer' onclick='alert(`Ubah Rule Verifikasi sedang dalam tahap pengembangan. \n\nSilahkan hubungi developer untuk info lebih lanjut!`)'> Ubah Rule $img_edit</span>";
 
-# ============================================================
-# FINAL ECHO
-# ============================================================
-set_h2("Manage Surat Tugas", "Tahun Ajar $tahun_ta $Gg ");
-set_title("$nama_dosen - Surat Tugas");
+if ($verified) {
+  $tanggal = tanggal($st['verif_date']);
+  $eta = eta2($st['verif_date']);
+  alert("Info: Surat Tugas Verified by <b>$st[verifikator]</b> tanggal <b>$tanggal</b> <i class=f12>$eta</i>", 'info');
 
-echo "
-  <p>
-    Yang bertanda tangan di bawah ini Dekan Fakultas Komputer, menugaskan kepada:
-  </p>
-  <ul id=dosen_selected>
-    <li><b>Nama:</b> <span id=nama_dosen_selected>$nama_dosen</span></li>
-    <li><b>NIDN:</b> <span id=nidn_dosen_selected>$nidn</span></li>
-  </ul>
-
-  $untuk_mengampu
-
-  <div class='row p1'>
-    <div class='offset-md-8 col-md-4'>
-      <label>
-        <input type=checkbox id=cek_all_kelas /> Check All Kelas
-      </label>
+  $btn_print = "
+    <a class='btn btn-success w-100 mt2 mb2' href='?st_ajar&aksi=manage&id_st=$id_st&print=1' >Print Surat Tugas</a>
+    <button class='btn btn-danger w-100' name=btn_rollback_verif value='$id_st'>Rollback Verifikasi</button>
+    <div class='mt1 abu miring'>
+      Yang berhak Rollback Verifikasi Surat Tugas seharusnya Level Pimpinan (Rektor atau Kaprodi)
+      <div class=mt2>Yang berhak Rollback saat ini:</div>
+      $all_users
     </div>
-  </div>
 
-  <form method=post>
-    $divs
+  ";
 
-    <div class='row border-top pt1'>
-      <div class='offset-md-8 col-md-4 mt1 mb2'>
-        <b class=f12>Total:</b>
-        <span class='darkblue f24' id=total_sks>0</span> SKS 
-        <input type=hidden id=total_sks_input name=total_sks>
+  $btn_verif = "$btn_print";
+} else {
+
+  $jabatan = $rrole[$petugas['role']];
+  $tanggal = tanggal();
+
+
+  $btn_verif = "
+    <div class='flexy flex-center'>
+      <a class='d-block bordered p-2 br5' href='?struktur_kurikulum'>$img_prev back to Struktur Kurikulum (Add MK)</a>
+      <div class='pointer green btn_aksi bordered p-2 br5 hover' id=blok_verifikasi__toggle>
+        Verifikasi Surat Tugas  $img_next  
       </div>
     </div>
+    <div class='wadah gradasi-hijau mt4 hideit' id=blok_verifikasi>
+      <h3>Verifikasi Dokumen Surat Tugas</h3>
+      <p class='abu'>
+        Verifikator (yang berhak verifikasi Surat Tugas) : $all_users
+      </p>
+      <p>Diverifikasi oleh:</p>
+      <ul>
+        <li><b>Petugas:</b> $petugas[nama]</li>
+        <li><b>Jabatan:</b> $jabatan</li>
+        <li><b>Di:</b> $lokasi_titimangsa</li>
+        <li><b>Tanggal:</b> $tanggal</li>
+      </ul>
+      <div class=flexy>
+        <input type=checkbox required class='d-block' id=cek_verif>
+        <label for=cek_verif class='pointer d-block'>Saya menyatakan bahwa Surat Tugas diatas sudah benar</label>
+      </div>
+      <div class=flexy>
+        <input type=checkbox required class='d-block' id=cek_verif2>
+        <label for=cek_verif2 class='pointer d-block'>Saya faham bahwa setelah diverifikasi Surat Tugas dapat di print, namun tidak bisa diubah lagi.</label>
+      </div>
+      <button class='btn btn-success w-100 mt2' name=btn_verifikasi_st value='$id_st'>Verifikasi Surat Tugas</button>
+      <div class='f14 abu mt1'>
+        Yang dapat rollback verifikasi: $all_users
+      </div>
 
-    <div class='f12 abu mb2'>
-      <a href='?st_ajar&id_kurikulum=$id_kurikulum&id_dosen=$id_dosen'>$img_add Tambah MK</a>
     </div>
-    $btn_simpan
-    $btn_verif
-  </form>
+  ";
+}
+
+$fakultas = 'Fakultas Komputer'; // ZZZ
+
+$menugaskan_kepada = "
+  <p>
+    Yang bertanda tangan di bawah ini Dekan $fakultas, menugaskan kepada:
+  </p>
+  <ul id=dosen_selected>
+    <li><b>Nama:</b> <span id=nama_dosen_selected>$st[nama_dosen]</span></li>
+    <li><b>NIDN:</b> <span id=nidn_dosen_selected>$st[nidn]</span></li>
+    <li><b>Homebase:</b> <span id=homebase_dosen_selected>$st[homebase]</span></li>
+  </ul>
+  <p>Untuk mengampu Mata Kuliah di <b>TA. $tahun_ta $GG</b> sebagai berikut:</p>
 ";
-?>
-<script>
-  function hitung_sks() {
-    let total_sks = 0;
-    $('.kelas').each(function() {
-      let tid = $(this).prop('id');
-      let rid = tid.split('__');
-      let aksi = rid[0];
-      let id_mk = rid[1];
-      let id_st_mk = rid[2];
-      let sks = parseInt($('#sks__' + id_st_mk).text());
-      let checked = $(this).prop('checked');
-      let disabled = $(this).prop('disabled');
-      // console.log(aksi, id_mk, id_st_mk, sks, checked);
-      if (checked && !disabled) total_sks += sks;
-      $('#total_sks').text(total_sks);
-      $('#total_sks_input').val(total_sks);
-    });
-    if (total_sks) {
-      $('#div_btn').slideDown();
-    } else {
-      $('#div_btn').slideUp();
 
-    }
-  }
+if (!$print) {
 
-  $(function() {
-    $('#cek_all_kelas').click(function() {
-      let checked = $(this).prop('checked');
-      console.log(checked);
-      $('.kelas').prop('checked', checked);
+  # ============================================================
+  # FINAL ECHO
+  # ============================================================
+  set_h2("Manage Surat Tugas", "Tahun Ajar $tahun_ta $Gg ");
+  set_title("$st[nama_dosen] - Surat Tugas");
 
-      hitung_sks();
-    });
-
-    $('.kelas').click(function() {
-      hitung_sks();
-    });
-
-    hitung_sks(); // form load
-
-
-  })
-</script>
+  echo "
+    $menugaskan_kepada
+  
+    <form method=post>
+      <table class=table>
+        <thead>
+          <th>No</th>
+          <th>MK</th>
+          <th>Prodi</th>
+          <th>Semester</th>
+          <th>SKS</th>
+          <th>Kelas</th>
+        </thead>
+        $tr
+        <tr class='gradasi-toska bold'>
+          <td colspan=4 class=kanan>TOTAL SKS</td>
+          <td>$total_sks</td>
+          <td>&nbsp;</td>
+        </tr>
+      </table>
+    </form>
+    <form method=post>
+      $btn_verif
+    </form>
+  ";
+} else {
+  include 'st_ajar-manage-print.php';
+}

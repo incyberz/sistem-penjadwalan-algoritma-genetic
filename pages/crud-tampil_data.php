@@ -5,7 +5,7 @@
 $th_subdata = '';
 $sql_subdata = '';
 $arr_subdata = [
-  'kelas' => 'st_mk_kelas',
+  'kelas' => 'st_detail',
   // 'mk' => 'st_mk', // spesialisasi tampilan UI
   'dosen' => 'st',
   'ruang' => 'jadwal',
@@ -36,6 +36,8 @@ $tr = '';
 $form_add = '';
 $i = 0;
 while ($row = $result->fetch_assoc()) {
+  $cid_ta = $row['id_ta'] ?? null;
+  if ($cid_ta and $cid_ta != $ta_aktif) continue; // skip data non curent TA 
   $i++;
 
   $td = '';
@@ -56,7 +58,7 @@ while ($row = $result->fetch_assoc()) {
   $btn = $sub_count ? $btn_delete_disabled : $btn_delete;
 
   $tr .= "
-    <tr>
+    <tr id=tr__$row[id]>
       <td>$i</td>
       $td
       $td_count

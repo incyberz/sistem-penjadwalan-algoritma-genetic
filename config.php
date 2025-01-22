@@ -7,6 +7,7 @@
 # IDENTITAS KAMPUS
 # ============================================================
 $nama_kampus = 'UNIVERSITAS MA`SOEM';
+$lokasi_titimangsa = 'Cipacing';
 
 $rfakultas = [
   'FKOM' => 'Fakultas Komputer',
@@ -35,12 +36,12 @@ $rjenjang = [
 
 $rshift = [
   'R' => [
-    'title' => 'Reguler',
+    'nama' => 'Reguler',
     'jam_awal' => '7:30',
     'jam_akhir' => '17:00',
   ],
   'NR' => [
-    'title' => 'Non Reguler',
+    'nama' => 'Non Reguler',
     'jam_awal' => '17:20',
     'jam_akhir' => '21:45',
   ],
@@ -66,7 +67,7 @@ $tahun_ta = substr($ta_aktif, 0, 4);
 $Gg = $is_ganjil  ? 'Ganjil' : 'Genap';
 $GG = strtoupper($Gg);
 $default_semester = $ta_aktif % 2 == 0 ? 2 : 1;
-
+$tahun_akademik = "$tahun_ta-" . ($tahun_ta + 1);
 
 # ============================================================
 # SENIN PERTAMA PERKULIAHAN

@@ -93,8 +93,7 @@ include 'crud-add_data.php';
   $(function() {
     let tb = $('#tb').text();
 
-    $('.btn_delete').click(function() {
-
+    $(document).on('click', '.btn_delete', function() {
       if (!confirm('Hapus data ini?')) return;
 
       let tid = $(this).prop('id');
@@ -107,11 +106,19 @@ include 'crud-add_data.php';
         $.ajax({
           url: url,
           success: function(response) {
-            alert(response);
-            // location.reload();
+            if (response == 'sukses') {
+              $('#tr__' + id).hide();
+            } else {
+              alert(response);
+            }
           }
         })
       }
+    })
+
+    $('.btn_delete').click(function() {
+
+
     })
   })
 </script>

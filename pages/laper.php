@@ -54,10 +54,6 @@ foreach ($rhari as $date => $v) {
         if ($nama_kelas) {
           $tmp = str_replace("-$ta_aktif", '', $nama_kelas);
           $t = explode('-', $tmp);
-          // echo '<pre>';
-          // var_dump($t);
-          // echo '</pre>';
-          // exit;
           $counter = isset($t[4]) ? "-$t[4]" : '';
           $smt = str_replace('SM', '', $t[3]);
           $nama_kls = $nama_kelas ? "$t[1]/$smt$counter" : '-';

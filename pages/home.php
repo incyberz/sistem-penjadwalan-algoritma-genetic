@@ -85,8 +85,7 @@ $rcount = [
     'title' => 'Penjadwalan',
     'href' => '?jadwal',
     'sql' => "SELECT 1 FROM tb_jadwal a 
-    JOIN tb_st_mk_kelas b ON a.id=b.id 
-    JOIN tb_st_mk c ON b.id_st_mk=c.id
+    JOIN tb_st_detail c ON a.id=c.id
     JOIN tb_st d ON c.id_st=d.id
     WHERE d.id_ta=$ta_aktif",
   ],

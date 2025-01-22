@@ -11,7 +11,7 @@ $rset = [
   'fakultas' => $rfakultas,
   'jenjang' => $rjenjang,
   'role' => $rrole,
-  'shift' => $rshift
+  'id_shift' => $rshift
 ];
 $dataset = [];
 foreach ($rset as $set => $arr) {
@@ -157,7 +157,7 @@ $arr_sql['sesi'] = "CREATE TABLE IF NOT EXISTS tb_sesi (
   nama VARCHAR(100) NOT NULL,
   awal TIME NOT NULL,
   akhir TIME NOT NULL,
-  shift SET($dataset[shift]) NOT NULL,
+  shift SET($dataset[id_shift]) NOT NULL,
   is_break BOOLEAN NULL DEFAULT NULL, -- true = waktu shalat
   bookable BOOLEAN NULL DEFAULT TRUE,
   info VARCHAR(100) NULL DEFAULT NULL
@@ -174,7 +174,7 @@ $arr_sql['kelas'] = "CREATE TABLE IF NOT EXISTS tb_kelas (
   id_prodi INT NOT NULL,
   id_ta SMALLINT(5) NOT NULL,
   semester SET('1', '2', '3', '4', '5', '6', '7', '8') NOT NULL,
-  shift SET($dataset[shift]) NOT NULL,
+  shift SET($dataset[id_shift]) NOT NULL,
   counter SET('A', 'B', 'C', 'D', 'E') NULL DEFAULT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -212,7 +212,6 @@ $arr_sql['st'] = "CREATE TABLE IF NOT EXISTS tb_st (
     id_ta SMALLINT(5) NOT NULL,
     tanggal timestamp NOT NULL DEFAULT current_timestamp(),
     id_petugas int(11) NOT NULL,
-    pernah_save_kelas tinyint(1) UNSIGNED DEFAULT NULL,
     verif_by int(11) UNSIGNED DEFAULT NULL,
     verif_date timestamp NULL DEFAULT NULL,
     CONSTRAINT VERIF_BY FOREIGN KEY (verif_by) REFERENCES tb_petugas(id),
@@ -224,33 +223,33 @@ $arr_sql['st'] = "CREATE TABLE IF NOT EXISTS tb_st (
 # ============================================================
 # st_mk
 # ============================================================
-$arr_sql['st_mk'] = "CREATE TABLE IF NOT EXISTS tb_st_mk (
-    id varchar(20) NOT NULL COMMENT 'TA DS KU MK' PRIMARY KEY,
-    id_st varchar(20) NOT NULL,
-    id_kumk varchar(20) NOT NULL,
-    unik_kumk varchar(20) NOT NULL UNIQUE,
+// $arr_sql['st_mk'] = "CREATE TABLE IF NOT EXISTS tb_st_detail (
+//     id varchar(20) NOT NULL COMMENT 'TA DS KU MK' PRIMARY KEY,
+//     id_st varchar(20) NOT NULL,
+//     id_kumk varchar(20) NOT NULL,
+//     unik_kumk varchar(20) NOT NULL UNIQUE,
 
-    CONSTRAINT tb_st_mk__kumk FOREIGN KEY (id_kumk) REFERENCES tb_kumk(id),
-    CONSTRAINT tb_st_mk__st FOREIGN KEY (id_st) REFERENCES tb_st(id)
+//     CONSTRAINT tb_st_mk__kumk FOREIGN KEY (id_kumk) REFERENCES tb_kumk(id),
+//     CONSTRAINT tb_st_mk__st FOREIGN KEY (id_st) REFERENCES tb_st(id)
 
-  );
-";
+//   );
+// ";
 
 # ============================================================
 # st_mk_kelas
 # ============================================================
-$arr_sql['st_mk_kelas'] = "CREATE TABLE IF NOT EXISTS tb_st_mk_kelas (
-    id varchar(20) NOT NULL COMMENT 'TA DS KU MK KLS' PRIMARY KEY,
-    id_st_mk varchar(20) NOT NULL,
-    id_kelas int(11) NOT NULL,
-    unique_check VARCHAR(30) NOT NULL COMMENT 'TA-MK-Kelas' UNIQUE,
-    id_dosen INT NOT NULL,
-    CONSTRAINT PARENT_DOSEN FOREIGN KEY (id_dosen) REFERENCES tb_dosen(id),
-    CONSTRAINT PARENT_ST_MK FOREIGN KEY (id_st_mk) REFERENCES tb_st_mk(id),
-    CONSTRAINT PARENT_KELAS FOREIGN KEY (id_kelas) REFERENCES tb_kelas(id)
+// $arr_sql['st_mk_kelas'] = "CREATE TABLE IF NOT EXISTS tb_st_mk_kelas (
+//     id varchar(20) NOT NULL COMMENT 'TA DS KU MK KLS' PRIMARY KEY,
+//     id_st_detail varchar(20) NOT NULL,
+//     id_kelas int(11) NOT NULL,
+//     unique_check VARCHAR(30) NOT NULL COMMENT 'TA-MK-Kelas' UNIQUE,
+//     id_dosen INT NOT NULL,
+//     CONSTRAINT PARENT_DOSEN FOREIGN KEY (id_dosen) REFERENCES tb_dosen(id),
+//     CONSTRAINT PARENT_ST_MK FOREIGN KEY (id_st_detail) REFERENCES tb_st_detail(id),
+//     CONSTRAINT PARENT_KELAS FOREIGN KEY (id_kelas) REFERENCES tb_kelas(id)
 
-  );
-";
+//   );
+// ";
 
 
 # ============================================================

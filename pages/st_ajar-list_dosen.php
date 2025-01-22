@@ -1,5 +1,9 @@
 <?php
-$sql_id_dosen = $id_dosen ? "a.id = $id_dosen" : '1';
+$kurikulum = [];
+$kurikulum['id_prodi'] = null;
+
+$list_dosen = '';
+
 $s = "SELECT a.*,
 (
   SELECT singkatan FROM tb_prodi WHERE id=a.id_prodi) homebase,
@@ -8,33 +12,24 @@ $s = "SELECT a.*,
   WHERE p.id_dosen=a.id 
   AND p.id_ta = $ta_aktif) id_st,
 (
-  SELECT COUNT(1) FROM tb_st_mk p 
+  SELECT COUNT(1) FROM tb_st_detail p 
   JOIN tb_st q ON p.id_st=q.id 
-  WHERE q.id_dosen=a.id 
-  AND q.id_ta = $ta_aktif) count_kumk_old,
-(
-  SELECT COUNT(1) FROM tb_st_mk p 
-  JOIN tb_st q ON p.id_st=q.id 
-  JOIN tb_kumk r ON p.id_kumk=r.id 
-  JOIN tb_st_mk_kelas s ON s.id_st_mk=p.id 
-  JOIN tb_mk t ON r.id_mk=t.id 
   WHERE q.id_dosen=a.id 
   AND q.id_ta = $ta_aktif) count_kumk,
 (
-  SELECT SUM(t.sks) FROM tb_st_mk p 
-  JOIN tb_st q ON p.id_st=q.id 
-  JOIN tb_kumk r ON p.id_kumk=r.id 
-  JOIN tb_st_mk_kelas s ON s.id_st_mk=p.id 
-  JOIN tb_mk t ON r.id_mk=t.id 
-  WHERE q.id_dosen=a.id 
-  AND q.id_ta = $ta_aktif) sum_sks
+  SELECT SUM(r.sks) FROM tb_st_detail p 
+  JOIN tb_kumk q ON p.id_kumk=q.id 
+  JOIN tb_mk r ON q.id_mk=r.id 
+  JOIN tb_st s ON p.id_st=s.id 
+  WHERE s.id_dosen=a.id 
+  AND s.id_ta = $ta_aktif) sum_sks
 
-FROM tb_dosen a WHERE $sql_id_dosen";
+FROM tb_dosen a 
+WHERE 1 
+ORDER BY sum_sks DESC, a.nama  
 
-// echo '<pre>';
-// var_dump($s);
-// echo '</pre>';
-// exit;
+";
+
 
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 if (mysqli_num_rows($q)) {
@@ -42,7 +37,7 @@ if (mysqli_num_rows($q)) {
   while ($d = mysqli_fetch_assoc($q)) {
     $i++;
 
-    if ($d['id_prodi'] == $kurikulum['id_prodi']) {
+    if ($d['id_prodi'] and $d['id_prodi'] == $kurikulum['id_prodi']) {
       $blue =  'blue bold';
       $homebase = "homebase $d[homebase]";
     } elseif ($d['homebase']) {
@@ -53,34 +48,29 @@ if (mysqli_num_rows($q)) {
       $homebase = "(LB)";
     }
 
-    $this_list_mk = '';
-    $id_mks = '';
+
+
     if ($d['count_kumk']) {
-      $s2 = "SELECT c.id,c.nama as nama_mk 
-      FROM tb_st_mk a 
-      JOIN tb_kumk b ON a.id_kumk=b.id 
-      JOIN tb_mk c ON b.id_mk=c.id 
-      WHERE a.id_st='$d[id_st]'";
-      // 
-      $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
-      $li = '';
-      while ($d2 = mysqli_fetch_assoc($q2)) {
-        $id_mks .= "$d2[id],";
-        $li .= "<li>$d2[nama_mk]</li>";
-      }
-      $this_list_mk = "<ul>$li</ul>";
+      $count_kumk = "<span class='blue bold'><span id=count_mk__$d[id]>$d[count_kumk]</span> MK</span>";
+      $sum_sks = "<span class='blue bold'><span id=count_mk__$d[id]>$d[sum_sks]</span> SKS</span>";
+      $manage_st = "<a href='?st_ajar&id_st=$d[id_st]' class='pointer' id=a_dosen__$d[id]>$img_next</a>";
+      $hideit = '';
+      $tr_class = 'punya_st';
+    } else {
+      $tr_class = 'no_st';
+      // $hideit = 'hideit';
+      $hideit = '';
+      $count_kumk = '-';
+      $sum_sks = '-';
+      $manage_st = '';
     }
 
-    $count_kumk = $d['count_kumk'] ? "<span class='blue bold'><span id=count_mk__$d[id]>$d[count_kumk]</span> MK</span>" : '-';
-    $sum_sks = $d['sum_sks'] ? "<span class='blue bold'><span id=sum_sks__$d[id]>$d[sum_sks]</span> SKS</span>" : '-';
-
     $list_dosen .= "
-      <tr>
+      <tr class='tr_dosen tr_dosen__$tr_class $hideit'>
         <td>$i</td>
         <td>
-          <a href='?st_ajar&id_kurikulum=2&id_dosen=$d[id]' class='pointer a_dosen' id=a_dosen__$d[id]>
-            <span class='nama_dosen $blue' id=nama_dosen__$d[id]>$d[nama]</span> $img_next
-          </a>
+          <span class='nama_dosen $blue' id=nama_dosen__$d[id]>$d[nama]</span>
+          $manage_st
         </td>
         <td><span class='$blue'>$homebase</span></td>
         <td>$count_kumk</td>
@@ -89,20 +79,23 @@ if (mysqli_num_rows($q)) {
     ";
   } // end while
   $list_dosen = "
-    <div class='row' id=list_dosen>
-      <div class='col-sm-12'>
-        <div class='wadah gradasi-hijau'>
-          <table class='table table-hover table-striped'>
-            <thead>
-              <th>No</th>
-              <th>Dosen</th>
-              <th>Homebase</th>
-              <th>MK</th>
-              <th>SKS</th>
-            </thead>
-            $list_dosen
-          </table>
-        </div>
+    <div id=list_dosen>
+      <div class=tengah>
+        <h3 class=mb2>Rekap Surat Tugas Mengajar Dosen</h3>
+        <h4 class=mb2>Tahun Ajar $tahun_ta $Gg</h4>
+      </div>
+      <div class='wadah gradasi-hijau'>
+        <table id=tb_dosen class='table table-hover table-striped'>
+          <thead>
+            <th>No</th>
+            <th>Dosen</th>
+            <th>Homebase</th>
+            <th>MK</th>
+            <th>SKS</th>
+          </thead>
+          $list_dosen
+        </table>
+        <script>let table = new DataTable('#tb_dosen');</script>
       </div>
     </div>
   ";
@@ -110,3 +103,11 @@ if (mysqli_num_rows($q)) {
   $list_dosen .= alert("Belum ada satupun dosen di prodi [$kurikulum[nama_prodi]]<hr><a href='?crud&tb=dosen'>Buat Pilihan dosen</a>", 'danger', '', false);
   $siap_assign = false;
 }
+
+echo "
+  $list_dosen
+  <div>
+    <button class='ondev btn btn-primary' >Print</button>
+    <button class='ondev btn btn-success' >Export</button>
+  </div>
+";

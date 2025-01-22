@@ -2,8 +2,9 @@
 # ============================================================
 # STRUKTUR KURIKULUM
 # ============================================================
+$fakultas = $_GET['fakultas'] ?? 'FKOM';
 $id_prodi = $_GET['id_prodi'] ?? '';
-$shift = $_GET['shift'] ?? '';
+$id_shift = $_GET['id_shift'] ?? '';
 $mode = $_GET['mode'] ?? 'view';
 $mode_edit = $mode == 'edit' ? 1 : 0;
 $img_drop = img_icon('drop');
@@ -13,45 +14,27 @@ $rmk = []; // array MK Struktur Kurikulum
 $get_semester = ($_GET['semester'] ?? null) ? $_GET['semester'] : $default_semester; // untuk menyimpan session editing semester
 echo "<span class=hideit id=semester>$get_semester</span>";
 $img_next = img_icon('next');
+$SHIFT = $id_shift == 'R' ? 'REGULER' : 'NON-REGULER';
+
 
 include 'struktur_kurikulum-styles.php';
 include 'struktur_kurikulum-processors.php';
 
 $not_mode = $mode_edit ? 'view' : 'edit';
 $Not_Mode = $mode_edit ? 'Mode View' : 'Mode Editing';
-$nav_mode = " <a href='?struktur_kurikulum&id_prodi=$id_prodi&mode=$not_mode&semester=$get_semester&shift=$shift'>$img_prev $Not_Mode</a>";
+$nav_mode = " <a href='?struktur_kurikulum&id_prodi=$id_prodi&mode=$not_mode&semester=$get_semester&id_shift=$id_shift'>$img_prev $Not_Mode</a>";
 
 
-if (!$id_prodi || !$shift) {
+if (!$id_prodi || !$id_shift) {
   # ============================================================
   # WAJIB PILIH PRODI
   # ============================================================
-  $div_shifts = '';
-  $col = round(12 / count($rshift));
-  foreach ($rshift as $key => $value) {
-    # code...
-    $s = "SELECT * FROM tb_prodi ORDER BY fakultas,jenjang, nama";
-    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-    $list = '';
-    while ($d = mysqli_fetch_assoc($q)) {
-      $list .= "<div><a class='btn btn-primary w-100 mb2' href='?struktur_kurikulum&id_prodi=$d[id]&shift=$key'>$d[fakultas] - $d[jenjang] - $d[nama] - $value[title]</a></div>";
-    }
-    $div_shifts .= "
-      <div class=col-$col>
-        <div>Kelas $value[title]:</div>
-        <div class='wadah mt2'>$list</div>
-      </div>
-    ";
-  }
-
-  set_h2('Pilih Kurikulum');
-  echo "
-    <div class=row>$div_shifts</div>
-  ";
+  include 'struktur_kurikulum-pilih_kurikulum.php';
 } else {
+  $shift = $rshift[$id_shift]['nama'];
   echo "
   <span class=hideit id=id_prodi>$id_prodi</span>
-  <span class=hideit id=shift>$shift</span>
+  <span class=hideit id=shift>$id_shift</span>
   ";
 
   # ============================================================
@@ -80,7 +63,13 @@ if (!$id_prodi || !$shift) {
   $prodi = mysqli_fetch_assoc($q);
   $id_kurikulum = $prodi['id_kurikulum'];
   $singkatan_prodi = $prodi['singkatan'];
-  set_title("$prodi[jenjang]-$prodi[singkatan] - Struktur Kurikulum");
+  set_title("$prodi[jenjang]-$prodi[singkatan]-$id_shift - Struktur Kurikulum");
+
+
+  # ============================================================
+  # NAV HEADER
+  # ============================================================
+  include 'struktur_kurikulum-nav_header.php';
 
   # ============================================================
   # MAIN LOOP FROM MAX SEMESTERS PRODI
@@ -94,7 +83,7 @@ if (!$id_prodi || !$shift) {
       $nav_semester_active = $semester == $get_semester ? 'nav_semester_active' : '';
       $nav_semester .= "
         <div class='nav_semester_item $nav_semester_active' >
-          <a href='?struktur_kurikulum&id_prodi=$id_prodi&mode=edit&shift=$shift&semester=$semester'>Semester $semester</a>
+          <a href='?struktur_kurikulum&id_prodi=$id_prodi&mode=edit&id_shift=$id_shift&semester=$semester'>Semester $semester</a>
         </div>
       ";
     }
@@ -102,6 +91,10 @@ if (!$id_prodi || !$shift) {
 
 
   for ($semester = 1; $semester <= $prodi['jumlah_semester']; $semester++) {
+    // hanya menampilkan semester ganjil | genap saja
+    if ($ta_aktif % 2 != $semester % 2) continue;
+
+
     // semester lain tidak diproses saat mode edit
     if ($mode_edit and $get_semester != $semester) continue;
 
@@ -111,7 +104,7 @@ if (!$id_prodi || !$shift) {
     $kelass = null;
     $id_kelass = null;
     $blok_kelass = null;
-    $rkelas = [];
+    $rkelas_aktif = [];
     if ($mode == 'edit') {
       $s = "SELECT 
       id as id_kelas, 
@@ -120,15 +113,15 @@ if (!$id_prodi || !$shift) {
       WHERE semester='$semester' 
       AND id_prodi=$id_prodi 
       AND id_ta=$ta_aktif 
-      AND shift='$shift' 
+      AND id_shift='$id_shift' 
       ";
       $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
       if (!mysqli_num_rows($q)) {
         $pesan = "Belum bisa assign Dosen Pengampu karena belum ada kelas di: semester [$semester] prodi [$prodi[nama]] kelas [$shift] TA. [$ta_aktif].";
-        $blok_kelass = "<div class='alert alert-danger'>$pesan | <a href='?crud&tb=kelas&note=$pesan'>Tambah</a></div>";
+        $blok_kelass = "<div class='alert alert-danger'>$pesan | <a href='?crud&tb=kelas&id_prodi=$id_prodi&id_shift=$id_shift&semester=$semester&note=$pesan'>Tambah</a></div>";
       } else {
         while ($d = mysqli_fetch_assoc($q)) {
-          $rkelas[$d['kelas']] = $d;
+          $rkelas_aktif[$d['kelas']] = $d;
           $koma = $kelass ? ', ' : '';
           $kelass .= "$koma$d[kelas]";
           $id_kelass .= "$koma$d[id_kelas]";
@@ -154,6 +147,7 @@ if (!$id_prodi || !$shift) {
     include 'struktur_kurikulum-tr_mk.php';
 
     $col = 6; // akan berganti ke-12 saat mode edit
+    $col = 12; // new struktur ganjil | genap only
     $blok_add_mk = ''; // akan terisi saat mode edit
     if ($mode_edit) {
       include 'struktur_kurikulum-blok_assign_or_add.php';
@@ -211,17 +205,17 @@ if (!$id_prodi || !$shift) {
     </div>
   ";
 
-  $shift_title = $rshift[$shift]['title'];
+  $shift_title = $rshift[$id_shift]['nama'];
   $Ganjil = $ta_aktif % 2 == 0 ? 'Genap' : 'Ganjil';
-  $editing_info = $mode_edit ? "- <span class=brown>Editing Semester $Ganjil</span> <a href='?home&show_config=1' onclick='return confirm(`Ganti Tahun Ajar?`)'>$img_manage</a>" : '';
+  $editing_info = $mode_edit ? "<span class=brown>Editing Semester $Ganjil</span> <a href='?home&show_config=1' onclick='return confirm(`Ganti Tahun Ajar?`)'>$img_manage</a>" : '';
   echo "
     <div class='tengah mb2'>
       $nav_mode
     </div>
     <div class='tengah gradasi-toska p-3'>
-      <h2>STRUKTUR KURIKULUM</h2>
-      <h3>$prodi[nama] $tahun_ta</h3>
-      <h4>Kelas $shift_title $editing_info</h4>
+      <h4 class=upper>$editing_info</h4>
+
+      $nav_header
     </div>
     $nav_semester
     <div class=row>  
@@ -325,7 +319,7 @@ if (!$id_prodi || !$shift) {
         let y = confirm(`Set MK ini ke dosen: [ ${nama_dosen} ] ?`);
         if (y) {
           $.ajax({
-            url: `pages/struktur_kurikulum-ajax_set_dosen.php?id_dosen=${id_dosen}&id_kumk=${id_kumk}&id_petugas=${id_petugas}&shift=${shift}&id_kelass=${id_kelass}`,
+            url: `pages/struktur_kurikulum-ajax_set_dosen.php?id_dosen=${id_dosen}&id_kumk=${id_kumk}&id_petugas=${id_petugas}&id_shift=${shift}&id_kelass=${id_kelass}`,
             success: function(a) {
               if (a == 'sukses') {
                 location.reload();

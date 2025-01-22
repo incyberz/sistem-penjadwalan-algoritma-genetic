@@ -133,6 +133,15 @@
     border: none !important;
   }
 
+  .hover {
+    transition: .3s;
+    cursor: pointer;
+  }
+
+  .hover:hover {
+    letter-spacing: .5px;
+  }
+
 
   @media (max-width:600px) {
     .section-title h2 {

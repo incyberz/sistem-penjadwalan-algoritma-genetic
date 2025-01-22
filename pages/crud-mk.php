@@ -123,7 +123,7 @@ $s = "SELECT
 a.*,
 d.id as id_prodi,  
 d.singkatan as prodi,
-(SELECT COUNT(1) FROM tb_st_mk WHERE id_$tb=a.id) count_st_mk  
+(SELECT COUNT(1) FROM tb_st_detail WHERE id_$tb=a.id) count_st_mk  
 FROM tb_mk a 
 JOIN tb_kumk b ON a.id=b.id_mk 
 JOIN tb_kurikulum c ON b.id_kurikulum=c.id 
@@ -151,7 +151,7 @@ if ($num_rows) {
       id=tr_mk__$d[id]
     >
       <td>$i</td>
-      <td>$d[nama]</td>
+      <td><a href='?detail&tb=mk&id=$d[id]'>$d[nama]</a></td>
       <td>$d[semester]</td>
       <td>$d[sks]</td>
       <td>$d[count_st_mk]</td>

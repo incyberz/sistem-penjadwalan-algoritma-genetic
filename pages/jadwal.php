@@ -4,8 +4,9 @@
 # ============================================================
 $fakultas = $_GET['fakultas'] ?? 'FKOM';
 $semester = $_GET['semester'] ?? $default_semester;
-$shift = $_GET['shift'] ?? 'R';
-$SHIFT = $shift == 'R' ? 'REGULER' : 'NON-REGULER';
+$id_shift = $_GET['id_shift'] ?? 'R';
+$get_id_kelas = $_GET['id_kelas'] ?? ''; // fokus at kelas ini
+$SHIFT = $id_shift == 'R' ? 'REGULER' : 'NON-REGULER';
 
 # ============================================================
 # MELIHAT JADWAL LAMA
@@ -25,8 +26,8 @@ if ($get_id_kurikulum) {
 # ============================================================
 if (!key_exists($fakultas, $rfakultas))
   die(alert("Fakultas [$fakultas] tidak ada di dalam system. | <a href='?'>Konfigurasi</a>"));
-if (!key_exists($shift, $rshift))
-  die(alert("Shift Kelas [$shift] tidak ada di dalam system. | <a href='?'>Konfigurasi</a>"));
+if (!key_exists($id_shift, $rshift))
+  die(alert("Shift Kelas [$id_shift] tidak ada di dalam system. | <a href='?'>Konfigurasi</a>"));
 
 include 'jadwal-functions.php';
 include 'jadwal-styles.php';
@@ -53,11 +54,11 @@ include 'jadwal-nav_header.php';
 # ============================================================
 # DATA SESI
 # ============================================================
-$s = "SELECT * FROM tb_sesi WHERE shift='$shift'";
+$s = "SELECT * FROM tb_sesi WHERE id_shift='$id_shift'";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $rsesi = [];
 if (!mysqli_num_rows($q)) {
-  die(alert("Belum ada Data Sesi Perkuliahan untuk shift-kelas [$shift]. | <a href='?crud&tb=sesi'>Manage Sesi</a>"));
+  die(alert("Belum ada Data Sesi Perkuliahan untuk shift-kelas [$id_shift]. | <a href='?crud&tb=sesi'>Manage Sesi</a>"));
 }
 while ($d = mysqli_fetch_assoc($q)) {
   $rsesi[$d['id']] = $d;
@@ -96,10 +97,11 @@ foreach ($rhari as $date => $v) {
     <h4 class='darkblue nama_hari p1 tengah'>$nama_hari</h4>
   ";
   $div_blok_kelas = '';
-  $hideit_kelas = '';
   foreach ($rkelas as $id_kelas => $arr_kelas) {
     $kelas = $arr_kelas['nama_kelas'];
     $rnama_kelas[$id_kelas] = $kelas;
+    $hideit_kelas = ($get_id_kelas and $id_kelas == $get_id_kelas) ? '' : 'hideit';
+
 
     # ============================================================
     # DATA AVAILABLE ST-DETAIL | UNSIGNED JADWAL
@@ -112,10 +114,9 @@ foreach ($rhari as $date => $v) {
     e.nama as nama_dosen,
     (SELECT 1 FROM tb_jadwal WHERE id=a.id) sudah_terjadwal
 
-    FROM tb_st_mk_kelas a 
-    JOIN tb_st_mk b ON a.id_st_mk=b.id 
-    JOIN tb_st c ON b.id_st=c.id 
-    JOIN tb_kumk d2 ON b.id_kumk=d2.id 
+    FROM tb_st_detail a  
+    JOIN tb_st c ON a.id_st=c.id 
+    JOIN tb_kumk d2 ON a.id_kumk=d2.id 
     JOIN tb_mk d ON d2.id_mk=d.id 
     JOIN tb_dosen e ON c.id_dosen=e.id 
     JOIN tb_kelas f ON a.id_kelas=f.id 
@@ -125,7 +126,7 @@ foreach ($rhari as $date => $v) {
     WHERE 1 
     AND d.semester = '$semester' 
     AND f.nama = '$kelas' 
-    AND f.shift = '$shift' 
+    AND f.id_shift = '$id_shift' 
     AND h.fakultas = '$fakultas' 
     AND i.id is null 
 
@@ -136,7 +137,7 @@ foreach ($rhari as $date => $v) {
     $kumk_count = mysqli_num_rows($q);
     $rkumk_count[$id_kelas] = $kumk_count;
     if (!$kumk_count) {
-      // die(alert("Belum ada Data Surat Tugas Perkuliahan detail untuk semester [$semester] kelas [$kelas-$shift] fakultas [$fakultas]. | <a href='?st_ajar'>Manage Surat Tugas</a>"));
+      // die(alert("Belum ada Data Surat Tugas Perkuliahan detail untuk semester [$semester] kelas [$kelas-$id_shift] fakultas [$fakultas]. | <a href='?st_ajar'>Manage Surat Tugas</a>"));
       // tidak apa2 habis mungkin di prodi lain se-fakultas masih ada 
     }
     while ($d = mysqli_fetch_assoc($q)) {
@@ -194,7 +195,7 @@ foreach ($rhari as $date => $v) {
             $jam_selesai = date('H:i', strtotime($terpakai['jam_selesai']));
             $delete_jadwal = !$hak['delete_jadwal'] ? '' : "
               <form method=post class='m0 p0 inline '>
-                <button class=transparan name=btn_delete_jadwal value=$terpakai[id_st_mk_kelas] onclick='return confirm(`Hapus Jadwal ini?`)'>$img_delete</button>
+                <button class=transparan name=btn_delete_jadwal value=$terpakai[id_st_detail] onclick='return confirm(`Hapus Jadwal ini?`)'>$img_delete</button>
               </form>
             ";
             $sks_info = "<div class='f12 miring abu'>( $terpakai[sks] SKS )</div>";
@@ -274,7 +275,7 @@ foreach ($rhari as $date => $v) {
               <tr>
                 <td>$awal - $akhir</td>
                 <td>
-                  <span class='abu f12 miring'>$pesan | <a target=_blank href='?st_ajar&id_kurikulum=$id_kurikulum&note=$pesan'>Add Surat Tugas</a></span>
+                  <span class='abu f12 miring'>$pesan | <a target=_blank href='?st_ajar&note=$pesan'>Add Surat Tugas</a></span>
                 </td>
                 <td>?</td>
               </tr>
@@ -323,7 +324,6 @@ foreach ($rhari as $date => $v) {
         </table>
       </div>      
     ";
-    $hideit_kelas = 'hideit';
   }
 
   $blok_jadwal .= "

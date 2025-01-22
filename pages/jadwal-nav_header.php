@@ -7,8 +7,8 @@ foreach ($rfakultas as $key => $value) {
 
 $nav_shift = '';
 foreach ($rshift as $key => $value) {
-  $nav_aktif = $shift == $key ? 'nav_aktif' : '';
-  $nav_shift .= "<div><a class='nav_jadwal $nav_aktif' href='?jadwal&shift=$key'>Kelas $key</a></div>";
+  $nav_aktif = $id_shift == $key ? 'nav_aktif' : '';
+  $nav_shift .= "<div><a class='nav_jadwal $nav_aktif' href='?jadwal&id_shift=$key'>Kelas $key</a></div>";
 }
 
 $nav_semester = '';
@@ -51,7 +51,7 @@ FROM tb_kelas a
 join tb_prodi b ON a.id_prodi=b.id 
 WHERE b.fakultas='$fakultas' 
 AND a.semester = '$semester' 
-AND a.shift = '$shift'
+AND a.id_shift = '$id_shift'
 ";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 if (!mysqli_num_rows($q)) {
@@ -69,18 +69,16 @@ if (!mysqli_num_rows($q)) {
 }
 
 $nav_kelas = '';
-$nav_kelas_active = 'nav_kelas_active';
-$nav_kelas_pertama = null;
 while ($d = mysqli_fetch_assoc($q)) {
   $rkelas[$d['id']] = $d;
-  $nav_kelas_pertama = $nav_kelas_pertama ?? $d['nama_kelas'];
+  $nav_kelas_active = ($get_id_kelas and $d['id'] == $get_id_kelas) ? 'nav_kelas_active' : '';
+
   $nav_kelas .= "
     <div class='nav_jadwal nav_kelas $nav_kelas_active' id=nav_kelas__$d[id]>
       <span>$d[nama_kelas]</span>
       <span id=kumk_count__$d[id] class='kumk_count'>0</span>
     </div>
   ";
-  $nav_kelas_active = '';
 }
 
 

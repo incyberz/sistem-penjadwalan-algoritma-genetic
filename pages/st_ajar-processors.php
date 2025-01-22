@@ -20,7 +20,7 @@ if (isset($_POST['btn_create_st'])) {
   if (isset($_POST['id_kumk'])) {
     foreach ($_POST['id_kumk'] as $id_kumk => $value) {
       $id = "$id_st-$id_kumk";
-      $s = "INSERT INTO tb_st_mk (
+      $s = "INSERT INTO tb_st_detail (
         id,
         id_st,
         id_kumk
@@ -33,5 +33,5 @@ if (isset($_POST['btn_create_st'])) {
       $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
     }
   }
-  jsurl("?st_ajar&id_kurikulum=$id_kurikulum&aksi=manage&id_st=$id_st");
+  jsurl("?st_ajar&aksi=manage&id_st=$id_st");
 }
