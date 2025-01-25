@@ -7,8 +7,6 @@ if (isset($_POST['btn_delete_jadwal'])) {
 
   $s = "DELETE FROM tb_jadwal WHERE id='$id_st_detail'";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-
-  jsurl("?jadwal&id_kelas=$get_id_kelas");
 }
 if (isset($_POST['btn_book'])) {
   $id_ruang = $_POST['id_ruang'];
@@ -186,8 +184,10 @@ if (isset($_POST['btn_book'])) {
       echolog('inserting jadwal...');
 
       $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-
-      jsurl("?jadwal&id_kelas=$get_id_kelas");
     } // tidak ada error saat insert pemakaian ruang
-  }
+  } // tidak ada konflik dosen
+} // end book sesi
+
+if ($_POST) {
+  jsurl("?jadwal&id_shift=$id_shift&id_kelas=$get_id_kelas");
 }

@@ -2,6 +2,9 @@
 $kurikulum = [];
 $kurikulum['id_prodi'] = null;
 
+# ============================================================
+# MAIN SELECT DOSEN
+# ============================================================
 $list_dosen = '';
 
 $s = "SELECT a.*,
@@ -36,6 +39,14 @@ if (mysqli_num_rows($q)) {
   $i = 0;
   while ($d = mysqli_fetch_assoc($q)) {
     $i++;
+    # ============================================================
+    # DELETE SURAT TUGAS KOSONG
+    # ============================================================
+    if ($d['id_st'] and !$d['count_kumk']) {
+      $s2 = "DELETE FROM tb_st WHERE id='$d[id_st]'";
+      mysqli_query($cn, $s2) or die(mysqli_error($cn));
+      $d['id_st'] = null;
+    }
 
     if ($d['id_prodi'] and $d['id_prodi'] == $kurikulum['id_prodi']) {
       $blue =  'blue bold';
