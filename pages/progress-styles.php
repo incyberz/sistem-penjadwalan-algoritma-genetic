@@ -29,8 +29,18 @@
   .count_total {
     font-family: 'Century Gothic', consolas, 'Courier New', Courier, monospace;
     color: purple;
-    font-size: 150%;
   }
+
+
+  .count_filter {
+    font-size: 180%;
+  }
+
+  .count_total {
+    font-size: 130%;
+  }
+
+
 
   .sub_div {
     font-style: italic;

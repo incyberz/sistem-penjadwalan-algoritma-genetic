@@ -137,7 +137,7 @@ foreach ($rhari as $date => $v) {
     $kumk_count = mysqli_num_rows($q);
     $rkumk_count[$id_kelas] = $kumk_count;
     if (!$kumk_count) {
-      // die(alert("Belum ada Data Surat Tugas Perkuliahan detail untuk semester [$semester] kelas [$kelas-$id_shift] fakultas [$fakultas]. | <a href='?st_ajar'>Manage Surat Tugas</a>"));
+      // die(alert("Belum ada Data Surat Tugas Perkuliahan detail untuk semester [$semester] kelas [$kelas-$id_shift] fakultas [$fakultas]. | <a href='?st'>Manage Surat Tugas</a>"));
       // tidak apa2 habis mungkin di prodi lain se-fakultas masih ada 
     }
     while ($d = mysqli_fetch_assoc($q)) {
@@ -275,7 +275,7 @@ foreach ($rhari as $date => $v) {
               <tr>
                 <td>$awal - $akhir</td>
                 <td>
-                  <span class='abu f12 miring'>$pesan | <a target=_blank href='?st_ajar&note=$pesan'>Add Surat Tugas</a></span>
+                  <span class='abu f12 miring'>$pesan | <a target=_blank href='?st&note=$pesan'>Add Surat Tugas</a></span>
                 </td>
                 <td>?</td>
               </tr>

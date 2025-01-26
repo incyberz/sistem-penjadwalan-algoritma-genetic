@@ -65,7 +65,7 @@ if (!$num_rows) {
       $d['dosen_pengampu'] = $d2['dosen_pengampu'];
       $d['id_dosen'] = $d2['id_dosen'];
       $d['id_st'] = $d2['id_st'];
-      $link_to_st = "<a onclick='return confirm(`Cek Surat Tugas?`)' href='?st_ajar&aksi=manage&id_st=$d[id_st]'>$img_next</a>";
+      $link_to_st = "<a onclick='return confirm(`Cek Surat Tugas?`)' href='?st&aksi=manage&id_st=$d[id_st]'>$img_next</a>";
     } else {
       $d['dosen_pengampu'] = '-';
       $d['id_dosen'] = null;

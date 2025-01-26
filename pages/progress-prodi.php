@@ -37,6 +37,7 @@ if ($tb == 'prodi') {
       $persen = 0;
       $count_of = "<i class='red bold consolas'>Belum ada satupun MK di prodi ini.</i>";
     }
+    $bg_persen = bg_persen($persen);
 
     $sub_divs .=  "
       <div class='mt4 mb1'>
@@ -44,7 +45,7 @@ if ($tb == 'prodi') {
       </div> 
       <div class='wadah bg-white'>
         <div class='progress'>
-          <div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='$persen' aria-valuemin='0' aria-valuemax='100' style='width:$persen%'>
+          <div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='$persen' aria-valuemin='0' aria-valuemax='100' style='width:$persen%;$bg_persen'>
             $persen%
           </div>
         </div>

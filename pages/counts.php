@@ -17,8 +17,6 @@
   }
 </style>
 <?php
-$get_tb = $_GET['tb'] ?? '';
-echo "<span id=get_tb class=hideit>$get_tb</span>";
 $rcount = [
   'prodi' => [
     'title' => 'Prodi',
@@ -45,7 +43,7 @@ $rcount = [
       WHERE b.id_ta=$ta_aktif
       ",
     'satuan' => "MK Kurikulum $tahun_ta $Gg",
-    'deskripsi' => 'MK Terjadwal artinya MK yang dibuat dan sudah terpasang di Jadwal Kuliah',
+    'deskripsi' => 'MK Kurikulum artinya MK yang terdapat pada <a target=_blank href=?struktur_kurikulum>Struktur Kurikulum</a>, sedangkan MK Terjadwal artinya MK yang sudah terpasang di Jadwal Kuliah',
   ],
   'kelas' => [
     'title' => "Grup Kelas",
@@ -83,7 +81,7 @@ $rcount = [
   'st' => [
     'title' => "Surat Tugas",
     'title2' => 'Verified ST',
-    'href' => '?st_ajar',
+    'href' => '?st',
     'class' => '',
     'sql_filter' => "SELECT 1 FROM tb_st WHERE id_ta=$ta_aktif AND verif_date is not null",
     'sql_total' => "SELECT 1 FROM tb_st WHERE id_ta=$ta_aktif",

@@ -24,6 +24,7 @@ if ($tb == 'ruang') {
     $rcount[$tb]['title2'] = 'Pemakaian Ruangan';
 
     $persen = !$rcount[$tb]['count_total'] ? 0 : round(($count_filter / $count_total) * 100);
+    $bg_persen = bg_persen($persen);
 
     $count_of = "
       <span class=count_filter>$count_filter</span> 
@@ -38,7 +39,7 @@ if ($tb == 'ruang') {
       <div class='wadah gradasi-toska'>
         <!-- bootstrap progress -->
         <div class='progress'>
-          <div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='$persen' aria-valuemin='0' aria-valuemax='100' style='width:$persen%'>
+          <div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='$persen' aria-valuemin='0' aria-valuemax='100' style='width:$persen%;$bg_persen'>
             $persen%
           </div>
   

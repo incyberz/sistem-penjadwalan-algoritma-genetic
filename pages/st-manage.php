@@ -8,7 +8,7 @@ if ($id_ta < 1 || $id_dosen < 1) die("Invalid value: id_ta: $id_ta, id_dosen: $i
 # ============================================================
 # ST-MANAGE-PROCESSORS
 # ============================================================
-include 'st_ajar-manage-processors.php';
+include 'st-manage-processors.php';
 
 # ============================================================
 # ST PROPERTIES 
@@ -30,7 +30,7 @@ JOIN tb_prodi f ON e.id_prodi=f.id
 WHERE a.id = '$id_st'";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $st = mysqli_fetch_assoc($q);
-if (!$st) die(alert("Data Surat Tugas dengan id [$id_st] tidak ditemukan. | <a href='?st_ajar'>Back to Rekap Surat Tugas</a>"));
+if (!$st) die(alert("Data Surat Tugas dengan id [$id_st] tidak ditemukan. | <a href='?st'>Back to Rekap Surat Tugas</a>"));
 $verified = $st['verif_date'] ? 1 : 0;
 
 if ($print) {
@@ -54,7 +54,7 @@ if ($print) {
     # ============================================================
     # NEW NO SURAT TUGAS
     # ============================================================
-    include 'st_ajar-manage-autocreate_no_st.php';
+    include 'st-manage-autocreate_no_st.php';
 
     exit;
   }
@@ -118,7 +118,7 @@ while ($d = mysqli_fetch_assoc($q)) {
 
   $btn_delete = '';
   if (!$verified) {
-    $btn_delete = "<a onclick='return confirm(`Drop MK ini?`)' href='?st_ajar&aksi=drop_mk&id_st=$id_st&id_st_detail=$d[id_st_detail]'>$img_delete</a>";
+    $btn_delete = "<a onclick='return confirm(`Drop MK ini?`)' href='?st&aksi=drop_mk&id_st=$id_st&id_st_detail=$d[id_st_detail]'>$img_delete</a>";
   }
 
   $tr .= "
@@ -178,7 +178,7 @@ if ($verified) {
   alert("Info: Surat Tugas Verified by <b>$st[verifikator]</b> tanggal <b>$tanggal</b> <i class=f12>$eta</i>", 'info');
 
   $btn_print = "
-    <a class='btn btn-success w-100 mt2 mb2' href='?st_ajar&aksi=manage&id_st=$id_st&print=1' >Print Surat Tugas</a>
+    <a class='btn btn-success w-100 mt2 mb2' href='?st&aksi=manage&id_st=$id_st&print=1' >Print Surat Tugas</a>
     <button class='btn btn-danger w-100' name=btn_rollback_verif value='$id_st'>Rollback Verifikasi</button>
     <div class='mt1 abu miring'>
       Yang berhak Rollback Verifikasi Surat Tugas seharusnya Level Pimpinan (Rektor atau Kaprodi)
@@ -279,5 +279,5 @@ if (!$print) {
     </form>
   ";
 } else {
-  include 'st_ajar-manage-print.php';
+  include 'st-manage-print.php';
 }

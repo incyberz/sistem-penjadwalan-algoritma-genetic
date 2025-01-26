@@ -54,7 +54,7 @@ foreach ($includes as $v) {
 # ICONS
 # ============================================================
 $img_next = img_icon('next');
-
+$null = '<i class="f12 abu">null</i>';
 
 # ============================================================
 # SELECT || CREATE TABLES
@@ -101,7 +101,10 @@ if ($username) include 'pages/user.php';
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Penjadwalan</title>
-  <?php include 'includes/head_devs.php'; ?>
+  <?php
+  include 'includes/head_devs.php';
+  include 'global_gets_and_cookies.php';
+  ?>
 </head>
 
 <body>

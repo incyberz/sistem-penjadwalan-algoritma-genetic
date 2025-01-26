@@ -45,7 +45,7 @@ if (!mysqli_num_rows($q)) {
         <li  class='flexy flex-between p2 gradasi-kuning'>
           <div onclick='alert(`Surat Tugas sudah terverifikasi.\n\nRollback dahulu jika ingin re-assign Surat Tugas.`)' style='cursor:not-allowed'>$nama</div>
           <div>
-            <a href='?st_ajar&id_st=$d[id_st]' target=_blank>ST verified at $verif_date</a>
+            <a href='?st&id_st=$d[id_st]' target=_blank>ST verified at $verif_date</a>
           </div>
         </li>
       ";

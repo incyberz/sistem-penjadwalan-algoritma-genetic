@@ -33,5 +33,5 @@ if (isset($_POST['btn_create_st'])) {
       $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
     }
   }
-  jsurl("?st_ajar&aksi=manage&id_st=$id_st");
+  jsurl("?st&aksi=manage&id_st=$id_st");
 }

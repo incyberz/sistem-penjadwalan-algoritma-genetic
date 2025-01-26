@@ -2,16 +2,16 @@
 set_h2("System Progress", 'Progress (Gamification Technique) untuk monitoring validasi system secara keseluruhan ');
 
 $detail_progress = true; // detail of at progress only
-include 'counts-progress_styles.php'; // style khusus di progress
+include 'progress-styles.php'; // style khusus di progress
 include 'counts.php';
 // include 'progress-functions.php';
-function warna_persen($persen)
+function bg_persen($persen)
 {
-
-  $red = '00';
+  $hex = round($persen * 255 / 100, 0);
   $green = '00';
-  $blue = '55';
-  return "#$red$green$blue";
+  $red = 255 - $hex;
+  $blue = $hex;
+  return "background:rgb($red,$green,$blue)";
 }
 
 # ============================================================
@@ -28,12 +28,12 @@ foreach ($rcount as $tb => $arr) {
     # ============================================================
     # DEFAULT PROGRESS
     # ============================================================
-    $warna_persen = warna_persen($persen);
+    $bg_persen = bg_persen($persen);
     $divs =  "
       <div class='wadah gradasi-toska'>
         <!-- bootstrap progress -->
         <div class='progress'>
-          <div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='$persen' aria-valuemin='0' aria-valuemax='100' style='width:$persen%; background: $warna_persen'>
+          <div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='$persen' aria-valuemin='0' aria-valuemax='100' style='width:$persen%; $bg_persen'>
             $persen%
           </div>
   
@@ -86,17 +86,7 @@ foreach ($rcount as $tb => $arr) {
     $('#div_count_info__' + tb).slideDown();
   }
   $(function() {
-    let rc = document.cookie.split(';');
-    let tb;
-    rc.forEach((v) => {
-      let t = v.trim().split('=');
-      t.forEach((v2) => {
-        if (v2 == 'tb') {
-          tb = t[1];
-          return;
-        }
-      });
-    });
+    get_cookies();
     show_div(tb);
 
     $('.div_count').click(function() {

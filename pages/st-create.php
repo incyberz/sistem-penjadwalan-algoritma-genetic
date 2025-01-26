@@ -5,7 +5,7 @@
 # LIST KELAS
 # ============================================================
 $list_kelas = '';
-include 'st_ajar-list_kelas.php';
+include 'st-list_kelas.php';
 
 $list_mk = '';
 $list_dosen = '';
@@ -20,7 +20,7 @@ if ($pesan_error) {
   # ============================================================
   # LIST mk
   # ============================================================
-  include 'st_ajar-list_mk.php';
+  include 'st-list_mk.php';
   $disabled_mk_unavailable = $mk_available ? '' : 'disabled';
   $disabled_mk_unavailable_info = $mk_available ? '' : 'Tidak ada MK available';
 
@@ -52,7 +52,7 @@ if ($pesan_error) {
   # LIST DOSEN
   # ============================================================
   if ($siap_assign) {
-    include 'st_ajar-list_dosen.php';
+    include 'st-list_dosen.php';
   } else {
     $list_dosen .= $pesan_error;
   }

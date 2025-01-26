@@ -43,8 +43,8 @@ $img_next = img_icon('next');
 //   }
 // }
 
-include 'st_ajar-styles.php';
-include 'st_ajar-processors.php';
+include 'st-styles.php';
+include 'st-processors.php';
 
 # ============================================================
 # DATA KURIKULUM
@@ -66,14 +66,14 @@ $bulan_romawi = $arr_bulan_romawi[date('m')];
 
 
 if ($aksi) {
-  $file = "st_ajar-$aksi.php";
+  $file = "st-$aksi.php";
   if (file_exists("pages/$file")) {
     include $file;
   } elseif ($aksi == 'drop_mk') {
     $id = $_GET['id_st_detail'] ?? udef('id_st_detail');
     $s = "DELETE FROM tb_st_detail WHERE id='$id'";
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-    jsurl("?st_ajar&aksi=manage&id_st=$id_st", 5000);
+    jsurl("?st&aksi=manage&id_st=$id_st", 5000);
   } else {
     alert("Aksi [$aksi] belum ada handler.");
   }

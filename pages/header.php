@@ -18,7 +18,7 @@ foreach ($arr_tb_master as $tb) {
       <li><a href="?">Home</a></li>
       <?= $li ?>
       <li><a href="?struktur_kurikulum">SKur</a></li>
-      <li><a href="?st_ajar">ST</a></li>
+      <li><a href="?st">ST</a></li>
       <li><a href="?jadwal">Jadwal</a></li>
       <li><a href="?laper">Laper</a></li>
       <li><a href="?home&show_config=1">Conf</a></li>

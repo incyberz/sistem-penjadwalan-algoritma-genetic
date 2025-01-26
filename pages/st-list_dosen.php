@@ -64,7 +64,7 @@ if (mysqli_num_rows($q)) {
     if ($d['count_kumk']) {
       $count_kumk = "<span class='blue bold'><span id=count_mk__$d[id]>$d[count_kumk]</span> MK</span>";
       $sum_sks = "<span class='blue bold'><span id=count_mk__$d[id]>$d[sum_sks]</span> SKS</span>";
-      $manage_st = "<a href='?st_ajar&id_st=$d[id_st]' class='pointer' id=a_dosen__$d[id]>$img_next</a>";
+      $manage_st = "<a href='?st&id_st=$d[id_st]' class='pointer' id=a_dosen__$d[id]>$img_next</a>";
       $hideit = '';
       $tr_class = 'punya_st';
     } else {
