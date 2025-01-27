@@ -37,7 +37,6 @@ if ($tb == 'ruang') {
     $sub_divs .=  "
       <div class='mt4 mb2 sub_div'><b>Pemakaian $id_shift:</b> $count_of</div> 
       <div class='wadah gradasi-toska'>
-        <!-- bootstrap progress -->
         <div class='progress'>
           <div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='$persen' aria-valuemin='0' aria-valuemax='100' style='width:$persen%;$bg_persen'>
             $persen%

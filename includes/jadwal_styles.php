@@ -8,6 +8,20 @@
     display: none;
   }
 
+  .petunjuk {
+    font-size: 14px;
+    font-style: italic;
+    color: #007bff;
+  }
+
+  .image {
+    border: solid 5px white;
+    box-shadow: 0 0 5px gray;
+    height: 4cm;
+    width: 3.5cm;
+    object-fit: cover;
+  }
+
   a,
   div a {
     text-decoration: none;

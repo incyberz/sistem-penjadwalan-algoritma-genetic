@@ -1,6 +1,13 @@
 <?php
 if ($_POST) {
 
+  if (isset($_POST['btn_approve'])) {
+    $s = "UPDATE tb_kelas SET status=100 WHERE id=$get_id";
+    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+    alert("Approve sukses.", 'success');
+    jsurl();
+  }
+
   if (isset($_POST['btn_drop'])) {
     $s = "DELETE FROM tb_peserta_kelas WHERE id_mhs = $_POST[btn_drop] AND id_kelas=$kelas[id]";
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
@@ -10,7 +17,17 @@ if ($_POST) {
 
   if (isset($_POST['btn_add'])) {
     $nama_mhs_baru = trim(strtoupper(mysqli_real_escape_string($cn, $_POST['nama_mhs_baru'])));
-    $s = "INSERT INTO tb_mhs (id_prodi,nama,angkatan) VALUES ($kelas[id_prodi], '$nama_mhs_baru',$angkatan)";
+    $s = "INSERT INTO tb_mhs (
+      id_prodi,
+      id_shift,
+      nama,
+      angkatan
+    ) VALUES (
+      $kelas[id_prodi],
+      '$kelas[id_shift]',
+      '$nama_mhs_baru',
+      $angkatan
+    )";
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 
     alert("Insert Mhs Baru sukses.", 'success');
@@ -30,9 +47,9 @@ if ($_POST) {
         '$new_id',
         $kelas[id],
         $id_mhs,
-        $petugas[id]
+        $user[id]
       ) ON DUPLICATE KEY UPDATE 
-        assign_by = $petugas[id]
+        assign_by = $user[id]
       ";
       $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
       alert("Assign Mhs sukses.", 'success');
@@ -54,10 +71,10 @@ if ($_POST) {
       echolog($s);
       $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
       alert("Update field [$key] sukses.", 'success');
-    } elseif ($key == 'ZZZ') {
-      // $s = "UPDATE tb_kelas SET $key='$value' WHERE id='$id'";
-      // // $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-      // alert("Update data kosma sukses.", 'success');
+    } elseif ($key == 'whatsapp_kosma') {
+      $s = "UPDATE tb_mhs SET whatsapp='$value' WHERE id='$_POST[id_kosma]'";
+      $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+      alert("Update data kosma sukses.", 'success');
       // // jsurl('', 1000);
     } else {
       die("Belum ada handler untuk field [$key]");

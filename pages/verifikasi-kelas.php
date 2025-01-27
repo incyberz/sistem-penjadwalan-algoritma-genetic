@@ -5,13 +5,19 @@ if ($get_id) {
   $s = "SELECT 
   a.id,
   a.id_prodi,
+  a.id_shift,
   a.label,
   a.nama,
   a.semester,
+  a.status,
   a.id_kosma,
-  a.whatsapp_kosma,
+  (
+    SELECT p.whatsapp FROM tb_mhs p
+    JOIN tb_kelas q ON p.id=q.id_kosma
+    WHERE q.id=a.id) whatsapp_kosma,
   a.id_dosen_wali,
   b.singkatan as prodi,
+  b.status as status_prodi,
   (SELECT nama FROM tb_dosen WHERE id=a.id_dosen_wali) nama_dosen_wali, 
   (SELECT nama FROM tb_mhs WHERE id=a.id_kosma) nama_kosma, 
   (SELECT COUNT(1) FROM tb_peserta_kelas WHERE id_kelas=a.id) count_peserta 
@@ -20,45 +26,81 @@ if ($get_id) {
   WHERE a.id='$get_id'";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   $kelas = mysqli_fetch_assoc($q);
-  $angkatan = $tahun_ta - intval(($kelas['semester'] - 1) / 2);
+  if ($kelas['status'] == 100) {
+    alert("Selamat! Kelas ini sudah terverifikasi - status: $kelas[status] | <a href='?detail&tb=$get_tb&id=$kelas[id]'>Lihat Detail</a>", 'info tengah blue f20');
+  } else {
 
-  include 'verifikasi-kelas-processors.php';
+    $angkatan = $tahun_ta - intval(($kelas['semester'] - 1) / 2);
 
-  echo "<h3>Persyaratan untuk Kelas <b class=darkblue>$kelas[nama]</b></h3>";
+    include 'verifikasi-kelas-processors.php';
 
-  if ($syarat) {
-    $li = '';
-    $btn_save = "<div><button class='btn btn-primary'>Save</button></div>";
-    foreach ($syarat['syarat'] as $item => $desc) {
+    echo "<h3>Persyaratan untuk Kelas <b class=darkblue>$kelas[nama]</b></h3>";
 
-      $input_syarat = null;
-      $status_syarat = "<b>$item</b>, $desc";
+    if ($syarat) {
+      $li = '';
+      $btn_save = "<div><button class='btn btn-primary'>Save</button></div>";
+      $input_syarat_before = null;
+      foreach ($syarat['syarat'] as $item => $desc) {
 
-      $item_file = strtolower(str_replace(' ', '_', $item));
-      $file = "pages/verifikasi-kelas-$item_file.php";
-      if (file_exists($file)) include $file; // input syarat akan direplace
+        $input_syarat = null;
+        $status_syarat = "<b>$item</b>, $desc";
 
-      $li .= "
-        <li>
-          <div>$status_syarat</div>
-          <div>$input_syarat</div>
-        </li>
+        $item_file = strtolower(str_replace(' ', '_', $item));
+
+        $file = "pages/verifikasi-kelas-$item_file.php";
+        if (file_exists($file)) include $file; // input syarat akan direplace
+
+
+        $li .= "
+          <li>
+            <div>$status_syarat</div>
+            <div>$input_syarat</div>
+          </li>
+        ";
+        $input_syarat_before = $input_syarat;
+      }
+      echo "
+        <p>Agar Status $syarat[title] Terverifikasi harus memenuhi persyaratan:</p>
+        <ol>$li</ol>  
       ";
-    }
-    echo "
-    <p>Agar Status $syarat[title] Terverifikasi harus memenuhi persyaratan:</p>
-    <ol>$li</ol>  
-  ";
-  }
+
+      # ============================================================
+      # ALL VERIFIED
+      # ============================================================
+      if (
+        $kelas['label']
+        && $kelas['count_peserta']
+        && $kelas['id_kosma']
+        && $kelas['id_dosen_wali']
+        && $kelas['status_prodi']
+      ) {
+        if ($kelas['status'] == 100) {
+          alert("Selamat! Kelas ini sudah terverifikasi.", 'success blue f24');
+        } else {
+          echo "
+            <form method=post class='wadah gradasi-hijau'>
+              <h4>Approve Verifikasi</h4>
+              <p class=petunjuk>Semua Kelengkapan Verifikasi sudah lengkap, Anda boleh Approve atau Manage Kembali data-data diatas. $img_help</p>
+              <button class='btn btn-primary' name=btn_approve>Approve</button>
+            </form>
+          ";
+        }
+      }
+    } // end ada data array syarat
+  } // end status kelas belum 100
 } else { // belum ada id_kelas
 
+  # ============================================================
+  # SELECT LIST KELAS
+  # ============================================================
   $s = "SELECT 
   a.id,
   b.fakultas,
   b.singkatan as prodi,
   a.nama as kelas,
   a.label,
-  a.kapasitas,
+  (SELECT COUNT(1) FROM tb_peserta_kelas WHERE id_kelas=a.id) peserta,
+  -- a.kapasitas,
   a.semester as smt,
   a.id_shift as shift,
   a.counter as rombel,
@@ -75,10 +117,12 @@ if ($get_id) {
     while ($d = mysqli_fetch_assoc($q)) {
       $i++;
       $td = '';
+      $gradasi = '';
       $td .= "<td>$i</td>";
       foreach ($d as $key => $value) {
         if (
-          $key == 'ids'
+          $key == 'id'
+          || $key == 'prodi'
           || $key == 'created_at'
         ) continue;
         if ($i == 1) {
@@ -90,15 +134,23 @@ if ($get_id) {
           $value = $value ? $value : '-';
         } elseif ($key == 'status') {
           $value = $value ? $value : '<i class="f12 red bold">unverified</i>';
+          $link_verif = $value == 100 ? "
+            <a class='btn btn-success btn-sm' href='?detail&tb=kelas&id=$d[id]'>Detail</button>
+          " : "
+            <a class='btn btn-primary btn-sm' href='?verifikasi&tb=kelas&id=$d[id]'>Verifikasi</button>
+          ";
+        } elseif ($key == 'peserta') {
+          $gradasi = $value ? '' : 'merah';
+          $value = $value ? $value : '<div class="f12 red bold ">0</div>';
         } else {
         }
         $td .= "<td>$value</td>";
       }
       $tr .= "
-        <tr>
+        <tr class='gradasi-$gradasi'>
           $td
           <td>
-            <a class='btn btn-primary' href='?verifikasi&tb=kelas&id=$d[id]'>Verifikasi</button>
+            $link_verif
           </td>
         </tr>
       ";

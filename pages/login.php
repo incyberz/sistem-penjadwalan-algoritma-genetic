@@ -2,7 +2,7 @@
 $pesan = '';
 if (isset($_POST['btn_login'])) {
   $_POST['username'] = strip_tags(strtolower($_POST['username']));
-  $s = "SELECT 1 from tb_petugas WHERE username='$_POST[username]' and password='$_POST[password]'";
+  $s = "SELECT 1 from tb_user WHERE username='$_POST[username]' and password='$_POST[password]'";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   if (mysqli_num_rows($q)) {
     $_SESSION['ekost_username'] = $_POST['username'];

@@ -1,4 +1,5 @@
 <?php
+set_title('Rekap Surat Tugas Mengajar Dosen');
 $kurikulum = [];
 $kurikulum['id_prodi'] = null;
 
@@ -48,6 +49,18 @@ if (mysqli_num_rows($q)) {
       $d['id_st'] = null;
     }
 
+    # ============================================================
+    # GET DATA SURAT TUGAS
+    # ============================================================
+    $st = [];
+    if ($d['id_st']) {
+      $s2 = "SELECT a.*,
+      (SELECT nama FROM tb_user WHERE id=a.verif_by) verifikator 
+      FROM tb_st a WHERE a.id='$d[id_st]'";
+      $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
+      $st = mysqli_fetch_assoc($q2);
+    }
+
     if ($d['id_prodi'] and $d['id_prodi'] == $kurikulum['id_prodi']) {
       $blue =  'blue bold';
       $homebase = "homebase $d[homebase]";
@@ -58,8 +71,6 @@ if (mysqli_num_rows($q)) {
       $blue = 'abu miring';
       $homebase = "(LB)";
     }
-
-
 
     if ($d['count_kumk']) {
       $count_kumk = "<span class='blue bold'><span id=count_mk__$d[id]>$d[count_kumk]</span> MK</span>";
@@ -76,8 +87,16 @@ if (mysqli_num_rows($q)) {
       $manage_st = '';
     }
 
+    if ($d['id_st']) {
+      $status = $st['verifikator'] ? "<div class='f12 green'>Verif by $st[verifikator] <br>at $st[verif_date]</div>" : $unverified;
+      $gradasi = $st['verifikator'] ? 'hijau' : 'merah';
+    } else {
+      $gradasi = '';
+      $status = '-';
+    }
+
     $list_dosen .= "
-      <tr class='tr_dosen tr_dosen__$tr_class $hideit'>
+      <tr class='tr_dosen tr_dosen__$tr_class $hideit gradasi-$gradasi'>
         <td>$i</td>
         <td>
           <span class='nama_dosen $blue' id=nama_dosen__$d[id]>$d[nama]</span>
@@ -86,6 +105,7 @@ if (mysqli_num_rows($q)) {
         <td><span class='$blue'>$homebase</span></td>
         <td>$count_kumk</td>
         <td>$sum_sks</td>
+        <td>$status</td>
       </tr>  
     ";
   } // end while
@@ -94,8 +114,9 @@ if (mysqli_num_rows($q)) {
       <div class=tengah>
         <h3 class=mb2>Rekap Surat Tugas Mengajar Dosen</h3>
         <h4 class=mb2>Tahun Ajar $tahun_ta $Gg</h4>
+        <p class='petunjuk tengah'><a href='?struktur_kurikulum' class='darkblue '>$img_prev Back to Struktur Kurikulum</a> untuk menambah Surat Tugas - $img_help - Untuk Manage Surat Tugas klik tombol $img_next</p>
       </div>
-      <div class='wadah gradasi-hijau'>
+      <div class='wadah gradasi-toska'>
         <table id=tb_dosen class='table table-hover table-striped'>
           <thead>
             <th>No</th>
@@ -103,6 +124,7 @@ if (mysqli_num_rows($q)) {
             <th>Homebase</th>
             <th>MK</th>
             <th>SKS</th>
+            <th>Verifikasi</th>
           </thead>
           $list_dosen
         </table>

@@ -38,9 +38,9 @@ set_title("JADWAL " . strtoupper($fakultas));
 # HAK AKSES
 # ============================================================
 $hak = [];
-$hak['delete_jadwal'] = hak_akses('delete_jadwal', $petugas['role']);
-$hak['book_jadwal'] = hak_akses('book_jadwal', $petugas['role']);
-$hak['barter_jadwal'] = hak_akses('barter_jadwal', $petugas['role']);
+$hak['delete_jadwal'] = hak_akses('delete_jadwal', $user['role']);
+$hak['book_jadwal'] = hak_akses('book_jadwal', $user['role']);
+$hak['barter_jadwal'] = hak_akses('barter_jadwal', $user['role']);
 
 
 # ============================================================

@@ -76,7 +76,7 @@ if (file_exists($file)) {
 } else {
   if ($tb == 'st') {
     echo "
-      <p>Untuk Verifikasi Surat Tugas dapat dilakukan dengan cara:</p>
+      <p class=petunjuk>$img_help Untuk Verifikasi Surat Tugas dapat dilakukan dengan cara:</p>
       <ol>
         <li>
           Masuk Menu <a href='?st'>ST (Surat Tugas)</a>
@@ -90,6 +90,6 @@ if (file_exists($file)) {
   } elseif ($tb == 'mk') {
     jsurl('?jadwal'); // mk terjadwal
   } else {
-    alert("Belum ada informasi lainnya untuk proses verifikasi [$tb]");
+    alert("Belum ada informasi [ prosedur ] lainnya untuk proses verifikasi [$tb]");
   }
 }

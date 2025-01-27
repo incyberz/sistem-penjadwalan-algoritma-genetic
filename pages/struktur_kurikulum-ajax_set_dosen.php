@@ -4,13 +4,13 @@ $id_ta = $_SESSION['jadwal_ta_aktif'] ?? die(`Undefined session-index [jadwal_ta
 
 $id_dosen = $_GET['id_dosen'] ?? die("Undefined index [id_dosen]");
 $id_kumk = $_GET['id_kumk'] ?? die("Undefined index [id_kumk]");
-$id_petugas = $_GET['id_petugas'] ?? die("Undefined index [id_petugas]");
+$id_user = $_GET['id_user'] ?? die("Undefined index [id_user]");
 $id_shift = $_GET['id_shift'] ?? die("Undefined index [id_shift]");
 $id_kelass = $_GET['id_kelass'] ?? die("Undefined index [id_kelass]"); // auto assign ke kelas-kelas
 
 if ($id_kelass === '') die('Index [id_kelass] cannot empty.');
 if ($id_shift === '') die('Index [id_shift] cannot empty.');
-if ($id_petugas === '') die('Index [id_petugas] cannot empty.');
+if ($id_user === '') die('Index [id_user] cannot empty.');
 
 include '../conn.php';
 
@@ -22,15 +22,15 @@ $s = "INSERT INTO tb_st (
   id,
   id_dosen,
   id_ta,
-  id_petugas
+  id_user
 ) VALUES (
   '$id_st',
   '$id_dosen',
   '$id_ta',
-  '$id_petugas'
+  '$id_user'
 ) ON DUPLICATE KEY UPDATE 
   tanggal=CURRENT_TIMESTAMP, 
-  id_petugas=$id_petugas
+  id_user=$id_user
 ";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 

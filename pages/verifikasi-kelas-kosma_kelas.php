@@ -1,6 +1,6 @@
 <?php
 if ($kelas['id_kosma']) {
-  $status_syarat = "<b>Kosma:</b> $kelas[nama_kosma] |  +$kelas[whatsapp_kosma] <span class=btn_aksi id=form_ubah_id_kosma__toggle>$img_edit</span>";
+  $status_syarat = "<b>Kosma:</b> $kelas[nama_kosma] |  +$kelas[whatsapp_kosma] $img_check <span class=btn_aksi id=form_ubah_id_kosma__toggle>$img_edit</span>";
   $hideit = 'hideit';
 } else {
   $hideit = '';

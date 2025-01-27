@@ -12,11 +12,16 @@
     letter-spacing: .3px;
   }
 
-  .div_count_detail {
+  .div_count_OK {
     background: linear-gradient(#eff, #dfd) !important;
   }
 
-  .div_count_detail:hover {
+  .div_count_warning {
+    background: linear-gradient(#fff, #fcc) !important;
+  }
+
+  .div_count_OK:hover,
+  .div_count_warning:hover {
     background: linear-gradient(#ffe, #ffa) !important;
   }
 

@@ -75,8 +75,8 @@ $rcount = [
     'class' => 'd-none d-lg-block',
     'sql_filter' => '',
     'sql_total' => "SELECT 1 FROM tb_ruang WHERE status=1 -- ready pakai",
-    'satuan' => 'Ruangan Aktif',
-    'deskripsi' => "Ruang Aktif adalah ruang yang pernah dipakai di TA $tahun_ta $Gg dengan [status: 100]",
+    'satuan' => 'Ruangan Terpakai',
+    'deskripsi' => "Ruang Terpakai adalah ruang yang pernah dipakai di TA $tahun_ta $Gg dengan [status: 100]",
   ],
   'st' => [
     'title' => "Surat Tugas",
@@ -116,22 +116,44 @@ foreach ($rcount as $tb => $arr) {
 
   $span_count_total = "<span id=count_total__$tb>$count_total</span>";
   $div_count_of = "<div class='f30 abu'>$span_count_total</div>";
-  $div_count_detail = '';
+  $div_count_OK = '';
 
-  if ($arr['sql_filter'] and isset($detail_progress)) {
-    $q = mysqli_query($cn, $arr['sql_filter']) or die(mysqli_error($cn));
-    $count_filter = mysqli_num_rows($q);
+  if (isset($detail_progress)) {
+    if ($tb == 'ruang') {
+      # ============================================================
+      # HITUNG RUANG AKTIF
+      # ============================================================
+      $s = "SELECT 1,
+      (
+        SELECT COUNT(1) FROM tb_pemakaian_ruang p
+        WHERE id LIKE '$ta_aktif-%' 
+        AND id_ruang=a.id
+        ) terpakai 
+      FROM tb_ruang a WHERE a.status=1";
+      $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+      $terpakai = 0;
+      while ($d = mysqli_fetch_assoc($q)) {
+        if ($d['terpakai']) $terpakai++;
+      }
+      $rcount[$tb]['title2'] = 'Ruangan Terpakai';
+      $rcount[$tb]['count_filter'] = $terpakai;
+      $count_filter = $terpakai;
+    } else {
+      $q = mysqli_query($cn, $arr['sql_filter']) or die(mysqli_error($cn));
+      $count_filter = mysqli_num_rows($q);
+    }
     $rcount[$tb]['count_filter'] = $count_filter;
-    $All = strpos($arr['sql_filter'], $ta_aktif) ? '' : 'All '; // replace All sign
-    $title2 = $arr['title2'] ?? null;
+    $All = (strpos($arr['sql_filter'], $ta_aktif) || $count_filter) ? '' : 'All '; // replace All sign
+    $title2 = $rcount[$tb]['title2'] ?? null;
     $title = $title2 ? $title2 : $arr['title'];
-    $div_count_detail = 'div_count_detail';
+    $div_count_OK = ($count_total && $count_total == $count_filter) ? 'div_count_OK' : 'div_count_warning';
+    $icon = ($count_total && $count_filter == $count_total) ? $img_check : '';
     $div_count_of = "
       <div class='f30 abu'>
         <span id=count_filter__$tb class=green>$count_filter</span>
         <i class=f10>of</i>
         <i class=f14>$span_count_total</i>
-        
+        $icon
       </div>
     ";
   }
@@ -139,7 +161,7 @@ foreach ($rcount as $tb => $arr) {
   $div_count_active = $tb == $get_tb ? 'div_count_active' : '';
 
   $div_counts .= "
-    <div class='div_count $div_count_active $div_count_detail $arr[class]' id=div_count__$tb>
+    <div class='div_count $div_count_active $div_count_OK $arr[class]' id=div_count__$tb>
       <div class='darkblue f12'>
         <span class=pointer onclick='alert(`All artinya data $arr[title] berlaku di semua Tahun Ajar.`)'>$All</span>
         $title

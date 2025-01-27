@@ -25,6 +25,7 @@ include 'includes/arr_tb_master.php';
 $includes = [
   'alert',
   'date_managements',
+  'div_alert',
   'echolog',
   'hak_akses',
   'tanggal',
@@ -54,7 +55,11 @@ foreach ($includes as $v) {
 # ICONS
 # ============================================================
 $img_next = img_icon('next');
+$img_wa_disabled = img_icon('wa_disabled');
+$img_unique = img_icon('unique');
+$img_help = img_icon('help');
 $null = '<i class="f12 abu">null</i>';
+$unverified = '<i class="f12 red">unverified</i>';
 
 # ============================================================
 # SELECT || CREATE TABLES
@@ -89,7 +94,7 @@ try {
 # LOGIN INFO
 # ============================================================
 $username = $_SESSION['jadwal_username'] ?? '';
-$petugas = [];
+$user = [];
 if ($username) include 'pages/user.php';
 
 

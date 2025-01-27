@@ -185,9 +185,9 @@ $arr_sql['kelas'] = "CREATE TABLE IF NOT EXISTS tb_kelas (
 ";
 
 # ============================================================
-# petugas
+# user
 # ============================================================
-$arr_sql['petugas'] = "CREATE TABLE IF NOT EXISTS tb_petugas (
+$arr_sql['user'] = "CREATE TABLE IF NOT EXISTS tb_user (
   id int(11) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   nama varchar(30) NOT NULL,
   username varchar(20) NOT NULL,
@@ -211,10 +211,10 @@ $arr_sql['st'] = "CREATE TABLE IF NOT EXISTS tb_st (
     id_dosen int(11) NOT NULL,
     id_ta SMALLINT(5) NOT NULL,
     tanggal timestamp NOT NULL DEFAULT current_timestamp(),
-    id_petugas int(11) NOT NULL,
+    id_user int(11) NOT NULL,
     verif_by int(11) UNSIGNED DEFAULT NULL,
     verif_date timestamp NULL DEFAULT NULL,
-    CONSTRAINT VERIF_BY FOREIGN KEY (verif_by) REFERENCES tb_petugas(id),
+    CONSTRAINT VERIF_BY FOREIGN KEY (verif_by) REFERENCES tb_user(id),
     CONSTRAINT ST_DOSEN FOREIGN KEY (id_dosen) REFERENCES tb_dosen(id),
     CONSTRAINT ST_TA FOREIGN KEY (id_ta) REFERENCES tb_ta(id)
   );
@@ -283,5 +283,13 @@ $arr_sql['pemakaian_ruang'] = "CREATE TABLE IF NOT EXISTS tb_pemakaian_ruang (
     unik_dosen VARCHAR(30) NOT NULL COMMENT 'TA-Dosen-W-S' UNIQUE,
     CONSTRAINT PEMAKAIAN_ST_MK_KELAS FOREIGN KEY (id_st_mk_kelas) REFERENCES tb_st_mk_kelas(id) ON DELETE RESTRICT,
     CONSTRAINT PEMAKAIAN_RUANG FOREIGN KEY (id_ruang) REFERENCES tb_ruang(id) ON DELETE RESTRICT
+  );
+";
+
+# ============================================================
+# mhs
+# ============================================================
+$arr_sql['mhs'] = "CREATE TABLE IF NOT EXISTS tb_mhs (
+    id INT(11) PRIMARY KEY
   );
 ";

@@ -26,7 +26,7 @@ foreach ($rfakultas as $fakultas => $arr_fakultas) {
   ";
 }
 
-set_h2('Pilih Kurikulum');
+set_h2('Pilih Kurikulum', "<div class=petunjuk>Silahkan Pilih Prodi yang mana yang ingin Anda akses $img_help</div>");
 echo "
   $div_fakultas
 ";

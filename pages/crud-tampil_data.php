@@ -12,7 +12,7 @@ $arr_subdata = [
   'ta' => 'kurikulum',
   'prodi' => 'kurikulum',
   'kurikulum' => 'kumk',
-  'petugas' => 'st',
+  'user' => 'st',
 ];
 if (key_exists($tb, $arr_subdata)) {
   $th_subdata = "
@@ -76,8 +76,8 @@ while ($row = $result->fetch_assoc()) {
 # SUB HEADER
 # ============================================================
 $note = $_GET['note'] ?? '';
-$note_info = $note ? "<span class='red'><b>Note:</b> $note</span>" : '';
-set_h2("tampil $tb", $note_info);
+$note_info = $note ? "<span class='red'><b>Note:</b> $note</span>" : "<p class=petunjuk>Berikut adalah Tampil Data Master Tabel [ <span class='upper darkblue consolas'>$tb</span> ]. Silahkan klik pada Link/Menu yang tersedia.</p>";
+set_h2("tampil $tb", "$note_info");
 
 # ============================================================
 # FINAL ECHO

@@ -1,6 +1,6 @@
 <?php
 if ($kelas['label']) {
-  $status_syarat = "<b>Label:</b> $kelas[label] <span class=btn_aksi id=form_ubah_label__toggle>$img_edit</span>";
+  $status_syarat = "<b>Label:</b> $kelas[label] $img_check <span class=btn_aksi id=form_ubah_label__toggle>$img_edit</span>";
   $hideit = 'hideit';
 } else {
   $hideit = '';

@@ -20,7 +20,7 @@ $arr_info_tambahan = [
     'nama' => 'hanya diperbolehkan A-Z (abaikan titik, petik, dll)',
     'whatsapp' => 'awali dengan "628..."',
   ],
-  'petugas' => [
+  'user' => [
     'nama' => 'hanya diperbolehkan A-Z (abaikan titik, gelar, dll)',
     'username' => 'hanya a-z dan 0-9',
     'whatsapp' => 'awali dengan "628..."',

@@ -20,7 +20,7 @@ b.nidn,
 f.fakultas,
 (
   SELECT nama FROM tb_prodi WHERE id=b.id_prodi) homebase,
-(SELECT nama FROM tb_petugas WHERE id=a.id_petugas) verifikator
+(SELECT nama FROM tb_user WHERE id=a.id_user) verifikator
 FROM tb_st a 
 JOIN tb_dosen b ON a.id_dosen=b.id
 JOIN tb_st_detail c ON a.id=c.id_st
@@ -191,7 +191,7 @@ if ($verified) {
   $btn_verif = "$btn_print";
 } else {
 
-  $jabatan = $rrole[$petugas['role']];
+  $jabatan = $rrole[$user['role']];
   $tanggal = tanggal();
 
 
@@ -209,7 +209,7 @@ if ($verified) {
       </p>
       <p>Diverifikasi oleh:</p>
       <ul>
-        <li><b>Petugas:</b> $petugas[nama]</li>
+        <li><b>Petugas:</b> $user[nama]</li>
         <li><b>Jabatan:</b> $jabatan</li>
         <li><b>Di:</b> $lokasi_titimangsa</li>
         <li><b>Tanggal:</b> $tanggal</li>

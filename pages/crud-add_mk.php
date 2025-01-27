@@ -3,9 +3,9 @@ echo "
 <div class='btn_aksi pointer' id='tambah_mk_aktif__toggle'>$img_add Tambah MK Aktif</div>
 <div id='tambah_mk_aktif' class='hideit wadah mt2 gradasi-kuning'>
   <div class='mb2 darkblue f20'>Cara Menambahkan MK Aktif</div>
-  <p>
+  <p class=petunjuk>
     Penambahan (Assign) MK pada Kurikulum aktif dapat Anda lakukan pada
-    <a href='?struktur_kurikulum'>Struktur Kurikulum</a>
+    <a href='?struktur_kurikulum'>Struktur Kurikulum $img_next</a>
   </p>
   <div class='row'>
     <div class='col-6'>

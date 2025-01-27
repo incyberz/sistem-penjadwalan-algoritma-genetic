@@ -178,7 +178,7 @@ if (isset($_POST['btn_book'])) {
         '$weekday',
         '$jam_mulai',
         '$jam_selesai',
-        '$petugas[id]'
+        '$user[id]'
       ) ON DUPLICATE KEY UPDATE assign_date = CURRENT_TIMESTAMP 
       ";
       echolog('inserting jadwal...');

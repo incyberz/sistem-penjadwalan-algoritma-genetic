@@ -22,6 +22,7 @@ include 'struktur_kurikulum-processors.php';
 
 $not_mode = $mode_edit ? 'view' : 'edit';
 $Not_Mode = $mode_edit ? 'Mode View' : 'Mode Editing';
+$Not_petunjuk = $mode_edit ? 'Anda berada pada Mode Editing, seluruh tombol dapat Anda akses' : 'Anda berada pada Mode View. Untuk mengakses Fitur Manage silahkan klik Mode Editing';
 $nav_mode = " <a href='?struktur_kurikulum&id_prodi=$id_prodi&mode=$not_mode&semester=$get_semester&id_shift=$id_shift'>$img_prev $Not_Mode</a>";
 
 
@@ -209,6 +210,7 @@ if (!$id_prodi || !$id_shift) {
   $Ganjil = $ta_aktif % 2 == 0 ? 'Genap' : 'Ganjil';
   $editing_info = $mode_edit ? "<span class=brown>Editing Semester $Ganjil</span> <a href='?home&show_config=1' onclick='return confirm(`Ganti Tahun Ajar?`)'>$img_manage</a>" : '';
   echo "
+    <div class='petunjuk tengah mb4'>$Not_petunjuk $img_help</div>
     <div class='tengah mb2'>
       $nav_mode
     </div>
@@ -228,7 +230,7 @@ if (!$id_prodi || !$id_shift) {
 <script>
   $(function() {
     let id_prodi = $('#id_prodi').text();
-    let id_petugas = $('#id_petugas').text();
+    let id_user = $('#id_user').text();
     let shift = $('#shift').text();
     let semester = $('#semester').text();
     let kelass = $('#kelass').text(); // kelas2 aktif di semester tsb
@@ -314,12 +316,12 @@ if (!$id_prodi || !$id_shift) {
       let nama_dosen = $('#nama_dosen__' + id_dosen + '__' + id_kumk).text();
       // console.log(aksi, id_dosen, id_kumk, nama_dosen);
 
-      console.log(id_dosen, id_kumk, id_petugas);
-      if (id_dosen && id_kumk && id_petugas) {
+      console.log(id_dosen, id_kumk, id_user);
+      if (id_dosen && id_kumk && id_user) {
         let y = confirm(`Set MK ini ke dosen: [ ${nama_dosen} ] ?`);
         if (y) {
           $.ajax({
-            url: `pages/struktur_kurikulum-ajax_set_dosen.php?id_dosen=${id_dosen}&id_kumk=${id_kumk}&id_petugas=${id_petugas}&id_shift=${shift}&id_kelass=${id_kelass}`,
+            url: `pages/struktur_kurikulum-ajax_set_dosen.php?id_dosen=${id_dosen}&id_kumk=${id_kumk}&id_user=${id_user}&id_shift=${shift}&id_kelass=${id_kelass}`,
             success: function(a) {
               if (a == 'sukses') {
                 location.reload();
@@ -334,7 +336,7 @@ if (!$id_prodi || !$id_shift) {
         }
 
       } else {
-        console.log(id_dosen, id_kumk, id_petugas);
+        console.log(id_dosen, id_kumk, id_user);
 
       }
     });

@@ -30,7 +30,7 @@ while ($d = mysqli_fetch_assoc($q)) {
 }
 
 
-$petugas['nama'] = strtolower($petugas['nama']);
+$user['nama'] = strtolower($user['nama']);
 $hideit = $show_config ? '' : 'hideit';
 
 # ============================================================
@@ -41,10 +41,11 @@ echo "<div style='margin: -20px 0 20px 5px'><a href='?progress'><i class=f12>mor
 
 $tmp = str_replace('$', '', file_get_contents('config.php'));
 echo "
-  <h1>Welcome <a href='?detail&tb=petugas&id=$petugas[id]' id='nama_user' class='proper'>$petugas[nama]</a>!!!</h1>
+  <h1>Welcome <a href='?detail&tb=user&id=$user[id]' id='nama_user' class='proper'>$user[nama]</a>!!!</h1>
+  <p class=petunjuk>Silahkan ikuti kalimat petunjuk yang berwarna biru yang biasanya terdapat icon $img_help Anda sekarang boleh klik pada Menu apapun yang tersedia.</p>
   <ul>
-    <li><b>Role:</b> $petugas[role] </li>
-    <li><b>Whatsapp:</b> $petugas[whatsapp] </li>
+    <li><b>Role:</b> $user[role] </li>
+    <li><b>Whatsapp:</b> $user[whatsapp] </li>
     <li>
       <b>TA Aktif:</b> 
       $tahun_ta $Gg 
