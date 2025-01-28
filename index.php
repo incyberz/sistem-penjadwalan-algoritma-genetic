@@ -6,6 +6,11 @@ session_start();
 # ============================================================
 $username = $_SESSION['jadwal_username'] ?? '';
 $user = [];
+$dosen = [];
+$mhs = [];
+$pesan = null;
+$id_dosen = null;
+$id_mhs = null;
 
 # ============================================================
 # CONFIGIRATION FILE
@@ -37,6 +42,7 @@ if ($username) {
     'key2kolom',
     'nama_hari',
     'nama_bulan',
+    'read_only',
     'set_h2',
     'udef',
   ];

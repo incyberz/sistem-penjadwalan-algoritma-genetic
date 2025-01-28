@@ -31,18 +31,18 @@ if (isset($_POST['btn_book'])) {
   $id_kumk = "$id_kurikulum-$id_mk";
   $get_id_kelas = $id_kelas; // refokus ke kelas ini
 
-  echolog("
-  <br>weekday:$weekday 
-  <br>id_sesi:$id_sesi 
-  <br>id_st_detail:$id_st_detail 
-  <br>sks:$sks 
-  <br>id_dosen:$id_dosen 
-  <br>id_mk:$id_mk 
-  <br>id_kelas:$id_kelas
-  <br>id_kurikulum:$id_kurikulum
-  <br>id_kumk:$id_kumk
-  <br>id_shift:$id_shift
-  ");
+  // echolog("
+  // <br>weekday:$weekday 
+  // <br>id_sesi:$id_sesi 
+  // <br>id_st_detail:$id_st_detail 
+  // <br>sks:$sks 
+  // <br>id_dosen:$id_dosen 
+  // <br>id_mk:$id_mk 
+  // <br>id_kelas:$id_kelas
+  // <br>id_kurikulum:$id_kurikulum
+  // <br>id_kumk:$id_kumk
+  // <br>id_shift:$id_shift
+  // ");
 
 
 
@@ -83,7 +83,7 @@ if (isset($_POST['btn_book'])) {
     # ============================================================
     # INSERTS MULTIPLE PEMAKAIAN RUANG SESUAI JUMLAH SKS MK
     # ============================================================
-    echolog('perform multiple insert pemakaian ruang sesuai SKS-MK...');
+    // echolog('perform multiple insert pemakaian ruang sesuai SKS-MK...');
     $last_id_sesi = '';
     $ada_error = 0;
     $j = 0;
@@ -91,14 +91,45 @@ if (isset($_POST['btn_book'])) {
       $j++;
       if ($cid_sesi == 6) $cid_sesi = 7; // shalat dzuhur
       if ($cid_sesi == 13) $cid_sesi = 14; // shalat magrib
-      echolog("inserting SKS ke : $j...");
-      $id = "$id_st_detail-$cid_sesi";
+      // echolog("inserting SKS ke : $j dengan current_id_sesi: $cid_sesi");
 
+      # ============================================================
+      # PENGECEKAN KETERSEDIAAN SESI DI KELAS INI
+      # ============================================================
+      $s = "SELECT id_st_detail FROM tb_pemakaian_ruang WHERE unik_dosen LIKE 'TA-%-W-S' AND id_st_detail LIKE 'TA-DS-KU-MK-KLS-SHIFT'";
+      $s = "SELECT id_st_detail FROM tb_pemakaian_ruang WHERE unik_dosen LIKE 'TA-%-W-S' AND id_st_detail LIKE 'TA-%-KLS-SHIFT'";
+      $s = "SELECT id_st_detail FROM tb_pemakaian_ruang 
+      WHERE unik_dosen LIKE '$ta_aktif-%-$weekday-$cid_sesi' 
+      -- AND id_st_detail LIKE 'TA-%-KLS-SHIFT'
+      AND id_st_detail LIKE '$ta_aktif-%-$id_kelas-$id_shift'
+      ";
+      // echolog("<b class=blue>Pengecekan Ketersediaan Sesi</b>, $s");
+      $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+      if (mysqli_num_rows($q)) die(alert("
+        <b class=red>Sesi tidak mencukupi untuk $sks SKS</b>
+        <hr>
+        Sesi $cid_sesi pada hari dan kelas tersebut sudah dipakai oleh dosen lain. Silahkan pakai sesi atau hari lain.
+        <span class='consolas abu'>
+        <br>- weekday: $weekday
+        <br>- cid_sesi: $cid_sesi
+        <br>- ta_aktif: $ta_aktif
+        </span>
+        <hr>
+        proses dibatalkan... <span class='btn btn-primary btn-sm' onclick='location.replace(`?jadwal&id_shift=$id_shift&id_kelas=$get_id_kelas`)'>OK</span>
+
+      "));
+
+
+
+
+      # ============================================================
+      # PENGECEKAN KONFLIK DOSEN
+      # ============================================================
       $unik_dosen = 'TA-Dosen-W-cid_sesi';
       $unik_dosen = "$ta_aktif-$id_dosen-$weekday-$cid_sesi";
 
       $s = "SELECT id_st_detail FROM tb_pemakaian_ruang WHERE unik_dosen='$unik_dosen'";
-      echolog($s);
+      // echolog("Pengecekan Konflik Dosen, $s");
       $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
       if (mysqli_num_rows($q)) {
         $d = mysqli_fetch_assoc($q);
@@ -117,12 +148,15 @@ if (isset($_POST['btn_book'])) {
       }
     }
 
+    # ============================================================
+    # JIKA TIDAK ADA KONFLIK DOSEN & RUANG > INSERT
+    # ============================================================
     if (!$ada_error) {
       for ($cid_sesi = $id_sesi; $cid_sesi < $id_sesi + $sks; $cid_sesi++) {
         if ($cid_sesi == 6) $cid_sesi = 7; // shalat dzuhur
         if ($cid_sesi == 13) $cid_sesi = 14; // shalat magrib
-        echolog("id_sesi terpakai: $cid_sesi");
-        $id = "$id_st_detail-$cid_sesi";
+        // echolog("id_sesi terpakai: $cid_sesi");
+        $id = "$id_st_detail-$cid_sesi"; // id_pemakaian_ruang
 
         $unik_dosen = 'TA-Dosen-W-S';
         $unik_dosen = "$ta_aktif-$id_dosen-$weekday-$cid_sesi";
@@ -141,8 +175,7 @@ if (isset($_POST['btn_book'])) {
           '$unik_dosen'
         ) ON DUPLICATE KEY UPDATE unik_dosen = '$unik_dosen' -- allow reinsert 
         ";
-        echolog($s);
-
+        // echolog("ZZZ: $s");
         $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
         $last_id_sesi = $cid_sesi;
       }
@@ -181,10 +214,11 @@ if (isset($_POST['btn_book'])) {
         '$user[id]'
       ) ON DUPLICATE KEY UPDATE assign_date = CURRENT_TIMESTAMP 
       ";
-      echolog('inserting jadwal...');
+      // echolog("insert multiple ($sks) data pemakaian ruang...OK");
+      // echolog('inserting jadwal...');
 
       $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-    } // tidak ada error saat insert pemakaian ruang
+    } // tidak ada error|konfliks saat insert pemakaian ruang
   } // tidak ada konflik dosen
 } // end book sesi
 

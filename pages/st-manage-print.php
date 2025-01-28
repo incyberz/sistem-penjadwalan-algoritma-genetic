@@ -29,8 +29,8 @@ $tanggal_surat = '20 Januari 2025'; // ZZZ
 
 echo "
   <div class=bg_hitam>
-    <h2>Print Preview Surat Tugas</h2> 
-    Format Kertas A4, Margin: 2-2-2-2
+    <h2 class=no_print>Print Preview Surat Tugas</h2> 
+    <div class=no_print>Format Kertas A4, Margin: 2-2-2-2</div>
     <div class=kertas_a4>
       <div class=blok_kop_surat>  
         <img src=custom/kop_surat.jpg class=img-fluid>
@@ -72,9 +72,39 @@ echo "
 
       <div class='ttd titimangsa'>$lokasi_titimangsa, $tanggal_surat</div>
       <div class='ttd verifikator_ttd'>$nama_dekan</div>
-
-
-
     </div>
+    <button class='btn btn-success btn-sm' id=btn_print>Print</button>
+    <span id=cancel_print class='hideit'>
+      <button class='btn btn-warning btn-sm' onclick=location.reload() >Cancel Print</button>
+    </span>
   </div>
+
 ";
+?>
+<style>
+  .ontop {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: 0;
+    z-index: 9999;
+  }
+
+  .bgblack {
+    background: black !important;
+  }
+</style>
+<script>
+  $(function() {
+    $('#btn_print').click(function() {
+      $("header").hide();
+      $(".no_print").hide();
+      $("#cancel_print").show();
+      $("body").addClass('bgblack');
+      $(".kertas_a4").addClass('ontop');
+      // $(".kertas_a4").show();
+      window.print();
+    })
+  })
+</script>

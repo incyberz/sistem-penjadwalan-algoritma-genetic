@@ -10,6 +10,7 @@ d.nama as nama_kelas,
 f.nama as nama_mk,
 f.sks,
 CONCAT(COALESCE(h.gelar_depan,''),' ',h.nama,', ',COALESCE(h.gelar_belakang,'')) as nama_lengkap_dosen,
+h.id as id_dosen,
 i.nama as nama_ruang
 
 FROM tb_pemakaian_ruang a 

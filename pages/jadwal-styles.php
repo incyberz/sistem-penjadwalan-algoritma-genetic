@@ -88,4 +88,10 @@
     vertical-align: bottom;
     /* padding-top: 5px; */
   }
+
+  .tr_mine {
+    border: solid 2px blue;
+    font-weight: bold;
+    background: greenyellow;
+  }
 </style>

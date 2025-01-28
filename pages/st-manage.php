@@ -169,23 +169,28 @@ while ($d = mysqli_fetch_assoc($q)) {
 # BTN VERIF
 # ============================================================
 $btn_verif = '';
+$btn_rollback = '';
 $all_users = "<span class='consolas darkred'>all-users | all-roles $img_warning</span> ~ 
           <span class='blue pointer' onclick='alert(`Ubah Rule Verifikasi sedang dalam tahap pengembangan. \n\nSilahkan hubungi developer untuk info lebih lanjut!`)'> Ubah Rule $img_edit</span>";
 
 if ($verified) {
   $tanggal = tanggal($st['verif_date']);
   $eta = eta2($st['verif_date']);
-  alert("Info: Surat Tugas Verified by <b>$st[verifikator]</b> tanggal <b>$tanggal</b> <i class=f12>$eta</i>", 'info');
+  alert("Info: Surat Tugas Verified by <b>$st[verifikator]</b> tanggal <b>$tanggal</b> <i class=f12>$eta</i>", 'info no_print');
 
+  if ($role == 'AKD' || $role == 'PIM') {
+    $btn_rollback = "
+      <button class='btn btn-danger w-100' name=btn_rollback_verif value='$id_st'>Rollback Verifikasi</button>
+      <div class='mt1 abu miring'>
+        Yang berhak Rollback Verifikasi Surat Tugas seharusnya Level Pimpinan (Rektor atau Kaprodi)
+        <div class=mt2>Yang berhak Rollback saat ini:</div>
+        $all_users
+      </div>
+    ";
+  }
   $btn_print = "
     <a class='btn btn-success w-100 mt2 mb2' href='?st&aksi=manage&id_st=$id_st&print=1' >Print Surat Tugas</a>
-    <button class='btn btn-danger w-100' name=btn_rollback_verif value='$id_st'>Rollback Verifikasi</button>
-    <div class='mt1 abu miring'>
-      Yang berhak Rollback Verifikasi Surat Tugas seharusnya Level Pimpinan (Rektor atau Kaprodi)
-      <div class=mt2>Yang berhak Rollback saat ini:</div>
-      $all_users
-    </div>
-
+    $btn_rollback
   ";
 
   $btn_verif = "$btn_print";

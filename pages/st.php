@@ -8,9 +8,9 @@ if ($role == 'DSN' and (!$id_st or $id_st != $dosen['id_st'])) {
   if ($dosen['id_st']) {
     jsurl("?st&id_st=$dosen[id_st]");
   } else {
-    alert("Anda belum punya Surat Tugas di TA. $tahun_ta $Gg");
+    alert("Anda belum punya Surat Tugas di TA. $tahun_ta $Gg. <hr>Silahkan hubungi Akademik untuk info lanjut.");
+    exit;
   }
-  exit;
 }
 $id_dosen = $_GET['id_dosen'] ?? '';
 $print = $_GET['print'] ?? '';

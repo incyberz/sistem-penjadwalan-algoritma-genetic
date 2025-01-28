@@ -12,7 +12,10 @@ echo "<span class=hideit id=id_user>$id_user</span>";
 echo "<span class=hideit id=role>$role</span>";
 
 if ($role == 'DSN') {
-  $s = "SELECT *,
+  $s = "SELECT a.*,
+  b.gender,
+  b.whatsapp,
+  b.image,
   (SELECT id FROM tb_st WHERE id_dosen=a.id AND id_ta=$ta_aktif) id_st 
   FROM tb_dosen a 
   JOIN tb_user b ON a.id_user=b.id 
@@ -20,4 +23,5 @@ if ($role == 'DSN') {
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   if (!mysqli_num_rows($q)) die(alert('Data User Dosen tidak ditemukan'));
   $dosen = mysqli_fetch_assoc($q);
+  $id_dosen = $dosen['id'];
 }

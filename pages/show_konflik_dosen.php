@@ -37,6 +37,6 @@ alert("
       <li><b>Semester:</b> $d[semester]</li>
     </ul>
   <hr>
-  proses dibatalkan... <span class='btn btn-primary btn-sm' onclick='location.replace(`?jadwal&id_kelas=$get_id_kelas`)'>OK</span>
+  proses dibatalkan... <span class='btn btn-primary btn-sm' onclick='location.replace(`?jadwal&id_shift=$id_shift&id_kelas=$get_id_kelas`)'>OK</span>
 ");
 exit;

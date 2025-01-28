@@ -107,6 +107,9 @@ foreach ($rhari as $date => $v) {
     # DATA AVAILABLE ST-DETAIL | UNSIGNED JADWAL
     # ============================================================
     $radio_st_mk_kelas = '';
+    $c_id_dosen = $dosen ? "c.id_dosen = $dosen[id]" : 1;
+
+
     $s = "SELECT 
     a.id,
     d.nama as nama_mk,
@@ -129,6 +132,7 @@ foreach ($rhari as $date => $v) {
     AND f.id_shift = '$id_shift' 
     AND h.fakultas = '$fakultas' 
     AND i.id is null 
+    AND $c_id_dosen
 
 
     ORDER BY nama_mk";
@@ -136,10 +140,7 @@ foreach ($rhari as $date => $v) {
     // $rst_mk_kelas = [];
     $kumk_count = mysqli_num_rows($q);
     $rkumk_count[$id_kelas] = $kumk_count;
-    if (!$kumk_count) {
-      // die(alert("Belum ada Data Surat Tugas Perkuliahan detail untuk semester [$semester] kelas [$kelas-$id_shift] fakultas [$fakultas]. | <a href='?st'>Manage Surat Tugas</a>"));
-      // tidak apa2 habis mungkin di prodi lain se-fakultas masih ada 
-    }
+
     while ($d = mysqli_fetch_assoc($q)) {
       $radio_st_mk_kelas .= "
         <label class='label_mk_dosen'>
@@ -190,17 +191,24 @@ foreach ($rhari as $date => $v) {
           # ============================================================
           # SUDAH TERPAKAI
           # ============================================================
+          $is_mine = $terpakai['id_dosen'] == $id_dosen ? 1 : 0;
           if ($terpakai['id_sesi'] == $terpakai['id_sesi_at_book']) {
             $jam_mulai = date('H:i', strtotime($terpakai['jam_mulai']));
             $jam_selesai = date('H:i', strtotime($terpakai['jam_selesai']));
-            $delete_jadwal = !$hak['delete_jadwal'] ? '' : "
+            $form_delete_jadwal = "
               <form method=post class='m0 p0 inline '>
                 <button class=transparan name=btn_delete_jadwal value=$terpakai[id_st_detail] onclick='return confirm(`Hapus Jadwal ini?`)'>$img_delete</button>
               </form>
             ";
+            $delete_jadwal = $hak['delete_jadwal'] ? $form_delete_jadwal : '';
+
+            // boleh delete jadwal sendiri
+            $delete_jadwal = $is_mine ? $form_delete_jadwal : $delete_jadwal;
+
             $sks_info = "<div class='f12 miring abu'>( $terpakai[sks] SKS )</div>";
+            $tr_mine = $is_mine ? 'tr_mine' : '';
             $tr .= "
-              <tr>
+              <tr class='$tr_mine'>
                 <td>$jam_mulai - $jam_selesai$sks_info</td>
                 <td>
                   $terpakai[nama_mk] $delete_jadwal
@@ -263,7 +271,7 @@ foreach ($rhari as $date => $v) {
             # ============================================================
             # PILIHAN MK HABIS
             # ============================================================
-            $pesan = "Pilihan MK di Surat Tugas untuk kelas [ $kelas ] habis";
+            $pesan = $dosen ? '-' : "Pilihan MK di Surat Tugas untuk kelas [ $kelas ] habis | <a target=_blank href='?st&note=$pesan'>Add Surat Tugas</a>";
             $s3 = "SELECT id FROM tb_kurikulum WHERE id_prodi=$arr_kelas[id_prodi] AND id_ta=$ta_aktif";
             $q3 = mysqli_query($cn, $s3) or die(mysqli_error($cn));
             $d3 = mysqli_fetch_assoc($q3);
@@ -275,7 +283,7 @@ foreach ($rhari as $date => $v) {
               <tr>
                 <td>$awal - $akhir</td>
                 <td>
-                  <span class='abu f12 miring'>$pesan | <a target=_blank href='?st&note=$pesan'>Add Surat Tugas</a></span>
+                  <span class='abu f12 miring'>$pesan</span>
                 </td>
                 <td>?</td>
               </tr>
