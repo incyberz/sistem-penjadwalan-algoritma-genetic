@@ -1,5 +1,5 @@
 <?php
-include 'includes/whatsapp_keyup.php';
+include 'includes/script_whatsapp.php';
 
 # ============================================================
 # PROPERTI MHS
@@ -12,7 +12,6 @@ b.singkatan as prodi,
 a.nim, 
 a.nama, 
 a.angkatan, 
-a.whatsapp, 
 (SELECT id FROM tb_user WHERE id=a.id_user) id_user, 
 (SELECT whatsapp FROM tb_user WHERE id=a.id_user) whatsapp, 
 (SELECT username FROM tb_user WHERE id=a.id_user) username, 
@@ -22,11 +21,6 @@ a.whatsapp,
   JOIN tb_peserta_kelas q ON p.id=q.id_kelas 
   WHERE q.id_mhs=a.id 
   AND p.id_ta = $ta_aktif) kelas, 
-(
-  SELECT p.id_dosen_wali FROM tb_kelas p 
-  JOIN tb_peserta_kelas q ON p.id=q.id_kelas 
-  WHERE q.id_mhs=a.id 
-  AND p.id_ta = $ta_aktif) id_dosen_wali, 
 a.status 
 FROM tb_mhs a 
 JOIN tb_prodi b ON a.id_prodi=b.id 
@@ -38,6 +32,11 @@ $image_mhs = '';
 if (mysqli_num_rows($q)) {
   $i = 0;
   $mhs = mysqli_fetch_assoc($q);
+
+  echo '<pre>';
+  var_dump($mhs);
+  echo '<b style=color:red>DEBUGING: echopreExit</b></pre>';
+  exit;
   foreach ($mhs as $key => $value) {
     $kolom = strtoupper(key2kolom($key));
     if (
@@ -46,7 +45,7 @@ if (mysqli_num_rows($q)) {
       || $key == 'image'
       || $key == 'kelas'
       || $key == 'id_user'
-      || $key == 'id_dosen_wali'
+      || $key == 'wa_grup'
     ) {
       continue;
     } elseif ($key == 'label') {
@@ -92,14 +91,6 @@ $username = $mhs['username'] ?? strtolower(str_replace(' ', '', $mhs['nama']));
 
 
 
-# ============================================================
-# DOSEN WALI
-# ============================================================
-$info_dosen_wali = div_alert('danger', 'Belum ada info dosen wali.');
-if ($mhs['id_dosen_wali']) {
-  $id_dosen_wali = $mhs['id_dosen_wali'];
-  include 'info_dosen_wali.php';
-}
 
 $form_upload = !$mhs['id_user'] ? div_alert('warning', "Belum bisa upload image.") : "
   <form method=post enctype='multipart/form-data'>
@@ -136,7 +127,7 @@ if ($mhs['kelas']) {
   $data_kelas = div_alert('danger', 'No data kelas akademik');
 }
 
-$script_whatsapp = whatsapp_keyup('whatsapp');
+$script_whatsapp = script_whatsapp('whatsapp');
 
 # ============================================================
 # FINAL ECHO
@@ -183,10 +174,6 @@ echo "
         <h3>Data Akademik</h3>
         $data_kelas
         <p class='petunjuk mt2'>Pada TA Aktif $tahun_ta $Gg $img_help</p>  
-        <hr>
-        <h3>Dosen Wali</h3>
-        $info_dosen_wali
-        <p class=petunjuk>Manage Dosen Wali dilakukan saat Verifikasi Kelas $img_help</p>  
       </div>
     </div>
   </div>

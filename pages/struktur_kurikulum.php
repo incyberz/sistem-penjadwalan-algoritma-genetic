@@ -15,15 +15,25 @@ $get_semester = ($_GET['semester'] ?? null) ? $_GET['semester'] : $default_semes
 echo "<span class=hideit id=semester>$get_semester</span>";
 $img_next = img_icon('next');
 $SHIFT = $id_shift == 'R' ? 'REGULER' : 'NON-REGULER';
-
-
-include 'struktur_kurikulum-styles.php';
-include 'struktur_kurikulum-processors.php';
-
 $not_mode = $mode_edit ? 'view' : 'edit';
 $Not_Mode = $mode_edit ? 'Mode View' : 'Mode Editing';
 $Not_petunjuk = $mode_edit ? 'Anda berada pada Mode Editing, seluruh tombol dapat Anda akses' : 'Anda berada pada Mode View. Untuk mengakses Fitur Manage silahkan klik Mode Editing';
 $nav_mode = " <a href='?struktur_kurikulum&id_prodi=$id_prodi&mode=$not_mode&semester=$get_semester&id_shift=$id_shift'>$img_prev $Not_Mode</a>";
+
+# ============================================================
+# HAK AKSES
+# ============================================================
+if ($mode_edit and ($role == 'DSN' || $role == 'MHS')) {
+  require_once 'includes/script_read_only.php';
+  alert("Role Anda tidak berhak masuk ke Mode Editing ", 'warning');
+  $mode = 'view';
+  $mode_edit = 0;
+  $Not_petunjuk = 'Relogin dengan role AKD atau PIM untuk Editing Struktur Kurikulum';
+}
+
+include 'struktur_kurikulum-styles.php';
+include 'struktur_kurikulum-processors.php';
+
 
 
 if (!$id_prodi || !$id_shift) {

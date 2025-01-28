@@ -12,7 +12,7 @@ if ($_POST) {
     $s = "DELETE FROM tb_peserta_kelas WHERE id_mhs = $_POST[btn_drop] AND id_kelas=$kelas[id]";
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
     alert("Dropping mhs sukses.", 'success');
-    jsurl("?verifikasi&tb=kelas&id=$get_id&last_aksi=manage_peserta", 500);
+    jsurl("?verifikasi&tb=kelas&id=$get_id&last_aksi=manage_peserta");
   }
 
   if (isset($_POST['btn_add'])) {
@@ -31,7 +31,7 @@ if ($_POST) {
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 
     alert("Insert Mhs Baru sukses.", 'success');
-    jsurl("?verifikasi&tb=kelas&id=$get_id&last_aksi=manage_peserta", 1000);
+    jsurl("?verifikasi&tb=kelas&id=$get_id&last_aksi=manage_peserta");
   }
 
   if (isset($_POST['btn_assign'])) {
@@ -55,7 +55,7 @@ if ($_POST) {
       alert("Assign Mhs sukses.", 'success');
     }
 
-    jsurl('', 1000);
+    jsurl();
   }
 
   $s = "DESCRIBE tb_kelas";
@@ -65,6 +65,7 @@ if ($_POST) {
     array_push($fields, $d['Field']);
   }
 
+
   foreach ($_POST as $key => $value) {
     if (in_array($key, $fields)) {
       $s = "UPDATE tb_kelas SET $key='$value' WHERE id='$id'";
@@ -72,12 +73,57 @@ if ($_POST) {
       $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
       alert("Update field [$key] sukses.", 'success');
     } elseif ($key == 'whatsapp_kosma') {
-      $s = "UPDATE tb_mhs SET whatsapp='$value' WHERE id='$_POST[id_kosma]'";
-      $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-      alert("Update data kosma sukses.", 'success');
-      // // jsurl('', 1000);
+      // cek jika kosma belum punya data user
+      $id_kosma = $_POST['id_kosma'] ?? null;
+      if ($id_kosma) {
+        $s = "SELECT a.id_user FROM tb_mhs a 
+        JOIN tb_user b ON a.id_user=b.id
+        WHERE a.id=$id_kosma";
+        echolog($s);
+        $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+        if (!mysqli_num_rows($q)) {
+          # ============================================================
+          # AUTO CREATE 
+          # ============================================================
+          $s = "SELECT MAX(id) as max_id FROM tb_user";
+          $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+          $d = mysqli_fetch_assoc($q);
+          $max_id = $d['max_id'];
+          $id_user = $max_id + 1;
+
+          $s = "INSERT INTO tb_user (
+            id,
+            username,
+            whatsapp,
+            role
+          ) VALUES (
+            $id_user,
+            'kosma$get_id',
+            '$value',
+            'MHS'
+          )";
+          echolog($s);
+          $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+          alert("Insert data user baru sukses. id: $id_user", 'success');
+        } else {
+          $d = mysqli_fetch_assoc($q);
+          $id_user = $d['id_user'];
+          $s = "UPDATE tb_user SET whatsapp='$value' WHERE id=$id_user";
+          $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+          alert("Update whatsapp kosma sukses.", 'success');
+        }
+        $s = "UPDATE tb_mhs SET id_user='$id_user' WHERE id=$id_kosma";
+        echolog($s);
+        $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+        alert(
+          "Update field id_user kosma sukses.",
+          'success'
+        );
+      } else {
+        die('Data POST id_kosma is null.');
+      }
     } else {
-      die("Belum ada handler untuk field [$key]");
+      die("<b class=red>Belum ada handler untuk field [$key]</b>");
     }
   }
   jsurl("?verifikasi&tb=kelas&id=$get_id");

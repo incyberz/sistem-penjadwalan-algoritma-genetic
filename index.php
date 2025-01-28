@@ -2,100 +2,104 @@
 session_start();
 
 # ============================================================
-# DEBUGGING
+# SESSION
 # ============================================================
-if (!isset($_SESSION['jadwal_username'])) $_SESSION['jadwal_username'] = 'yunita';
-if (!isset($_SESSION['jadwal_ta_aktif'])) $_SESSION['jadwal_ta_aktif'] = 20242;
+$username = $_SESSION['jadwal_username'] ?? '';
+$user = [];
 
 # ============================================================
 # CONFIGIRATION FILE
 # ============================================================
 include 'config.php';
+include 'conn.php';
+include 'includes/jadwal_styles.php';
 
 
 
 # ============================================================
 # INCLUDES
 # ============================================================
-include 'conn.php';
-include 'includes/jadwal_styles.php';
-include 'includes/arr_sql.php';
-include 'includes/arr_tb_master.php';
+if ($username) {
 
-$includes = [
-  'alert',
-  'date_managements',
-  'div_alert',
-  'echolog',
-  'hak_akses',
-  'tanggal',
-  'img_icon',
-  'insho_styles',
-  'jsurl',
-  'key2kolom',
-  'nama_hari',
-  'nama_bulan',
-  'set_h2',
-  'udef',
-];
-foreach ($includes as $v) {
-  $file = "includes/$v.php";
-  if (file_exists($file)) {
-    include $file;
-  } elseif (file_exists("../$file")) {
-    include "../$file"; // at htdocs or main server
+  include 'includes/arr_sql.php';
+  include 'includes/arr_tb_master.php';
 
-  } else {
-    die("<b style=color:red>File include [ $v ] diperlukan untuk menjalankan sistem.</b>");
-  }
-}
+  $includes = [
+    'alert',
+    'date_managements',
+    'div_alert',
+    'echolog',
+    'hak_akses',
+    'tanggal',
+    'img_icon',
+    'insho_styles',
+    'jsurl',
+    'key2kolom',
+    'nama_hari',
+    'nama_bulan',
+    'set_h2',
+    'udef',
+  ];
+  foreach ($includes as $v) {
+    $file = "includes/$v.php";
+    if (file_exists($file)) {
+      include $file;
+    } elseif (file_exists("../$file")) {
+      include "../$file"; // at htdocs or main server
 
-
-# ============================================================
-# ICONS
-# ============================================================
-$img_next = img_icon('next');
-$img_wa_disabled = img_icon('wa_disabled');
-$img_unique = img_icon('unique');
-$img_help = img_icon('help');
-$null = '<i class="f12 abu">null</i>';
-$unverified = '<i class="f12 red">unverified</i>';
-
-# ============================================================
-# SELECT || CREATE TABLES
-# ============================================================
-try {
-  foreach ($arr_sql as $key => $sql) {
-    $sql = "SELECT 1 FROM tb_$key LIMIT 1";
-    $result = $conn->query($sql);
-
-    if ($result === false) {
-      throw new Exception("Tabel [ $key ] belum ada.");
-      break;
+    } else {
+      die("<b style=color:red>File include [ $v ] diperlukan untuk menjalankan sistem.</b>");
     }
   }
-} catch (Exception $e) {  // Tangkap dan tampilkan error
-  echo '<div style="color:red;padding:15px"><b>' . $e->getMessage() . '</b></div>';
+
 
   # ============================================================
-  # CREATE TABLES
+  # ICONS
   # ============================================================
-  echolog('<b class="darkblue f20 p2 mt4">PERFORM AUTOMATIC UPDATING TABLES</b><hr>');
-  foreach ($arr_sql as $key => $sql) {
+  $img_next = img_icon('next');
+  $img_wa_disabled = img_icon('wa_disabled');
+  $img_unique = img_icon('unique');
+  $img_help = img_icon('help');
+  $null = '<i class="f12 abu">null</i>';
+  $unverified = '<i class="f12 red">unverified</i>';
+  $api_wa = 'https://api.whatsapp.com/send';
+  $now = date('Y-m-d H:i:s');
+  $text_wa_from = "%0a%0a```From: Smart Scheduling System %0aat $now```";
+  # ============================================================
+  # SELECT || CREATE TABLES
+  # ============================================================
+  try {
+    foreach ($arr_sql as $key => $sql) {
+      $sql = "SELECT 1 FROM tb_$key LIMIT 1";
+      $result = $conn->query($sql);
 
-    $conn->query($sql);
+      if ($result === false) {
+        throw new Exception("Tabel [ $key ] belum ada.");
+        break;
+      }
+    }
+  } catch (Exception $e) {  // Tangkap dan tampilkan error
+    echo '<div style="color:red;padding:15px"><b>' . $e->getMessage() . '</b></div>';
+
+    # ============================================================
+    # CREATE TABLES
+    # ============================================================
+    echolog('<b class="darkblue f20 p2 mt4">PERFORM AUTOMATIC UPDATING TABLES</b><hr>');
+    foreach ($arr_sql as $key => $sql) {
+
+      $conn->query($sql);
+    }
+    alert("<div style='padding:15px;color:green'>Tables created successfully. | <a href='?'>Back to Home</a></div>", 'success');
+    exit;
   }
-  alert("<div style='padding:15px;color:green'>Tables created successfully. | <a href='?'>Back to Home</a></div>", 'success');
-  exit;
+
+
+
+  # ============================================================
+  # LOGIN INFO
+  # ============================================================
+  include 'pages/user.php';
 }
-
-
-# ============================================================
-# LOGIN INFO
-# ============================================================
-$username = $_SESSION['jadwal_username'] ?? '';
-$user = [];
-if ($username) include 'pages/user.php';
 
 
 ?>
@@ -114,7 +118,7 @@ if ($username) include 'pages/user.php';
 
 <body>
   <div class="container">
-    <?php include 'pages/header.php'; ?>
+    <?php if ($username) include 'pages/header.php'; ?>
     <main>
       <section>
         <?php include 'routing.php'; ?>

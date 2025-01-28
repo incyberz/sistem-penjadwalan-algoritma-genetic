@@ -4,7 +4,7 @@ $info_tambahan = $arr_info_tambahan[$tb][$field] ?? null;
 $field_key = $kolom['Key'][$key];
 $field_type = $kolom['Type'][$key];
 
-if ($field == 'id_kosma' || $field == 'id_dosen_wali') {
+if ($field == 'id_kosma') {
   $input_th .= "<th>-</th>";
 } elseif ($field_key == 'MUL') { // select
   # ============================================================

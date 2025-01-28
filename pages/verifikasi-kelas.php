@@ -12,13 +12,13 @@ if ($get_id) {
   a.status,
   a.id_kosma,
   (
-    SELECT p.whatsapp FROM tb_mhs p
+    SELECT o.whatsapp FROM tb_user o
+    JOIN tb_mhs p ON o.id=p.id_user
     JOIN tb_kelas q ON p.id=q.id_kosma
     WHERE q.id=a.id) whatsapp_kosma,
-  a.id_dosen_wali,
+  a.wa_grup,
   b.singkatan as prodi,
   b.status as status_prodi,
-  (SELECT nama FROM tb_dosen WHERE id=a.id_dosen_wali) nama_dosen_wali, 
   (SELECT nama FROM tb_mhs WHERE id=a.id_kosma) nama_kosma, 
   (SELECT COUNT(1) FROM tb_peserta_kelas WHERE id_kelas=a.id) count_peserta 
   FROM tb_kelas a 
@@ -71,7 +71,7 @@ if ($get_id) {
         $kelas['label']
         && $kelas['count_peserta']
         && $kelas['id_kosma']
-        && $kelas['id_dosen_wali']
+        && $kelas['wa_grup']
         && $kelas['status_prodi']
       ) {
         if ($kelas['status'] == 100) {

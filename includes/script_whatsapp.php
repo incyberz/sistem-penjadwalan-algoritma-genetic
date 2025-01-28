@@ -1,5 +1,5 @@
 <?php
-function whatsapp_keyup($id_html)
+function script_whatsapp($id_html)
 {
   return "
     <script>

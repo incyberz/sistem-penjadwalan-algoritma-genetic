@@ -40,7 +40,6 @@ if ($_POST) {
     } else {
       $d = mysqli_fetch_assoc($q);
       $id_user = $d['id_user'];
-      // alert("Get id_user: [ $id_user ] ", 'success');
     }
 
     $s = "UPDATE tb_mhs SET id_user=$id_user WHERE id=$get_id";

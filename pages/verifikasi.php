@@ -24,7 +24,7 @@ $syarats = [
       'Label Kelas' => 'yaitu custom penamaan kelas agar mudah diingat , default nya sama dengan nama kelas',
       'Peserta Kelas' => 'terdapat minimal satu orang mahasiswa peserta kelas tersebut',
       'Kosma Kelas' => 'terdapat data kosma kelas dan whatsapp nya',
-      'Dosen Wali' => 'data dosen wali dan kegiatan perwalian',
+      'WA Grup' => 'grup whatsapp untuk koordinasi perkuliahan (Format: https://chat.whatsapp.com/[id-grup])',
       'Prodi Terverifikasi' => 'prodi induk kelas ini harus sudah terverifikasi',
     ]
   ],

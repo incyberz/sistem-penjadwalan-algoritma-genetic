@@ -3,6 +3,15 @@
 # SK AJAR
 # ============================================================
 $id_st = $_GET['id_st'] ?? '';
+if ($role == 'DSN' and (!$id_st or $id_st != $dosen['id_st'])) {
+
+  if ($dosen['id_st']) {
+    jsurl("?st&id_st=$dosen[id_st]");
+  } else {
+    alert("Anda belum punya Surat Tugas di TA. $tahun_ta $Gg");
+  }
+  exit;
+}
 $id_dosen = $_GET['id_dosen'] ?? '';
 $print = $_GET['print'] ?? '';
 $aksi = $_GET['aksi'] ?? 'manage';
@@ -12,59 +21,14 @@ $pesan_error = '';
 $mk_available = 0;
 $img_next = img_icon('next');
 
-# ============================================================
-# DATA DOSEN + DATA ST/MK SEBELUMNYA
-# ============================================================
-// $rkumk = [];
-// $Create = 'Create';
-// if ($id_dosen) {
-//   $s = "SELECT a.*,
-//   (SELECT id FROM tb_st WHERE id_dosen=a.id AND id_ta=$ta_aktif) id_st
-//   FROM tb_dosen a WHERE a.id=$id_dosen";
-//   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-//   $dosen = mysqli_fetch_assoc($q);
-//   $spasi = $dosen['gelar_depan'] ? ' ' : '';
-//   $koma = $dosen['gelar_belakang'] ? ', ' : '';
-//   $nama_lengkap_dosen = "$dosen[gelar_depan]$spasi$dosen[nama]$koma$dosen[gelar_belakang]";
-//   if ($dosen['id_st']) {
-//     $Create = 'Manage';
-//     # ============================================================
-//     # GET MK PADA SURAT TUGAS
-//     # ============================================================
-//     $s = "SELECT a.*,
-//     -- (SELECT COUNT(1) FROM tb_st_mk_kelas WHERE id_st_detail=a.id) jumlah_kelas 
-//     (SELECT 0) jumlah_kelas 
-//     FROM tb_st_detail a 
-//     WHERE a.id_st='$dosen[id_st]'";
-//     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-//     while ($d = mysqli_fetch_assoc($q)) {
-//       $rkumk[$d['id_kumk']] = ['jumlah_kelas' => $d['jumlah_kelas']];
-//     }
-//   }
-// }
-
 include 'st-styles.php';
 include 'st-processors.php';
 
 # ============================================================
-# DATA KURIKULUM
-# ============================================================
-// $s = "SELECT a.*,b.fakultas,
-// (SELECT nama FROM tb_prodi WHERE id=a.id_prodi) nama_prodi  
-// FROM tb_kurikulum a 
-// JOIN tb_prodi b ON a.id_prodi=b.id 
-// WHERE a.id = $id_kurikulum";
-// $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-// $kurikulum = mysqli_fetch_assoc($q);
-
-# ============================================================
 # DATES
 # ============================================================
-// $Tahun = intval($kurikulum['id_ta'] / 10);
 include 'includes/arr_bulan_romawi.php';
 $bulan_romawi = $arr_bulan_romawi[date('m')];
-
-
 if ($aksi) {
   $file = "st-$aksi.php";
   if (file_exists("pages/$file")) {
