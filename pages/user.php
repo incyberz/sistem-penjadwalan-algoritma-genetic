@@ -24,4 +24,5 @@ if ($role == 'DSN') {
   if (!mysqli_num_rows($q)) die(alert('Data User Dosen tidak ditemukan'));
   $dosen = mysqli_fetch_assoc($q);
   $id_dosen = $dosen['id'];
+  $user['nama'] = $dosen['nama'];
 }

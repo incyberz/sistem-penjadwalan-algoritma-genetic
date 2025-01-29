@@ -2,9 +2,31 @@
 $img_manage = img_icon('manage');
 
 $li = '';
-foreach ($arr_tb_master as $tb) {
-  $li .= "<li><a href='?crud&tb=$tb'>$tb</a></li>";
+if ($role == 'AKD') {
+  $arr_manage = [];
+  $arr_manage['SKur'] = 'struktur_kurikulum';
+  $arr_manage['ST'] = 'st';
+  $arr_manage['Jadwal'] = 'jadwal';
+  $arr_manage['Laper'] = 'laper';
+  $arr_manage['Progress'] = 'progress';
+
+  foreach ($arr_tb_master as $tb) {
+    $li .= "<li><a href='?crud&tb=$tb'>$tb</a></li>";
+  }
+  foreach ($arr_manage as $caption => $href) {
+    $li .= "<li><a href='?$href'>$caption</a></li>";
+  }
+} elseif ($role == 'DSN') {
+  $arr_4dosen = [];
+  $arr_4dosen['ST'] = 'st';
+  $arr_4dosen['Jadwal'] = 'jadwal';
+  $arr_4dosen['Progress'] = 'progress';
+  foreach ($arr_4dosen as $caption => $href) {
+    $li .= "<li><a href='?$href'>$caption</a></li>";
+  }
 }
+
+
 ?>
 <div class="no_print">
   <h1 class="tengah">Sistem Penjadwalan Akademik</h1>
@@ -19,12 +41,6 @@ foreach ($arr_tb_master as $tb) {
         <ul>
           <li><a href="?">Home</a></li>
           <?= $li ?>
-          <li><a href="?struktur_kurikulum">SKur</a></li>
-          <li><a href="?st">ST</a></li>
-          <li><a href="?jadwal">Jadwal</a></li>
-          <li><a href="?laper">Laper</a></li>
-          <li><a href="?home&show_config=1">Conf</a></li>
-          <li><a href="?progress">Progress</a></li>
         </ul>
         <ul>
           <li><a href="?detail&tb=user&id=<?= $id_user ?>"><?= $username ?> - <?= $role ?></a></li>

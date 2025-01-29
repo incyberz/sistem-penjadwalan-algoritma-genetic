@@ -8,7 +8,7 @@ function script_whatsapp($id_html)
           let val = $(this).val();
 
           if (val.length > 2) {
-            if (val.substring(0, 1) == '0') {
+            if (val.substring(0, 2) != '62') {
               $(this).val('62' + val.substring(1, 100));
             }
           }

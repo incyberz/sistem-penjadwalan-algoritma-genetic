@@ -8,14 +8,14 @@ foreach ($rfakultas as $key => $value) {
 $nav_shift = '';
 foreach ($rshift as $key => $value) {
   $nav_aktif = $id_shift == $key ? 'nav_aktif' : '';
-  $nav_shift .= "<div><a class='nav_jadwal $nav_aktif' href='?jadwal&id_shift=$key'>Kelas $key</a></div>";
+  $nav_shift .= "<div><a class='nav_jadwal $nav_aktif' href='?jadwal&fakultas=$fakultas&id_shift=$key'>Kelas $key</a></div>";
 }
 
 $nav_semester = '';
 for ($i = 1; $i <= 8; $i++) {
   if (($is_ganjil and $i % 2 != 0) || (!$is_ganjil and $i % 2 == 0)) {
     $nav_aktif = $semester == $i ? 'nav_aktif' : '';
-    $nav_semester .= "<div><a class='nav_jadwal $nav_aktif' href='?jadwal&semester=$i'>Semester $i</a></div>";
+    $nav_semester .= "<div><a class='nav_jadwal $nav_aktif' href='?jadwal&fakultas=$fakultas&id_shift=$id_shift&semester=$i'>Semester $i</a></div>";
   }
 }
 

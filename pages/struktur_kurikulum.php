@@ -25,7 +25,7 @@ $nav_mode = " <a href='?struktur_kurikulum&id_prodi=$id_prodi&mode=$not_mode&sem
 # ============================================================
 if ($mode_edit and ($role == 'DSN' || $role == 'MHS')) {
   require_once 'includes/script_read_only.php';
-  alert("Role Anda tidak berhak masuk ke Mode Editing ", 'warning');
+  alert("Hanya Role Akademik yang berhak masuk ke Mode Editing ", 'warning');
   $mode = 'view';
   $mode_edit = 0;
   $Not_petunjuk = 'Relogin dengan role AKD atau PIM untuk Editing Struktur Kurikulum';

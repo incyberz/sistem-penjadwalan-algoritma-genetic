@@ -87,7 +87,7 @@ if ($jumlah_peserta) {
     }
     require_once 'includes/Waktu.php';
     $text_wa = urlencode("Hallo $d[nama_peserta], Selamat $Waktu! $text_wa_from");
-    $whatsapp = $d['whatsapp_peserta'] ? "<a href='$api_wa?phone=$d[whatsapp_peserta]&text=$text_wa'>$img_wa</a>" : "<i onclick='alert(`Belum ada whatsapp untuk mhs ini.`)'>$img_wa_disabled</i>";
+    $whatsapp = $d['whatsapp_peserta'] ? "<a href='$https_api_wa?phone=$d[whatsapp_peserta]&text=$text_wa'>$img_wa</a>" : "<i onclick='alert(`Belum ada whatsapp untuk mhs ini.`)'>$img_wa_disabled</i>";
     $list_peserta .= "
       <tr>
         <td>$i</td>

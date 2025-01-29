@@ -67,7 +67,6 @@ if ($_POST) {
       # ============================================================
       # RESIZE IMG
       # ============================================================
-      $dotdot = $is_live ? '.' : '..';
       include "$dotdot/includes/resize_img.php";
       resize_img($target);
 

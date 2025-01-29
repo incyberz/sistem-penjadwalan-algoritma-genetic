@@ -1,5 +1,6 @@
 <?php
 session_start();
+// session_destroy();
 
 # ============================================================
 # SESSION
@@ -19,6 +20,15 @@ include 'config.php';
 include 'conn.php';
 include 'includes/jadwal_styles.php';
 
+# ============================================================
+# GLOBAL VARIABLES
+# ============================================================
+$https_api_wa = 'https://api.whatsapp.com/send';
+$now = date('Y-m-d H:i:s');
+$text_wa_from = "\n\n```From: Smart Scheduling System \nat $now```";
+$arr_hari = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+$arr_bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+$dotdot = $is_live ? '.' : '..';
 
 
 # ============================================================
@@ -68,9 +78,8 @@ if ($username) {
   $img_help = img_icon('help');
   $null = '<i class="f12 abu">null</i>';
   $unverified = '<i class="f12 red">unverified</i>';
-  $api_wa = 'https://api.whatsapp.com/send';
-  $now = date('Y-m-d H:i:s');
-  $text_wa_from = "%0a%0a```From: Smart Scheduling System %0aat $now```";
+  $verified = '<b class="f12 green">verified</b>';
+
   # ============================================================
   # SELECT || CREATE TABLES
   # ============================================================
@@ -98,8 +107,6 @@ if ($username) {
     alert("<div style='padding:15px;color:green'>Tables created successfully. | <a href='?'>Back to Home</a></div>", 'success');
     exit;
   }
-
-
 
   # ============================================================
   # LOGIN INFO

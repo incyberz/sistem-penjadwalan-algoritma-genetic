@@ -24,7 +24,7 @@ if ($dosen_wali) {
 
   if ($dosen_wali['whatsapp']) {
     $text_wa = urlencode("Yth. Dosen Wali $Bapak $nama_dosen_wali,%0a%0a");
-    $link_wa = "<a target=_blank href='$api_wa?phone=$dosen_wali[whatsapp]&text=$text_wa'>$img_wa</a>";
+    $link_wa = "<a target=_blank href='$https_api_wa?phone=$dosen_wali[whatsapp]&text=$text_wa'>$img_wa</a>";
   } else {
     $link_wa = "<i onclick='alert(`Belum ada whatsapp Dosen Wali.`)'>$img_wa_disabled</a>";
   }

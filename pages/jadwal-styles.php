@@ -94,4 +94,8 @@
     font-weight: bold;
     background: greenyellow;
   }
+
+  .separator_top {
+    border-top: solid 8px #fcf !important;
+  }
 </style>

@@ -72,12 +72,17 @@ if ($syarat and !$id) {
 
 $file = "pages/verifikasi-$tb.php";
 if (file_exists($file)) {
-  include $file;
+  if ($role == 'AKD') {
+    include $file;
+  } else {
+    alert("Untuk fitur verifikasi lainnya hanya dapat dilakukan dengan Role Akademik.", 'info');
+  }
 } else {
   if ($tb == 'st') {
     echo "
       <p class=petunjuk>$img_help Untuk Verifikasi Surat Tugas dapat dilakukan dengan cara:</p>
       <ol>
+        <li>Login as Akademik (AKD)</li>
         <li>
           Masuk Menu <a href='?st'>ST (Surat Tugas)</a>
         </li>

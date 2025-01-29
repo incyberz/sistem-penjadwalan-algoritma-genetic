@@ -8,6 +8,17 @@ if (isset($_POST['btn_delete_jadwal'])) {
   $s = "DELETE FROM tb_jadwal WHERE id='$id_st_detail'";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 }
+if (isset($_POST['btn_locked_jadwal'])) {
+  $id_st_detail = $_POST['btn_locked_jadwal'];
+
+  $s = "SELECT is_locked FROM tb_jadwal WHERE id='$id_st_detail'";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  $d = mysqli_fetch_assoc($q);
+  $is_locked = $d['is_locked'] ? 'NULL' : 1;
+
+  $s = "UPDATE tb_jadwal SET is_locked=$is_locked WHERE id='$id_st_detail'";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+}
 if (isset($_POST['btn_book'])) {
   $id_ruang = $_POST['id_ruang'];
 

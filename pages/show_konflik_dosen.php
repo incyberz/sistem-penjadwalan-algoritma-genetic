@@ -21,8 +21,7 @@ $s = "SELECT
     ";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $d = mysqli_fetch_assoc($q);
-$arr = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-$nama_hari = $arr[$weekday];
+$nama_hari = $arr_hari[$weekday];
 
 alert("
   <span class='consolas red'>CONFLICT DETECTED</span>

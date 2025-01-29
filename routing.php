@@ -41,7 +41,12 @@ if (file_exists($konten)) {
   if ($username) {
     include $konten;
   } else {
-    include 'pages/login.php';
+    if ($param == 'register' || $param == 'lupa_password' || $param == 'verifikasi_whatsapp') {
+      // include page tersebut
+      include "pages/$param.php";
+    } else {
+      include 'pages/login.php';
+    }
   }
 } else {
   include 'na.php';

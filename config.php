@@ -47,6 +47,14 @@ $rshift = [
   ],
 ];
 
+# ============================================================
+# PETUGAS DEFAULT
+# ============================================================
+$petugas_default = [
+  'nama' => 'Yunita',
+  'jabatan' => 'Sekprodi FKom',
+  'whatsapp' => '62895338753271',
+];
 
 
 # ============================================================
@@ -58,10 +66,15 @@ $min_ta_ganjil = $min_ta . '1';
 $max_ta_genap = $max_ta . '2';
 
 $tahun_ini = date('Y');
+$bulan_ini = intval(date('m'));
 $tahun_ini_ganjil = $tahun_ini . '1';
 $tahun_ini_genap = $tahun_ini . '2';
 
-$ta_aktif = $_SESSION['jadwal_ta_aktif'] ?? $tahun_ini_ganjil;
+$ta_default = $tahun_ini_ganjil;
+if ($bulan_ini < 2) $ta_default -= 9; // 20251 - 9 = 20242
+if ($bulan_ini > 8) $ta_default += 1; // 20251 + 1 = 20252
+
+$ta_aktif = $_SESSION['jadwal_ta_aktif'] ?? $ta_default;
 $is_ganjil = $ta_aktif % 2 == 0 ? 0 : 1;
 $tahun_ta = substr($ta_aktif, 0, 4);
 $Gg = $is_ganjil  ? 'Ganjil' : 'Genap';
