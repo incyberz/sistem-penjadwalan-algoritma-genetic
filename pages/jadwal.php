@@ -24,7 +24,7 @@ if ($get_id_kurikulum) {
 # ============================================================
 # JADWAL SAYA
 # ============================================================
-if ($dosen['id_st']) include 'jadwal_saya.php';
+if (isset($dosen['id_st']) and $dosen['id_st']) include 'jadwal_saya.php';
 
 # ============================================================
 # GET VALIDATIONS

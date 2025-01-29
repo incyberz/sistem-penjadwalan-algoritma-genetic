@@ -43,8 +43,7 @@ echo "Login success...
   <div class='alert alert-danger'>Status Akun Anda belum terverifikasi.</div>
 ";
 
-$arr = explode('?', $_SERVER['REQUEST_URI']);
-$link_verif = "$_SERVER[REQUEST_SCHEME]://$_SERVER[SERVER_NAME]$arr[0]?verifikasi_whatsapp&nama=$d[nama]&username=$d[username]&role=$d[role]&whatsapp=$d[whatsapp]";
+$link_verif = "$nama_server?verifikasi_whatsapp&nama=$d[nama]&username=$d[username]&role=$d[role]&whatsapp=$d[whatsapp]";
 
 $text_asal = "```================================\nREQUEST VERIFIKASI AKUN\nfrom: $d[whatsapp] | UNCHECKED!\n================================```\n\nYth. Petugas Akademik ($petugas_default[nama]),\n\nMohon verifikasi akun saya atas nama:\n- *nama:* $d[nama]\n- *username:* $d[username]\n- *role:* $d[role] \n\nTerimakasih.\n\nLink:\n$link_verif$text_wa_from";
 $preview = str_replace("\n\n", '<br>.<br>', $text_asal);
@@ -74,15 +73,8 @@ echo "
         <b>Status:</b> <i style='color:red'>unverified</i>
       </li>
     </ul>
-    <style>
-      .text_preview {
-        font-size: 12px;
-        color: #888;
-        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-      }
-    </style>
-    <div class='card p-2 text_preview' >$preview</div>
-    <a href='$link_wa' class='btn btn-primary w-100 mt-2'>Kirim Link Verifikasi ke Petugas</a>
+    <div class='card p-2 wa_preview' >$preview</div>
+    <a target=_blank href='$link_wa' class='btn btn-primary w-100 mt-2'>Kirim Link Verifikasi ke Petugas</a>
   </div>
   <div class='mt-2 text-center'><a href='?logout' onclick='return confirm(`Logout?`)'>Logout</a></div>
 

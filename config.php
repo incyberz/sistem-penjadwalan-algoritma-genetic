@@ -21,6 +21,8 @@ $rrole = [
   'AKD' => 'Staf Akademik',
   'KEU' => 'Staf Keuangan',
   'PIM' => 'Kaprodi / Pimpinan',
+  'DSN' => 'Dosen',
+  'MHS' => 'Mahasiswa',
 ];
 
 $rjenjang = [

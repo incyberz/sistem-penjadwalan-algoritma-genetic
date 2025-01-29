@@ -53,6 +53,7 @@ WHERE b.fakultas='$fakultas'
 AND a.semester = '$semester' 
 AND a.id_shift = '$id_shift'
 ";
+// echolog($s);
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 if (!mysqli_num_rows($q)) {
   $pesan = "Belum ada Data Kelas untuk semester [$semester] kelas [$SHIFT] fakultas [$fakultas].";

@@ -101,9 +101,13 @@ while ($d = mysqli_fetch_assoc($q)) {
   ";
 }
 
+// ZZZ PERHATIAN ST UNVERIFIED
+// ZZZ HIDE GLOBAL JADWAL IF MYJADWAL ASSIGN COMPLETE
+// ZZZ CETAK JADWAL SAYA
 echo "
   <div class='wadah gradasi-hijau'>
     <h3>Jadwal Saya</h3>
+
     <table class='table table-striped'>
       <thead>
         <th>No</th>

@@ -18,9 +18,10 @@ if ($param == 'login' and $username) die('<script>location.replace("?")</script>
 # ============================================================
 # ADDRESS ROUTE 
 # ============================================================
+$home = $role == 'MHS' ? 'home_mhs' : 'home';
 $arr_route = [
-  '' => 'home',
-  '?' => 'home',
+  '' => $home,
+  '?' => $home,
 ];
 
 

@@ -62,7 +62,7 @@
     margin: 12px 0 40px 0
   }
 
-  .text_preview {
+  .wa_preview {
     font-size: 12px;
     color: #888;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;

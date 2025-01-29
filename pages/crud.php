@@ -14,7 +14,7 @@ include 'crud-processor.php';
 # GLOBAL VARIABLE
 # ============================================================
 $required_icon = ' <b style=color:red>*</b> ';
-$hide_field = ['id', 'id_kosma', 'created_at', 'updated_at', 'password', 'image'];
+$hide_field = ['id', 'id_kosma', 'created_at', 'updated_at', 'password', 'image', 'wa_grup'];
 
 # ============================================================
 # INFO TAMBAHAN UNTUK FIELD

@@ -1,4 +1,5 @@
 <?php
+// if ($role == 'MHS') jsurl('?home_mhs');
 $show_config = $_GET['show_config'] ?? null;
 
 if (isset($_POST['btn_set_ta'])) {

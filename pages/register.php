@@ -37,27 +37,7 @@ if (isset($_POST['username'])) {
         <a class='btn btn-primary' href='?login&username=$username&password=$username'>Login</a>
       </div>
     ");
-    // while ($d = mysqli_fetch_assoc($q)) {
-    //   $asd = $d['asd'];
-    // }
   }
-
-
-  echo '<pre>';
-  var_dump($_POST);
-  echo '<b style=color:red>DEBUGING: echopreExit</b></pre>';
-  // exit;
-  // $default_pass = $_POST['username'] == strtolower($_POST['password']) ? 1 : 0;
-  // $and_pass = $default_pass ? "password is null" : "password='$_POST[password]'";
-  // $s = "SELECT 1 from tb_user WHERE username='$_POST[username]' and $and_pass";
-  // $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-  // if (mysqli_num_rows($q)) {
-  //   $_SESSION['jadwal_username'] = $_POST['username'];
-  //   echo '<script>location.replace("?")</script>';
-  //   exit;
-  // } else {
-  //   $pesan = 'Maaf, username dan password tidak tepat.';
-  // }
 }
 $pesan = $pesan == '' ? $pesan : "<div class='alert alert-danger'>$pesan</div>";
 ?>

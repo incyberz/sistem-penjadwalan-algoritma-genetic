@@ -117,7 +117,7 @@ while ($d = mysqli_fetch_assoc($q)) {
   $total_sks += $d['sks'];
 
   $btn_delete = '';
-  if (!$verified) {
+  if (!$verified and $role == 'AKD') {
     $btn_delete = "<a onclick='return confirm(`Drop MK ini?`)' href='?st&aksi=drop_mk&id_st=$id_st&id_st_detail=$d[id_st_detail]'>$img_delete</a>";
   }
 
@@ -200,7 +200,17 @@ if ($verified) {
   $tanggal = tanggal();
 
 
-  $btn_verif = "
+  $btn_verif = $role != 'AKD' ? "
+    <div class='flexy flex-center'>
+      <a class='d-block bordered p-2 br5' href='?struktur_kurikulum'>$img_prev Lihat Struktur Kurikulum </a>
+      <div class='pointer abu bordered p-2 br5 hover' onclick='alert(`Unverified artinya belum diverifikasi oleh Petugas Akademik\n\n\nUnverified Status memungkinkan Item Surat Tugas Anda bertambah atau berkurang.`)'>
+        Surat Tugas Unverified $img_help  
+      </div>
+    </div>
+  " : "
+    <!-- ================================================ -->
+    <!-- AKD ONLY -->
+    <!-- ================================================ -->
     <div class='flexy flex-center'>
       <a class='d-block bordered p-2 br5' href='?struktur_kurikulum'>$img_prev back to Struktur Kurikulum (Add MK)</a>
       <div class='pointer green btn_aksi bordered p-2 br5 hover' id=blok_verifikasi__toggle>

@@ -2,6 +2,7 @@
   * {
     margin: 0;
     padding: 0;
+    font-family: 'Century Gothic', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   }
 
   .hideit {
@@ -21,6 +22,13 @@
     width: 3.5cm;
     object-fit: cover;
   }
+
+  .wa_preview {
+    font-size: 12px;
+    color: #888;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  }
+
 
   a,
   div a {

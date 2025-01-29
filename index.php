@@ -9,6 +9,7 @@ $username = $_SESSION['jadwal_username'] ?? '';
 $user = [];
 $dosen = [];
 $mhs = [];
+$role = null;
 $pesan = null;
 $id_dosen = null;
 $id_mhs = null;
@@ -29,6 +30,8 @@ $text_wa_from = "\n\n```From: Smart Scheduling System \nat $now```";
 $arr_hari = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 $arr_bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 $dotdot = $is_live ? '.' : '..';
+$arr = explode('?', $_SERVER['REQUEST_URI']);
+$nama_server = "$_SERVER[REQUEST_SCHEME]://$_SERVER[SERVER_NAME]$arr[0]";
 
 
 # ============================================================
