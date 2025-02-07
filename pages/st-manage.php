@@ -65,6 +65,7 @@ if ($print) {
 # MAIN SELECT
 # ============================================================
 $s = "SELECT a.* ,
+b.id_kelas,
 b.id as id_st_detail,
 d.id as id_kumk,
 e.id as id_mk,
@@ -97,8 +98,6 @@ ORDER BY
   e.semester 
 ";
 
-// ZZZ auto-create kelas aktif ZZZ
-
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $num_rows = mysqli_num_rows($q);
 $tr = '';
@@ -117,9 +116,12 @@ while ($d = mysqli_fetch_assoc($q)) {
   $total_sks += $d['sks'];
 
   $btn_delete = '';
-  if (!$verified and $role == 'AKD') {
+  if (!$verified and $role == 'AKD' and !$d['count_jadwal']) {
     $btn_delete = "<a onclick='return confirm(`Drop MK ini?`)' href='?st&aksi=drop_mk&id_st=$id_st&id_st_detail=$d[id_st_detail]'>$img_delete</a>";
   }
+
+  $terjadwal = $d['count_jadwal'] ? "<a href='?jadwal&id_kelas=$d[id_kelas]'>terjadwal</a>" : '';
+  // $btn_delete = $d['count_jadwal'] ? $btn_delete_disabled : $btn_delete;
 
   $tr .= "
     <tr>
@@ -132,6 +134,7 @@ while ($d = mysqli_fetch_assoc($q)) {
       <td>$d[semester]</td>
       <td><span id=sks__$d[id_st_detail]>$d[sks]</span></td>
       <td>$d[shift] - $d[kelas]</td>
+      <td>$terjadwal</td>
     </tr>
   ";
 
@@ -280,11 +283,13 @@ if (!$print) {
           <th>Semester</th>
           <th>SKS</th>
           <th>Kelas</th>
+          <th>Terjadwal</th>
         </thead>
         $tr
         <tr class='gradasi-toska bold'>
           <td colspan=4 class=kanan>TOTAL SKS</td>
           <td>$total_sks</td>
+          <td>&nbsp;</td>
           <td>&nbsp;</td>
         </tr>
       </table>

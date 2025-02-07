@@ -1,6 +1,6 @@
 <?php
 unset($_SESSION['jadwal_username']);
-unset($_SESSION['jadwal_ta_aktif']);
+unset($_SESSION['ta_aktif']);
 if ($_SESSION) {
   echo '<pre>';
   var_dump($_SESSION);

@@ -12,8 +12,8 @@ a.id,
 a.id_prodi,
 a.nama,
 (SELECT singkatan FROM tb_prodi WHERE id=a.id_prodi) homebase, 
-(SELECT id FROM tb_st WHERE id_dosen=a.id AND id_ta='$_SESSION[jadwal_ta_aktif]') id_st, 
-(SELECT verif_date FROM tb_st WHERE id_dosen=a.id AND id_ta='$_SESSION[jadwal_ta_aktif]') verif_date 
+(SELECT id FROM tb_st WHERE id_dosen=a.id AND id_ta='$_SESSION[ta_aktif]') id_st, 
+(SELECT verif_date FROM tb_st WHERE id_dosen=a.id AND id_ta='$_SESSION[ta_aktif]') verif_date 
 FROM tb_dosen a 
 WHERE nama like '%$keyword%' 
 AND a.id != '$id_dosen'

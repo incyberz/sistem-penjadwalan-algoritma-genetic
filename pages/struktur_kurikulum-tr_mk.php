@@ -52,6 +52,7 @@ if (!$num_rows) {
     if ($d['count_st_detail']) {
       $s2 = "SELECT 
       a.id as id_st, 
+      b.id as id_st_detail, 
       c.id as id_dosen, 
       c.nama as dosen_pengampu 
       FROM tb_st a 

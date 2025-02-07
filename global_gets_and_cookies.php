@@ -1,23 +1,35 @@
 <?php
 $last_aksi = $_GET['last_aksi'] ?? null;
 
+$session_tb = $_SESSION['tb'] ?? null;
 $get_tb = $_GET['tb'] ?? null;
-$get_id_kelas = $_GET['id_kelas'] ?? null;
-$get_id_prodi = $_GET['id_prodi'] ?? null;
-$get_id_shift = $_GET['id_shift'] ?? null;
-$get_id_fakultas = $_GET['id_fakultas'] ?? null;
-
 echo "<i id=get_tb class=hideit>$get_tb</i>";
-echo "<i id=get_id_kelas class=hideit>$get_id_kelas</i>";
-echo "<i id=get_id_prodi class=hideit>$get_id_prodi</i>";
-echo "<i id=get_id_shift class=hideit>$get_id_shift</i>";
-echo "<i id=get_id_fakultas class=hideit>$get_id_fakultas</i>";
-
 if ($get_tb) echo "<script>document.cookie='tb=$get_tb'</script>";
-if ($get_id_kelas) echo "<script>document.cookie='id_kelas=$get_id_kelas'</script>";
-if ($get_id_prodi) echo "<script>document.cookie='id_prodi=$get_id_prodi'</script>";
-if ($get_id_shift) echo "<script>document.cookie='id_shift=$get_id_shift'</script>";
+
+$session_id_fakultas = $_SESSION['id_fakultas'] ?? null;
+$get_id_fakultas = $_GET['id_fakultas'] ?? null;
+echo "<i id=get_id_fakultas class=hideit>$get_id_fakultas</i>";
 if ($get_id_fakultas) echo "<script>document.cookie='id_fakultas=$get_id_fakultas'</script>";
+
+$session_id_prodi = $_SESSION['id_prodi'] ?? null;
+$get_id_prodi = $_GET['id_prodi'] ?? null;
+echo "<i id=get_id_prodi class=hideit>$get_id_prodi</i>";
+if ($get_id_prodi) echo "<script>document.cookie='id_prodi=$get_id_prodi'</script>";
+
+$session_id_shift = $_SESSION['id_shift'] ?? null;
+$get_id_shift = $_GET['id_shift'] ?? null;
+echo "<i id=get_id_shift class=hideit>$get_id_shift</i>";
+if ($get_id_shift) echo "<script>document.cookie='id_shift=$get_id_shift'</script>";
+
+$session_semester = $_SESSION['semester'] ?? null;
+$get_semester = $_GET['semester'] ?? null;
+echo "<i id=get_semester class=hideit>$get_semester</i>";
+if ($get_semester) echo "<script>document.cookie='semester=$get_semester'</script>";
+
+$session_id_kelas = $_SESSION['id_kelas'] ?? null;
+$get_id_kelas = $_GET['id_kelas'] ?? null;
+echo "<i id=get_id_kelas class=hideit>$get_id_kelas</i>";
+if ($get_id_kelas) echo "<script>document.cookie='id_kelas=$get_id_kelas'</script>";
 
 function get_cookies()
 {

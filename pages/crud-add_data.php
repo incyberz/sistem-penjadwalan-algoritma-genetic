@@ -2,7 +2,9 @@
 # ============================================================
 # AUTO-INSERT KURIKULUM JIKA NUM_ROWS != COUNT_TA x COUNT_PRODI
 # ============================================================
-if ($tb == 'kurikulum') {
+if ($tb == 'kelas') {
+  // do nothing, sudah di handle oleh tampil kelas
+} elseif ($tb == 'kurikulum') {
   include 'auto_insert_kurikulum.php';
   alert("Data Kurikulum telah auto-inserted sebanyak [ jumlah prodi x jumlah TA ] hingga TA $tahun_ini_genap.", 'info');
 } else {

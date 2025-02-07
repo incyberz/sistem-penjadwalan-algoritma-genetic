@@ -19,7 +19,6 @@ $id_mhs = null;
 # ============================================================
 include 'config.php';
 include 'conn.php';
-include 'includes/jadwal_styles.php';
 
 # ============================================================
 # GLOBAL VARIABLES
@@ -32,6 +31,16 @@ $arr_bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'A
 $dotdot = $is_live ? '.' : '..';
 $arr = explode('?', $_SERVER['REQUEST_URI']);
 $nama_server = "$_SERVER[REQUEST_SCHEME]://$_SERVER[SERVER_NAME]$arr[0]";
+
+// $get_id_shift = $_GET['id_shift'] ?? null;
+// $get_id_prodi = $_GET['id_prodi'] ?? null;
+// $get_prodi = $_GET['prodi'] ?? null;
+// $get_fakultas = $_GET['fakultas'] ?? null;
+
+// $session_id_shift = $_SESSION['id_shift'] ?? null;
+// $session_id_prodi = $_SESSION['id_prodi'] ?? null;
+// $session_prodi = $_SESSION['prodi'] ?? null;
+// $session_fakultas = $_SESSION['fakultas'] ?? null;
 
 
 # ============================================================
@@ -115,7 +124,8 @@ if ($username) {
   # LOGIN INFO
   # ============================================================
   include 'pages/user.php';
-}
+  if ($role == 'AKD') include 'pages/rprodi.php';
+} // end if $username
 
 
 ?>
@@ -125,10 +135,12 @@ if ($username) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Penjadwalan</title>
+  <title>Smart Gamified SIAKAD</title>
   <?php
   include 'includes/head_devs.php';
   include 'global_gets_and_cookies.php';
+  include 'includes/siakad_styles.php';
+  include 'includes/siakad_functions.php';
   ?>
 </head>
 
@@ -141,6 +153,7 @@ if ($username) {
       </section>
     </main>
   </div>
+  <?php include 'pages/ontops.php'; ?>
 </body>
 
 <?php include $is_live ? 'includes/script_btn_aksi.php' : '../includes/script_btn_aksi.php'; ?>
@@ -153,3 +166,14 @@ if ($username) {
     })
   })
 </script>
+
+<?php
+# ============================================================
+# SET SESSION IF NOT SET
+# ============================================================
+if (!$session_id_prodi and $get_id_prodi) $_SESSION['id_prodi'] = $get_id_prodi;
+if (!$session_id_shift and $get_id_shift) $_SESSION['id_shift'] = $get_id_shift;
+if (!$session_semester and $get_semester) $_SESSION['semester'] = $get_semester;
+echo '<pre>';
+var_dump($_SESSION);
+echo '</pre>';

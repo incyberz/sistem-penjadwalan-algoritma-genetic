@@ -72,7 +72,7 @@ if (!$id_prodi || !$id_shift) {
   ";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   $prodi = mysqli_fetch_assoc($q);
-  $id_kurikulum = $prodi['id_kurikulum'];
+  $id_kurikulum = $prodi['id_kurikulum'] ?? die(alert("Belum ada Kurikulum untuk Prodi ini | <a href='?crud&tb=kurikulum'>Auto Create Kurikulum</a>"));
   $singkatan_prodi = $prodi['singkatan'];
   set_title("$prodi[jenjang]-$prodi[singkatan]-$id_shift - Struktur Kurikulum");
 

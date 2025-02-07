@@ -246,6 +246,7 @@ foreach ($rhari as $date => $v) {
           # RADIO RUANG HARUS LOOP DISINI
           # ============================================================
           $radio_ruang = '';
+          $pesan = '';
           foreach ($rruang as $id_ruang => $arr_ruang) {
             // apakah ruangan ini sudah terpakai di hari senin sesi 12
             $id_ruang_terpakai = $rpemakaian[$v['weekday']][$id_ruang][$id_sesi]['id_ruang'] ?? null;

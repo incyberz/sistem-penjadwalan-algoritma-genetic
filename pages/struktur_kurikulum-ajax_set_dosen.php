@@ -1,6 +1,6 @@
 <?php
 session_start();
-$id_ta = $_SESSION['jadwal_ta_aktif'] ?? die(`Undefined session-index [jadwal_ta_aktif]. \n\nSilahkan relogin!`);
+$id_ta = $_SESSION['ta_aktif'] ?? die(`Undefined session-index [ta_aktif]. \n\nSilahkan relogin!`);
 
 $id_dosen = $_GET['id_dosen'] ?? die("Undefined index [id_dosen]");
 $id_kumk = $_GET['id_kumk'] ?? die("Undefined index [id_kumk]");
@@ -13,6 +13,12 @@ if ($id_shift === '') die('Index [id_shift] cannot empty.');
 if ($id_user === '') die('Index [id_user] cannot empty.');
 
 include '../conn.php';
+
+# ============================================================
+# 1 KU-MK WAJIB 1 DOSEN || DELETE ST DETAIL SEBELUMNYA 
+# ============================================================
+$s = "DELETE FROM tb_st_detail WHERE id_kumk='$id_kumk'";
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 
 # ============================================================
 # CREATE SURAT TUGAS JIKA BELUM ADA
@@ -54,7 +60,7 @@ foreach ($rid_kelas as $id_kelas) {
     '$id_kelas',
     '$id_shift'
   ) 
-  ON DUPLICATE KEY UPDATE -- Rule Kampus 1 dosen 1 MK 1 shift
+  ON DUPLICATE KEY UPDATE -- Rule: 1 dosen 1 MK 1 shift
     id='$id_st_detail',
     id_st='$id_st',
     id_kumk='$id_kumk',

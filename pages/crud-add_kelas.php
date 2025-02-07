@@ -78,16 +78,7 @@ if (1) {
   # ============================================================
   include 'opt_prodi.php';
   include 'opt_shift.php';
-
-  $opt_semester = '';
-  for ($i = 1; $i <= 8; $i++) {
-    if (($is_ganjil and $i % 2 != 0) || (!$is_ganjil and $i % 2 == 0)) {
-      $selected = ($post_semester == $i || $get_semester == $i) ? 'selected' : '';
-      $opt_semester .= "<option $selected value=$i>Semester $i</option>";
-    }
-  }
-
-
+  include 'opt_semester.php';
 
 
 ?>

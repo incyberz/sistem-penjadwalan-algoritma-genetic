@@ -76,7 +76,7 @@ $ta_default = $tahun_ini_ganjil;
 if ($bulan_ini < 2) $ta_default -= 9; // 20251 - 9 = 20242
 if ($bulan_ini > 8) $ta_default += 1; // 20251 + 1 = 20252
 
-$ta_aktif = $_SESSION['jadwal_ta_aktif'] ?? $ta_default;
+$ta_aktif = $_SESSION['ta_aktif'] ?? $ta_default;
 $is_ganjil = $ta_aktif % 2 == 0 ? 0 : 1;
 $tahun_ta = substr($ta_aktif, 0, 4);
 $Gg = $is_ganjil  ? 'Ganjil' : 'Genap';

@@ -1,25 +1,31 @@
 <?php
-if (isset($_POST['btn_submit_password'])) {
-  # ============================================================
-  # CEK USERNAME DAN PASSWORD > JIKA OK MAKA PASANGKAN, LALU DELETE AKUN LAMA
-  # ============================================================
-  $s = "SELECT 1 FROM tb_user WHERE username='$_POST[username]' AND password=md5('$_POST[password]') ";
-  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-  if (!mysqli_num_rows($q)) {
-    div_alert('danger', 'Data ZZZ tidak ditemukan');
-  } else {
+if (isset($_POST['nidn']) || isset($_POST['btn_submit_password'])) {
+  $err = '';
+  if (isset($_POST['btn_submit_password'])) {
     # ============================================================
-    # PASANGKAN LALU DELETE AKUN LAMA
+    # CEK USERNAME DAN PASSWORD 
     # ============================================================
+    $s = "SELECT 1 FROM tb_user WHERE username='$_POST[username]' AND password=md5('$_POST[password]') ";
+    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+    if (!mysqli_num_rows($q)) {
+      $err = "<hr class='mt2 mb2'>Maaf, username atau password Anda tidak tepat.<br><span class=blue>Silahkan coba lagi!</span><hr class='mt2 mb2'><span class=abu>Jika ingin reset password dosen, silahkan hubungi Bagian Akademik secara offline.</span>";
+    } else {
+      # ============================================================
+      # DELETE AKUN BARU
+      # ============================================================
+      echolog('deleting akun baru');
+      $s = "DELETE FROM tb_user WHERE id=$id_user";
+      $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 
+
+      # ============================================================
+      # LOGIN DG AKUN LAMA
+      # ============================================================
+      echolog('set session login...');
+      $_SESSION['jadwal_username'] = $_POST['username'];
+      jsurl('', 3000);
+    }
   }
-
-  echo '<pre>';
-  var_dump($_POST);
-  echo '<b style=color:red>DEBUGING: echopreExit</b></pre>';
-  exit;
-}
-if (isset($_POST['nidn'])) {
   # ============================================================
   # CEK JIKA NIDN ADA BISA DI-CLAIM
   # ============================================================
@@ -50,6 +56,7 @@ if (isset($_POST['nidn'])) {
             <div class='wadah tengah'>
               <b class=red>NIDN sudah ada di database.</b> 
               <div class=blue>Silahkan masukan password akun Anda!</div>
+              <div class=red>$err</div>
             </div>
             <style>
               .wadah input, .wadah button{

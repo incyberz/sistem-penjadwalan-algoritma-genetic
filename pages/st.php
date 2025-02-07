@@ -3,6 +3,9 @@
 # SK AJAR
 # ============================================================
 $id_st = $_GET['id_st'] ?? '';
+$get_id_st = $id_st;
+$get_id_kelas = $_GET['id_kelas'] ?? '';
+
 if ($role == 'DSN' and (!$id_st or $id_st != $dosen['id_st'])) {
 
   if ($dosen['id_st']) {
@@ -37,7 +40,7 @@ if ($aksi) {
     $id = $_GET['id_st_detail'] ?? udef('id_st_detail');
     $s = "DELETE FROM tb_st_detail WHERE id='$id'";
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-    jsurl("?st&aksi=manage&id_st=$id_st", 5000);
+    jsurl("?st&aksi=manage&id_st=$id_st", 500);
   } else {
     alert("Aksi [$aksi] belum ada handler.");
   }

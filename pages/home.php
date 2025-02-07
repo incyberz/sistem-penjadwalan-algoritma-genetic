@@ -4,7 +4,7 @@ $show_config = $_GET['show_config'] ?? null;
 
 if (isset($_POST['btn_set_ta'])) {
   echolog("Setting ke TA. $_POST[btn_set_ta]");
-  $_SESSION['jadwal_ta_aktif'] = $_POST['btn_set_ta'];
+  $_SESSION['ta_aktif'] = $_POST['btn_set_ta'];
   jsurl();
 }
 
