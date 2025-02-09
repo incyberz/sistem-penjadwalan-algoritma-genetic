@@ -1,4 +1,5 @@
 <?php
+$confirm_set_all_dosen_sebelumnya = $_GET['confirm_set_all_dosen_sebelumnya'] ?? null;
 # ============================================================
 # TR MK | TABLE ROW TIAP SEMESTER
 # ============================================================
@@ -14,7 +15,18 @@ d.singkatan as prodi,
 (
   SELECT COUNT(1) FROM tb_st_detail 
   WHERE id_kumk=b.id 
-  AND id_shift='$id_shift') count_st_detail
+  AND id_shift='$id_shift') count_st_detail,
+(
+  -- SELECT COUNT(1) FROM tb_dosen p
+  SELECT CONCAT(p.id,'-',p.nama) FROM tb_dosen p
+  JOIN tb_st q ON p.id=q.id_dosen 
+  JOIN tb_st_detail r ON q.id=r.id_st 
+  JOIN tb_kumk s ON r.id_kumk=s.id 
+  WHERE s.id_mk = a.id 
+  AND r.id_shift = '$id_shift' 
+  AND q.id_ta = $ta_sebelumnya
+  ) dosen_sebelumnya
+
 FROM tb_mk a 
 JOIN tb_kumk b ON a.id=b.id_mk 
 JOIN tb_kurikulum c ON b.id_kurikulum=c.id 
@@ -46,10 +58,15 @@ if (!$num_rows) {
     $sum_sks += $d['sks'];
     $total_sks += $d['sks'];
 
+
+
     $last_semester = $d['semester'];
 
     $link_to_st = '';
     if ($d['count_st_detail']) {
+      # ============================================================
+      # INFO DOSEN PENGAMPU JIKA SUDAH ASSIGN
+      # ============================================================
       $s2 = "SELECT 
       a.id as id_st, 
       b.id as id_st_detail, 
@@ -63,7 +80,7 @@ if (!$num_rows) {
       ";
       $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
       $d2 = mysqli_fetch_assoc($q2);
-      $d['dosen_pengampu'] = $d2['dosen_pengampu'];
+      $d['dosen_pengampu'] = $d2['dosen_pengampu']; // info dosen pengampu jika sudah assign
       $d['id_dosen'] = $d2['id_dosen'];
       $d['id_st'] = $d2['id_st'];
       $link_to_st = "<a onclick='return confirm(`Cek Surat Tugas?`)' href='?st&aksi=manage&id_st=$d[id_st]'>$img_next</a>";
@@ -72,6 +89,88 @@ if (!$num_rows) {
       $d['id_dosen'] = null;
       $d['id_st'] = null;
     }
+
+
+    $id_dosen_sebelumnya = null;
+    $nama_dosen_sebelumnya = null;
+    if ($d['dosen_sebelumnya']) {
+      $t = explode('-', $d['dosen_sebelumnya']);
+      $id_dosen_sebelumnya = $t[0];
+      $nama_dosen_sebelumnya = strlen($t[1]) <= 15 ? $t[1] : substr($t[1], 0, 12) . '...';
+      if ($id_dosen_sebelumnya == $d['id_dosen']) {
+        $nama_dosen_sebelumnya = '(sama)';
+      } else {
+        $semua_dosen_sebelumnya_sama = 0;
+
+        if ($confirm_set_all_dosen_sebelumnya) {
+          # ============================================================
+          # SET DOSEN SEBELUMNYA KE KUMK INI
+          # ============================================================
+          $id_kumk = $d['id_kumk'] ?? die(udef('id_mk'));
+
+          // CEK APAKAH DOSEN INI SUDAH PUNYA ST? || INSERT | UPDATE TB_ST
+          $id_st = "$ta_aktif-$id_dosen_sebelumnya";
+          $s2 = "INSERT INTO tb_st (
+            id,
+            id_dosen,
+            id_ta,
+            tanggal,
+            id_user
+          ) VALUES (
+            '$id_st',
+            $id_dosen_sebelumnya,
+            $ta_aktif,
+            CURRENT_TIMESTAMP,
+            $id_user
+          ) ON DUPLICATE KEY UPDATE id_user=$id_user";
+          echolog('Insert | Update ST Dosen...');
+          $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
+
+          # ============================================================
+          # 1 KU-MK WAJIB 1 DOSEN || DELETE ST DETAIL SEBELUMNYA 
+          # ============================================================
+          $s2 = "DELETE FROM tb_st_detail WHERE id_kumk='$id_kumk'";
+          echolog('1 KU-MK WAJIB 1 DOSEN | checking rule...');
+          $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
+
+
+          foreach ($rkelas_aktif as $nama_kelas => $arr_kelas) {
+            echolog("Inserting ST Detail untuk kelas [$nama_kelas]...");
+            $id_kelas = $arr_kelas['id_kelas'];
+            # ============================================================
+            # INSERT ST-DETAIL
+            # ============================================================
+            $id_st_detail = "$ta_aktif-$id_dosen_sebelumnya-$id_kumk-$id_kelas-$id_shift"; // TA-DS-KU-MK-KLS-SHIFT 	
+            $unik_kumk = "$id_kumk-" . strtolower($id_shift); // KU MK SHIFT
+            $s2 = "INSERT INTO tb_st_detail (
+              id,
+              id_st,
+              id_kumk,
+              id_kelas,
+              id_shift
+            ) VALUES (
+              '$id_st_detail',
+              '$id_st',
+              '$id_kumk',
+              '$id_kelas',
+              '$id_shift'
+            ) 
+            ON DUPLICATE KEY UPDATE -- Rule: 1 dosen 1 MK 1 shift
+              id='$id_st_detail',
+              id_st='$id_st',
+              id_kumk='$id_kumk',
+              id_kelas='$id_kelas',
+              id_shift='$id_shift'
+            ";
+            echolog('Insert ST Detail...');
+            $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
+          }
+        } // end confirm_set_all_dosen_sebelumnya
+
+      } // end dosen sebelumnya != dosen skg (exists)
+    } // end if dosen_sebelumnya exists
+
+
 
     if ($mode_edit) {
       if ($rkelas_aktif) { // sudah ada kelas-kelas aktif di semester ini
@@ -114,13 +213,27 @@ if (!$num_rows) {
 
     $MKDU = $d['id_prodi'] ? '' : $MKDU_badge;
 
+    $td_dosen_sebelumnya = !$mode_edit ? '' : "
+      <td>
+        <span class='f12 abu miring'>
+          $nama_dosen_sebelumnya
+        </span>
+      </td>    
+    ";
+
     $tr_mk .= "
       <tr class='hideita tr_mk tr_mk__$d[prodi] tr_mk__$d[id_prodi]__$d[semester]' id=tr_mk__$d[id_kumk]>
         <td>$i</td>
         <td>$form_drop $d[nama_mk] $MKDU </td>
         <td>$d[sks]</td>
         <td>$dosen_pengampu</td>
+        $td_dosen_sebelumnya
       </tr>
     ";
   } // end while
 } // end if num_rows
+
+if ($confirm_set_all_dosen_sebelumnya) {
+  echolog('Set All Dosen Sebelumnya sukses.');
+  jsurl("?struktur_kurikulum&id_prodi=$id_prodi&mode=edit&semester=$semester&id_shift=$id_shift");
+}

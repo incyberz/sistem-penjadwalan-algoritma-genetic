@@ -8,10 +8,19 @@ if ($role == 'AKD') {
   $arr_manage['SKur'] = 'struktur_kurikulum';
   $arr_manage['ST'] = 'st';
   $arr_manage['Jadwal'] = 'jadwal';
-  $arr_manage['Laper'] = 'laper';
-  $arr_manage['Progress'] = 'progress';
+  $arr_manage['ME'] = 'me';
+
+
 
   $li .= "<li class=''><span class='btn_aksi pointer brown' id=ul_master__toggle>masters</span></li>";
+
+  $arr_tb_info = ['pemakaian', 'progress', 'penugasan', 'siklus'];
+  $li_info = '';
+  foreach ($arr_tb_info as $info) {
+    $li_info .= "<li class='li_info'><a href='?$info'>$info</a></li>";
+  }
+  $ul_info = "<ul class='pl3 pr3'>$li_info</ul>";
+
   $li_master = '';
   foreach ($arr_tb_master as $tb) {
     $li_master .= "<li class='li_master'><a href='?crud&tb=$tb'>$tb</a></li>";
@@ -24,6 +33,7 @@ if ($role == 'AKD') {
   foreach ($arr_manage as $caption => $href) {
     $li .= "<li><a href='?$href'>$caption</a></li>";
   }
+  $li .= "<li class=''><span class='btn_aksi pointer brown' id=ul_info__toggle>info</span></li>";
 } elseif ($role == 'DSN') {
   $arr_4dosen = [];
   $arr_4dosen['ST'] = 'st';
@@ -58,6 +68,14 @@ if ($role == 'AKD') {
       <div class="flexy">
         <div class="bordered mx-3 p1 br5 gradasi-kuning">
           <?= $ul_master ?>
+
+        </div>
+      </div>
+    </div>
+    <div id=ul_info class='hideit'>
+      <div class="flexy">
+        <div class="bordered mx-3 p1 br5 gradasi-kuning">
+          <?= $ul_info ?>
 
         </div>
       </div>

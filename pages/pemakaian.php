@@ -6,8 +6,8 @@ $get_id_ruang = $_GET['id_ruang'] ?? '';
 $get_weekday = $_GET['weekday'] ?? '';
 $mode = $_GET['mode'] ?? '';
 
-include 'laper-nav_header.php';
-include 'laper-styles.php';
+include 'pemakaian-nav_header.php';
+include 'pemakaian-styles.php';
 
 # ============================================================
 # DATA RUANG

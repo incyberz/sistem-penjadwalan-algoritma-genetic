@@ -5,6 +5,7 @@ if (isset($_POST['btn_save'])) {
   $koloms = '';
   $isis = '';
   foreach ($_POST as $field => $value) {
+    if ($field == 'nama') $value = strtoupper($value); // uppercase semua field nama
     $value = addslashes(strtoupper(strip_tags($value)));
     $koma = $koloms ? ',' : null;
     $koloms .= "$koma$field";

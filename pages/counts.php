@@ -36,10 +36,12 @@ $rcount = [
     'sql_filter' => "SELECT 1 FROM tb_kumk a 
       JOIN tb_kurikulum b ON a.id_kurikulum=b.id 
       JOIN tb_st_detail c ON a.id=c.id_kumk 
+      JOIN tb_jadwal d ON c.id=d.id 
       WHERE b.id_ta=$ta_aktif
       ",
     'sql_total' => "SELECT 1 FROM tb_kumk a 
       JOIN tb_kurikulum b ON a.id_kurikulum=b.id 
+      JOIN tb_st_detail c ON a.id=c.id_kumk 
       WHERE b.id_ta=$ta_aktif
       ",
     'satuan' => "MK Kurikulum $tahun_ta $Gg",

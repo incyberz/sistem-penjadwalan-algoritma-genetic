@@ -7,7 +7,9 @@ $get_id_st = $id_st;
 $get_id_kelas = $_GET['id_kelas'] ?? '';
 
 if ($role == 'DSN' and (!$id_st or $id_st != $dosen['id_st'])) {
-
+  # ============================================================
+  # SURAT TUGAS MILIK SAYA (DOSEN)
+  # ============================================================
   if ($dosen['id_st']) {
     jsurl("?st&id_st=$dosen[id_st]");
   } else {
@@ -15,6 +17,7 @@ if ($role == 'DSN' and (!$id_st or $id_st != $dosen['id_st'])) {
     exit;
   }
 }
+
 $id_dosen = $_GET['id_dosen'] ?? '';
 $print = $_GET['print'] ?? '';
 $aksi = $_GET['aksi'] ?? 'manage';

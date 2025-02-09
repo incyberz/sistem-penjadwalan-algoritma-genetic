@@ -52,6 +52,7 @@ join tb_prodi b ON a.id_prodi=b.id
 WHERE b.fakultas='$fakultas' 
 AND a.semester = '$semester' 
 AND a.id_shift = '$id_shift'
+AND a.id_ta = '$ta_aktif'
 ";
 // echolog($s);
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));

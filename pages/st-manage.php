@@ -251,6 +251,14 @@ if ($verified) {
 
 $fakultas = 'Fakultas Komputer'; // ZZZ
 
+$t = explode('-', $id_st);
+$id_ta_st = $t[0];
+$tahun_ta_st = substr($id_ta_st, 0, 4);
+$info_sebelumnya = '';
+if ($id_ta_st != $ta_aktif) {
+  $info_sebelumnya = "<span class=bg-yellow>(TA sebelumnya)</span>";
+}
+
 $menugaskan_kepada = "
   <p>
     Yang bertanda tangan di bawah ini Dekan $fakultas, menugaskan kepada:
@@ -260,7 +268,7 @@ $menugaskan_kepada = "
     <li><b>NIDN:</b> <span id=nidn_dosen_selected>$st[nidn]</span></li>
     <li><b>Homebase:</b> <span id=homebase_dosen_selected>$st[homebase]</span></li>
   </ul>
-  <p>Untuk mengampu Mata Kuliah di <b>TA. $tahun_ta $GG</b> sebagai berikut:</p>
+  <p>Untuk mengampu Mata Kuliah di <b>TA. $tahun_ta_st $GG $info_sebelumnya </b> sebagai berikut:</p>
 ";
 
 if (!$print) {

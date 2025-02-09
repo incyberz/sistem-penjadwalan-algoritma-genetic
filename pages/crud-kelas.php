@@ -113,7 +113,11 @@ while ($prodi = mysqli_fetch_assoc($q)) {
             $jumlah_st_detail = $d2['jumlah_st_detail'] ? "<a target=_blank href='?st&aksi=cari_st&id_st=all&id_kelas=$d2[id]'>$d2[jumlah_st_detail] ST</a>" : '-';
             $input_form .= "
               <div class='flexy'>
-                <div>$d2[nama]</div>
+                <div>
+                  <a target=_blank href='?verifikasi&tb=kelas&id=$d2[id]'>
+                    $d2[nama]
+                  </a>
+                </div>
                 <div>$jumlah_st_detail</div>
               </div>
             ";

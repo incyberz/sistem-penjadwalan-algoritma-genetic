@@ -25,6 +25,41 @@ if (isset($_POST['btn_assign_mk'])) {
     }
   }
 }
+if (isset($_POST['btn_assign_mk_sebelumnya'])) {
+  $t = explode('-', $_POST['btn_assign_mk_sebelumnya']);
+  $id_prodi = $t[0] ?? udef('value[0]');
+  $id_kurikulum = $t[1] ?? udef('value[1]');
+  $semester = $t[2] ?? udef('value[2]');
+  // $id_prodi-$id_kurikulum-$semester
+
+  // get id_mk yang di-assign di TA sebelumnya
+  $s = "SELECT d.id as id_mk 
+  FROM tb_kumk a 
+  JOIN tb_kurikulum b ON a.id_kurikulum=b.id 
+  JOIN tb_st_detail c ON a.id=c.id_kumk  
+  JOIN tb_mk d ON a.id_mk=d.id  
+  WHERE 1  
+  AND b.id_ta = $ta_sebelumnya
+  AND b.id_prodi = $id_prodi
+  AND c.id_shift = '$id_shift'
+  AND a.semester = $semester";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  while ($d = mysqli_fetch_assoc($q)) {
+    $s = "INSERT INTO tb_kumk (
+    id, -- id_kumk
+    id_kurikulum, 
+    semester, 
+    id_mk
+    ) VALUES (
+    '$id_kurikulum-$d[id_mk]', -- id_kumk
+    $id_kurikulum, 
+    $semester, 
+    $d[id_mk]
+    )";
+    mysqli_query($cn, $s) or die(mysqli_error($cn));
+  }
+}
+
 if (isset($_POST['btn_drop_mk'])) {
   $s = "DELETE FROM tb_kumk WHERE id='$_POST[btn_drop_mk]'";
   mysqli_query($cn, $s) or die(mysqli_error($cn));
@@ -44,15 +79,17 @@ if (isset($_POST['btn_tambah_mk'])) {
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   $new_no = mysqli_fetch_assoc($q)['new_no'];
   $new_no = $new_no ?? 1;
-  $new_no = sprintf('%03d', $new_no);
+  $new_no_zerofill = sprintf('%03d', $new_no);
 
   $time = date('ymdHis');
   if ($_POST['is_mkdu']) {
-    $kode = "MKDU-$new_no";
+    $kode = "MKDU-$new_no_zerofill";
     $part_id_prodi = 'NULL';
   } else {
-    $kode = "MK-$part_id_prodi-$part_semester-$new_no";
+    $kode = "MK-$part_id_prodi-$part_semester-$new_no_zerofill";
   }
+
+  $_POST['nama_mk'] = preg_replace('/[^A-Z0-9\s\(\)]/', '', trim(strtoupper($_POST['nama_mk'])));
 
   $s = "INSERT INTO tb_mk (
     id_prodi,

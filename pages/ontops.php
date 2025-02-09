@@ -50,7 +50,8 @@ echo  ontop($ta_aktif, "
   color: black;
 ");
 
-if ($id_shift) {
+if ($get_id_shift) {
+  $id_shift = $get_id_shift ?? $session_id_shift;
   $bg = $id_shift == 'R' ? '#a4fDaA' : '#FFB74D';
   echo  ontop($id_shift, "
   top: 80px;left: -10px;
@@ -60,7 +61,9 @@ if ($id_shift) {
   ");
 }
 
-if ($id_prodi) {
+if ($get_id_prodi) {
+  $id_prodi = $get_id_prodi ?? $session_id_prodi;
+
   $warna_hexa = $rprodi[$id_prodi]['warna_hexa'] ?? 'ffff00';
   $color = warna_teks($warna_hexa);
 
@@ -74,9 +77,22 @@ if ($id_prodi) {
   ");
 }
 
-if ($semester) {
+if ($get_semester) {
+  $semester = $get_semester ?? $session_semester;
+
   echo  ontop($semester, "
   top: 120px;
+  left: -10px;
+  padding: 5px 8px 5px 15px;
+  background: #a4fDaA;
+  border-radius: 5px;
+  ");
+}
+
+if ($session_counter || $get_counter) {
+  $counter = $get_counter ?? $session_counter;
+  echo  ontop($counter, "
+  top: 160px;
   left: -10px;
   padding: 5px 8px 5px 15px;
   background: #a4fDaA;

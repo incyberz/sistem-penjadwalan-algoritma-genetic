@@ -2,16 +2,17 @@
 # ============================================================
 # STRUKTUR KURIKULUM
 # ============================================================
-$fakultas = $_GET['fakultas'] ?? 'FKOM';
-$id_prodi = $_GET['id_prodi'] ?? '';
-$id_shift = $_GET['id_shift'] ?? '';
+$fakultas = $get_fakultas;
+$id_prodi = $get_id_prodi;
+$id_shift = $get_id_shift;
+
 $mode = $_GET['mode'] ?? 'view';
 $mode_edit = $mode == 'edit' ? 1 : 0;
 $img_drop = img_icon('drop');
 $img_drop_disabled = img_icon('drop_disabled');
 $MKDU_badge = "<span class=mkdu_badge>MKDU</span>";
 $rmk = []; // array MK Struktur Kurikulum
-$get_semester = ($_GET['semester'] ?? null) ? $_GET['semester'] : $default_semester; // untuk menyimpan session editing semester
+// $get_semester = ($_GET['semester'] ?? null) ? $_GET['semester'] : $default_semester; // untuk menyimpan session editing semester
 echo "<span class=hideit id=semester>$get_semester</span>";
 $img_next = img_icon('next');
 $SHIFT = $id_shift == 'R' ? 'REGULER' : 'NON-REGULER';
@@ -19,6 +20,8 @@ $not_mode = $mode_edit ? 'view' : 'edit';
 $Not_Mode = $mode_edit ? 'Mode View' : 'Mode Editing';
 $Not_petunjuk = $mode_edit ? 'Anda berada pada Mode Editing, seluruh tombol dapat Anda akses' : 'Anda berada pada Mode View. Untuk mengakses Fitur Manage silahkan klik Mode Editing';
 $nav_mode = " <a href='?struktur_kurikulum&id_prodi=$id_prodi&mode=$not_mode&semester=$get_semester&id_shift=$id_shift'>$img_prev $Not_Mode</a>";
+$semua_dosen_sebelumnya_sama = 1; // untuk auto fill dosen sebelumnya
+
 
 # ============================================================
 # HAK AKSES
@@ -51,14 +54,16 @@ if (!$id_prodi || !$id_shift) {
   # ============================================================
   # STRUKTUR KURIKULUM GANJIL GENAP
   # ============================================================
+  $th_sebelumnya = $mode_edit ? "<th><span class=abu>Sebelumnya ($ta_sebelumnya)</span></th>" : '';
   $thead = "
     <thead>
       <th>No</th>
       <th>MK</th>
       <th>SKS</th>
       <th>Dosen</th>
+      $th_sebelumnya
     </thead>
-  ";
+  "; // di definisikan disini karena akan masuk loop function blok_jadwal()
 
   # ============================================================
   # PROPERTI PRODI
@@ -164,6 +169,16 @@ if (!$id_prodi || !$id_shift) {
       include 'struktur_kurikulum-blok_assign_or_add.php';
     }
 
+    $link_set_all_dosen_sebelumnya = $semua_dosen_sebelumnya_sama ? '-' : "<a class='btn btn-secondary btn-sm w-100' value='$id_prodi-$semester-$id_shift' onclick='return confirm(`Replace semua dosen dari dosen di TA sebelumnya?`)' href='?struktur_kurikulum&id_prodi=$id_prodi&mode=edit&semester=$semester&id_shift=$id_shift&confirm_set_all_dosen_sebelumnya=1'>Set All Dosen Sebelumnya</a>";
+
+    $td_set_all_dosen_sebelumnya = !$mode_edit ? '' : "
+      <td>
+        $link_set_all_dosen_sebelumnya
+      </td>
+    ";
+
+
+
     # ============================================================
     # CREATE TABLE TB KURIKULUM
     # ============================================================
@@ -176,6 +191,7 @@ if (!$id_prodi || !$id_shift) {
         <tfoot class='bold gradasi-kuning'>
           <td colspan=2 class=right>JUMLAH SKS</td>
           <td colspan=2>$sum_sks</td>
+          $td_set_all_dosen_sebelumnya
         </tfoot>
       </table>
     ";
@@ -235,7 +251,7 @@ if (!$id_prodi || !$id_shift) {
     </div>
     $blok_total_sks
   ";
-}
+} // end if id_prodi dan id_shift set
 ?>
 <script>
   $(function() {

@@ -31,16 +31,8 @@ $arr_bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'A
 $dotdot = $is_live ? '.' : '..';
 $arr = explode('?', $_SERVER['REQUEST_URI']);
 $nama_server = "$_SERVER[REQUEST_SCHEME]://$_SERVER[SERVER_NAME]$arr[0]";
-
-// $get_id_shift = $_GET['id_shift'] ?? null;
-// $get_id_prodi = $_GET['id_prodi'] ?? null;
-// $get_prodi = $_GET['prodi'] ?? null;
-// $get_fakultas = $_GET['fakultas'] ?? null;
-
-// $session_id_shift = $_SESSION['id_shift'] ?? null;
-// $session_id_prodi = $_SESSION['id_prodi'] ?? null;
-// $session_prodi = $_SESSION['prodi'] ?? null;
-// $session_fakultas = $_SESSION['fakultas'] ?? null;
+$default_fakultas = 'FKOM';
+$ta_sebelumnya = $ta_aktif - 10;
 
 
 # ============================================================
@@ -88,6 +80,7 @@ if ($username) {
   $img_wa_disabled = img_icon('wa_disabled');
   $img_unique = img_icon('unique');
   $img_help = img_icon('help');
+  $img_history = img_icon('history');
   $null = '<i class="f12 abu">null</i>';
   $unverified = '<i class="f12 red">unverified</i>';
   $verified = '<b class="f12 green">verified</b>';
@@ -124,6 +117,7 @@ if ($username) {
   # LOGIN INFO
   # ============================================================
   include 'pages/user.php';
+  include 'pages/ta.php';
   if ($role == 'AKD') include 'pages/rprodi.php';
 } // end if $username
 
@@ -153,7 +147,27 @@ if ($username) {
       </section>
     </main>
   </div>
-  <?php include 'pages/ontops.php'; ?>
+  <?php
+  if ($role == 'AKD') {
+    # ============================================================
+    # SET SESSION IF NOT SET
+    # ============================================================
+    if ($get_id_prodi and $get_id_prodi != $session_id_prodi) $_SESSION['id_prodi'] = $get_id_prodi;
+    if ($get_id_shift and $get_id_shift != $session_id_shift) $_SESSION['id_shift'] = $get_id_shift;
+    if ($get_semester and $get_semester != $session_semester) $_SESSION['semester'] = $get_semester;
+    if ($get_counter and $get_counter != $session_counter) $_SESSION['counter'] = $get_counter;
+
+    include 'pages/ontops.php';
+  }
+
+  echo '<pre>';
+  var_dump($_SESSION);
+  echo '</pre>';
+
+  echo '<pre>';
+  var_dump($_GET);
+  echo '</pre>';
+  ?>
 </body>
 
 <?php include $is_live ? 'includes/script_btn_aksi.php' : '../includes/script_btn_aksi.php'; ?>
@@ -166,14 +180,3 @@ if ($username) {
     })
   })
 </script>
-
-<?php
-# ============================================================
-# SET SESSION IF NOT SET
-# ============================================================
-if (!$session_id_prodi and $get_id_prodi) $_SESSION['id_prodi'] = $get_id_prodi;
-if (!$session_id_shift and $get_id_shift) $_SESSION['id_shift'] = $get_id_shift;
-if (!$session_semester and $get_semester) $_SESSION['semester'] = $get_semester;
-echo '<pre>';
-var_dump($_SESSION);
-echo '</pre>';

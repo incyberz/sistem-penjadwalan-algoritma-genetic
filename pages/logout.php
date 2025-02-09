@@ -1,6 +1,6 @@
 <?php
 unset($_SESSION['jadwal_username']);
-unset($_SESSION['ta_aktif']);
+include 'unset_session_akd.php';
 if ($_SESSION) {
   echo '<pre>';
   var_dump($_SESSION);
