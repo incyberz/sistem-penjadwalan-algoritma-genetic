@@ -11,7 +11,26 @@ $role = $user['role'];
 echo "<span class=hideit id=id_user>$id_user</span>";
 echo "<span class=hideit id=role>$role</span>";
 
-if ($role == 'DSN') {
+if ($role == 'AKD') {
+  $s = "SELECT a.*,
+  b.gender,
+  b.whatsapp,
+  b.image 
+  FROM tb_petugas a 
+  JOIN tb_user b ON a.id_user=b.id 
+  WHERE a.id_user=$id_user";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  if (!mysqli_num_rows($q)) {
+    echo ("<div class='wadah gradasi-kuning p2 m3 tengah red'>Data Petugas belum ada</div>");
+    // include 'register-as_petugas.php'; // akun ada, data petugas belom
+    exit;
+
+    die(alert('Data User Petugas tidak ditemukan'));
+  }
+  $petugas = mysqli_fetch_assoc($q);
+  $id_petugas = $petugas['id'];
+  $user['nama'] = $petugas['nama'];
+} elseif ($role == 'DSN') {
   $s = "SELECT a.*,
   b.gender,
   b.whatsapp,

@@ -234,5 +234,5 @@ if (isset($_POST['btn_book'])) {
 } // end book sesi
 
 if ($_POST) {
-  jsurl("?jadwal&fakultas=$fakultas&id_shift=$id_shift&id_kelas=$get_id_kelas&semester=$semester");
+  jsurl($full_param);
 }

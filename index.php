@@ -32,6 +32,9 @@ $dotdot = $is_live ? '.' : '..';
 $arr = explode('?', $_SERVER['REQUEST_URI']);
 $nama_server = "$_SERVER[REQUEST_SCHEME]://$_SERVER[SERVER_NAME]$arr[0]";
 $default_fakultas = 'FKOM';
+$get_fakultas = $_GET['fakultas'] ?? null;
+$session_fakultas = $_SESSION['fakultas'] ?? $default_fakultas;
+$fakultas = $get_fakultas ?? $session_fakultas;
 $ta_sebelumnya = $ta_aktif - 10;
 
 

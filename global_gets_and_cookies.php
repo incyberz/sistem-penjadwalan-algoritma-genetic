@@ -1,40 +1,64 @@
 <?php
 $last_aksi = $_GET['last_aksi'] ?? null;
 
+# ============================================================
+# TABEL
+# ============================================================
 $session_tb = $_SESSION['tb'] ?? null;
 $get_tb = $_GET['tb'] ?? null;
 echo "<i id=get_tb class=hideit>$get_tb</i>";
 if ($get_tb) echo "<script>document.cookie='tb=$get_tb'</script>";
 
-$session_fakultas = $_SESSION['fakultas'] ?? $default_fakultas;
-$get_fakultas = $_GET['fakultas'] ?? $default_fakultas;
-echo "<i id=get_fakultas class=hideit>$get_fakultas</i>";
-if ($get_fakultas) echo "<script>document.cookie='fakultas=$get_fakultas'</script>";
+# ============================================================
+# FAKULTAS
+# ============================================================
+// $session_fakultas = $_SESSION['fakultas'] ?? $default_fakultas;
+// $get_fakultas = $_GET['fakultas'] ?? $default_fakultas;
+// echo "<i id=get_fakultas class=hideit>$get_fakultas</i>";
+// if ($get_fakultas) echo "<script>document.cookie='fakultas=$get_fakultas'</script>";
 
+# ============================================================
+# PRODI
+# ============================================================
 $session_id_prodi = $_SESSION['id_prodi'] ?? null;
 $get_id_prodi = $_GET['id_prodi'] ?? null;
 echo "<i id=get_id_prodi class=hideit>$get_id_prodi</i>";
 if ($get_id_prodi) echo "<script>document.cookie='id_prodi=$get_id_prodi'</script>";
 
+# ============================================================
+# SHIFT
+# ============================================================
 $session_id_shift = $_SESSION['id_shift'] ?? null;
 $get_id_shift = $_GET['id_shift'] ?? null;
 echo "<i id=get_id_shift class=hideit>$get_id_shift</i>";
 if ($get_id_shift) echo "<script>document.cookie='id_shift=$get_id_shift'</script>";
 
+# ============================================================
+# SEMESTER
+# ============================================================
 $session_semester = $_SESSION['semester'] ?? null;
 $get_semester = $_GET['semester'] ?? null;
 echo "<i id=get_semester class=hideit>$get_semester</i>";
 if ($get_semester) echo "<script>document.cookie='semester=$get_semester'</script>";
 
+# ============================================================
+# COUNTER
+# ============================================================
 $session_counter = $_SESSION['counter'] ?? null;
 $get_counter = $_GET['counter'] ?? null;
 echo "<i id=get_counter class=hideit>$get_counter</i>";
 if ($get_counter) echo "<script>document.cookie='counter=$get_counter'</script>";
 
+# ============================================================
+# KELAS
+# ============================================================
 $session_id_kelas = $_SESSION['id_kelas'] ?? null;
 $get_id_kelas = $_GET['id_kelas'] ?? null;
 echo "<i id=get_id_kelas class=hideit>$get_id_kelas</i>";
 if ($get_id_kelas) echo "<script>document.cookie='id_kelas=$get_id_kelas'</script>";
+
+
+
 
 function get_cookies()
 {

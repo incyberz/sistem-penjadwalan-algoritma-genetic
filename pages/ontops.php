@@ -37,10 +37,10 @@ function warna_teks($hexColor)
   return $luminance < 128 ? 'white' : 'black';
 }
 
-
-
-
-echo  ontop($ta_aktif, "
+# ============================================================
+# ONTOP LEVEL 1 TA AKTIF
+# ============================================================
+echo  ontop("$fakultas $ta_aktif", "
   top:-10px;
   left:-15px;
   background:yellow;
@@ -50,6 +50,36 @@ echo  ontop($ta_aktif, "
   color: black;
 ");
 
+# ============================================================
+# ONTOP LEVEL 2 PRODI | KELAS
+# ============================================================
+if ($get_id_prodi || $get_id_kelas) {
+  if ($get_id_kelas) {
+    $id_kelas = $get_id_kelas;
+    include 'kelas.php';
+    $value = $kelas['nama'];
+    $warna_hexa = '070';
+    $color = 'fff';
+  } else {
+    $id_prodi = $get_id_prodi ?? $session_id_prodi;
+    $warna_hexa = $rprodi[$id_prodi]['warna_hexa'] ?? 'ffff00';
+    $color = warna_teks($warna_hexa);
+    $value = $rprodi[$id_prodi]['singkatan'];
+  }
+
+  echo  ontop($value, "
+  top: 40px;
+  left: -10px;
+  padding: 5px 8px 5px 15px;
+  background: #$warna_hexa;
+  border-radius: 5px;
+  color: $color;
+  ");
+}
+
+# ============================================================
+# ONTOP LEVEL 3 SHIFT
+# ============================================================
 if ($get_id_shift) {
   $id_shift = $get_id_shift ?? $session_id_shift;
   $bg = $id_shift == 'R' ? '#a4fDaA' : '#FFB74D';
@@ -61,22 +91,9 @@ if ($get_id_shift) {
   ");
 }
 
-if ($get_id_prodi) {
-  $id_prodi = $get_id_prodi ?? $session_id_prodi;
-
-  $warna_hexa = $rprodi[$id_prodi]['warna_hexa'] ?? 'ffff00';
-  $color = warna_teks($warna_hexa);
-
-  echo  ontop($rprodi[$id_prodi]['singkatan'], "
-  top: 40px;
-  left: -10px;
-  padding: 5px 8px 5px 15px;
-  background: #$warna_hexa;
-  border-radius: 5px;
-  color: $color;
-  ");
-}
-
+# ============================================================
+# ONTOP LEVEL 4 SEMESTER
+# ============================================================
 if ($get_semester) {
   $semester = $get_semester ?? $session_semester;
 

@@ -44,13 +44,33 @@ if ($role == 'AKD') {
   }
 }
 
+$nav_fakultas = '';
+foreach ($rfakultas as $key => $value) {
+  if ($key == $fakultas) {
+    $nav_fakultas .= "<div class='abu miring'>$key</div>";
+  } else {
+    $nav_fakultas .= "<div><a onclick='return confirm(`Pindah ke Fakultas $key?`)' href='?pindah_fakultas&fakultas=$key'>$key</a></div>";
+  }
+}
+
 
 ?>
 <h1 class="tengah mt2">Smart Gamified SIAKAD</h1>
 <div class="tengah f12 abu miring">With The Power of Gamifications and Artificial Intelligence</div>
 <div class="tengah bold mt2 mb1">
-  TA Aktif: <span id="ta_aktif" class=hideit><?= $ta_aktif ?></span><span id="tahun_ta"><?= $tahun_ta ?></span> | <span id="Gg"><?= $Gg ?></span>
-  <a href="?home&show_config=1"><?= $img_manage ?></a>
+  <span class="btn_aksi hover darkblue" id=nav_fakultas__toggle><?= $fakultas ?></span> |
+  TA Aktif:
+  <a href="?home&show_config=1">
+    <span id="ta_aktif" class=hideit><?= $ta_aktif ?></span>
+    <span id="tahun_ta"><?= $tahun_ta ?></span> |
+    <span id="Gg"><?= $Gg ?></span>
+    <?= $img_manage ?>
+  </a>
+  <div class='wadah gradasi-kuning mt2 hideit' id=nav_fakultas>
+    <div class='flexy flex-center'>
+      <?= $nav_fakultas ?>
+    </div>
+  </div>
 </div>
 <header style="position: sticky; top:0;z-index:99; border-bottom: solid 1px #ccc">
   <nav>

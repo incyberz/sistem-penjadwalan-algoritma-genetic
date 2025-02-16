@@ -106,7 +106,7 @@ $total_sks = 0;
 $arr_print = []; // Matakuliah SKS Program SMT KLS Jml_Kelas jml_SKS
 $rprogram = [];
 $rshift = [];
-$rkelas = [];
+$rkelas = []; // jumlah kelas per item surat tugas
 $sum_sks = 0;
 while ($d = mysqli_fetch_assoc($q)) {
 

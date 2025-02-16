@@ -33,6 +33,8 @@ include 'jadwal-pemakaian_ruang.php';
 $blok_pemakaian = '';
 foreach ($rhari as $date => $v) {
 
+  $hide_hari = ''; // belum diimplementasikan di fitur pemakaian
+
   if ($get_weekday and $v['weekday'] != $get_weekday) continue;
   $s = "SELECT * FROM tb_sesi";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
@@ -91,25 +93,26 @@ foreach ($rhari as $date => $v) {
 
   $nama_hari = nama_hari($date);
   $blok_pemakaian .= "
-    <h4 class='darkblue nama_hari p1 tengah'>$nama_hari</h4>
-
-    <div style='display:grid; grid-template-columns:200px auto;'>
-      <div style='background:#cff'>
-        <table class='table table-bordered'>
-          <thead>
-            <th>Sesi</th>
-            <th>Pukul</th>
-          </thead>
-          $tr1
-        </table>
-      </div>
-      <div style='overflow: scroll; border-right: solid 1px #ccc'>
-        <table class='table table-bordered'>
-          <thead>
-            $ths_ruang
-          </thead>
-          $tr2
-        </table>
+    <div class='$hide_hari'>
+      <h4 class='darkblue nama_hari p1 tengah'>$nama_hari</h4>
+      <div style='display:grid; grid-template-columns:200px auto;'>
+        <div style='background:#cff'>
+          <table class='table table-bordered'>
+            <thead>
+              <th>Sesi</th>
+              <th>Pukul</th>
+            </thead>
+            $tr1
+          </table>
+        </div>
+        <div style='overflow: scroll; border-right: solid 1px #ccc'>
+          <table class='table table-bordered'>
+            <thead>
+              $ths_ruang
+            </thead>
+            $tr2
+          </table>
+        </div>
       </div>
     </div>
   ";

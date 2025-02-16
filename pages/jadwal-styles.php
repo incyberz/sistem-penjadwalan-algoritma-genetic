@@ -67,8 +67,16 @@
   }
 
   .nav_aktif,
+  .nav_hari_active {
+    background: linear-gradient(blue, darkblue) !important;
+    border: none !important;
+    color: white;
+    cursor: default;
+  }
+
   .nav_kelas_active {
-    background: linear-gradient(#dff, #bfb);
+    background: darkblue;
+    color: white;
   }
 
   .nav_kelas:hover {

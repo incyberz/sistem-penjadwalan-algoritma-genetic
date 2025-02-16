@@ -1,4 +1,5 @@
 <?php
+/*
 $nav_fakultas = '';
 foreach ($rfakultas as $key => $value) {
   $nav_aktif = $fakultas == $key ? 'nav_aktif' : '';
@@ -87,3 +88,24 @@ while ($d = mysqli_fetch_assoc($q)) {
 echo "
   <div class='flexy flex-center mt4' id=nav_kelas>$nav_kelas</div>
 ";
+
+
+# ============================================================
+# NAV HARI
+# ============================================================
+// ZZZ HERE
+$nav_hari = '';
+foreach ($rhari as $date => $arr_hari) {
+  # code...
+  $nav_hari_active = $arr_hari['weekday'] == $get_weekday ? 'nav_hari_active' : '';
+  echo "<hr>$arr_hari[weekday] == $get_weekday";
+  $nav_hari .= "
+    <div class='nav_jadwal nav_hari $nav_hari_active' id=nav_hari__$arr_hari[weekday]>
+      <span>$date</span>
+    </div>
+  ";
+}
+echo "
+  <div class='flexy flex-center mt4' id=nav_hari>$nav_hari</div>
+";
+*/

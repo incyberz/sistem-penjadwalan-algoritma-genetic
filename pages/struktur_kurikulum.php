@@ -10,6 +10,7 @@ $mode = $_GET['mode'] ?? 'view';
 $mode_edit = $mode == 'edit' ? 1 : 0;
 $img_drop = img_icon('drop');
 $img_drop_disabled = img_icon('drop_disabled');
+$img_edit_disabled = img_icon('edit_disabled');
 $MKDU_badge = "<span class=mkdu_badge>MKDU</span>";
 $rmk = []; // array MK Struktur Kurikulum
 // $get_semester = ($_GET['semester'] ?? null) ? $_GET['semester'] : $default_semester; // untuk menyimpan session editing semester

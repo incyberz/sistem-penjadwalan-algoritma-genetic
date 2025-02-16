@@ -110,6 +110,17 @@ if (isset($_POST['btn_tambah_mk'])) {
   mysqli_query($cn, $s) or die(mysqli_error($cn));
 }
 
+if (isset($_POST['btn_update_sks'])) {
+  $s = "UPDATE tb_mk SET sks=$_POST[sks] WHERE id=$_POST[btn_update_sks]";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+}
+
+if (isset($_POST['btn_update_nama_mk'])) {
+  $nama_mk = preg_replace('/[^A-Z0-9\s\(\)]/', '', trim(strtoupper($_POST['nama_mk'])));
+  $s = "UPDATE tb_mk SET nama='$nama_mk' WHERE id=$_POST[btn_update_nama_mk]";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+}
+
 if ($_POST) {
   if (!$id_prodi) {
     echo '<pre>';
@@ -117,5 +128,5 @@ if ($_POST) {
     echo '<b style=color:red>DEBUGING: echopreExit</b></pre>';
     exit;
   }
-  jsurl("?struktur_kurikulum&id_prodi=$id_prodi&mode=$mode&semester=$get_semester&id_shift=$id_shift", 1000);
+  jsurl("?struktur_kurikulum&id_prodi=$id_prodi&mode=$mode&semester=$get_semester&id_shift=$id_shift", 300);
 }

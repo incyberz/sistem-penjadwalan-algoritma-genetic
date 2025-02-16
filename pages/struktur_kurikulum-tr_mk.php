@@ -17,6 +17,11 @@ d.singkatan as prodi,
   WHERE id_kumk=b.id 
   AND id_shift='$id_shift') count_st_detail,
 (
+  SELECT COUNT(1) FROM tb_st_detail p 
+  JOIN tb_jadwal q ON p.id=q.id 
+  WHERE p.id_kumk=b.id 
+  AND p.id_shift='$id_shift') terjadwal,
+(
   -- SELECT COUNT(1) FROM tb_dosen p
   SELECT CONCAT(p.id,'-',p.nama) FROM tb_dosen p
   JOIN tb_st q ON p.id=q.id_dosen 
@@ -61,6 +66,7 @@ if (!$num_rows) {
 
 
     $last_semester = $d['semester'];
+    $terjadwal = $d['terjadwal'];
 
     $link_to_st = '';
     if ($d['count_st_detail']) {
@@ -221,11 +227,53 @@ if (!$num_rows) {
       </td>    
     ";
 
+    # ============================================================
+    # EDIT NAMA | EDIT SKS
+    # ============================================================
+    $edit_sks = '';
+    $edit_nama_mk = '';
+    if ($mode_edit) {
+      $edit_nama_mk = "
+        <span class=btn_aksi id=form_ubah_nama_mk$d[id_kumk]__toggle>$img_edit</span>
+        <form method=post id=form_ubah_nama_mk$d[id_kumk] class='wadah mt2 gradasi-kuning hideit'>
+          <input required minlength=3 maxlength=30 name=nama_mk value='$d[nama_mk]' class='form-control upper' />
+          <div class='mt1 mb2 abu miring f12'>hanya diperbolehkan A-Z, 0-9, dan tanda kurung ( )</div>
+          <button class='btn btn-warning btn-sm mt2' name=btn_update_nama_mk value=$d[id_mk]>Update Nama MK</button>
+        </form>
+      ";
+
+      if ($terjadwal) {
+        $edit_sks = "<span onclick='alert(`Tidak bisa mengubah SKS karena sudah terjadwal.`)'>$img_edit_disabled</span>";
+      } else {
+
+        $radios = '';
+        for ($sks = 1; $sks <= 6; $sks++) {
+          $disabled = $sks == $d['sks'] ? 'disabled' : '';
+          $radios .= "
+            <label class='d-block'>
+              <input type=radio name=sks value=$sks $disabled> $sks
+            </label>
+          ";
+        }
+
+        $edit_sks = "
+          <span class=btn_aksi id=form_ubah_sks$d[id_kumk]__toggle>$img_edit</span>
+          <form method=post id=form_ubah_sks$d[id_kumk] class='wadah mt2 gradasi-kuning hideit'>
+            $radios
+            <button class='btn btn-warning btn-sm mt2' name=btn_update_sks value=$d[id_mk]>Update SKS</button>
+          </form>
+        ";
+      }
+    }
+
+    # ============================================================
+    # FINAL OUTPUT TR
+    # ============================================================
     $tr_mk .= "
       <tr class='hideita tr_mk tr_mk__$d[prodi] tr_mk__$d[id_prodi]__$d[semester]' id=tr_mk__$d[id_kumk]>
         <td>$i</td>
-        <td>$form_drop $d[nama_mk] $MKDU </td>
-        <td>$d[sks]</td>
+        <td>$form_drop $d[nama_mk] $MKDU $edit_nama_mk</td>
+        <td>$d[sks] $edit_sks</td>
         <td>$dosen_pengampu</td>
         $td_dosen_sebelumnya
       </tr>

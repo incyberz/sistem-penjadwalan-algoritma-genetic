@@ -41,11 +41,13 @@ include 'counts.php';
 echo "<div style='margin: -20px 0 20px 5px'><a href='?progress'><i class=f12>more at progress...</i></a></div>";
 
 $tmp = str_replace('$', '', file_get_contents('config.php'));
+$jabatan = $role == 'AKD' ? "$petugas[jabatan]" : 'DOSEN';
 echo "
   <h1>Welcome <a href='?detail&tb=user&id=$user[id]' id='nama_user' class='proper'>$user[nama]</a>!!!</h1>
   <p class=petunjuk>Silahkan ikuti kalimat petunjuk yang berwarna biru yang biasanya terdapat icon $img_help Anda sekarang boleh klik pada Menu apapun yang tersedia.</p>
   <ul>
     <li><b>Role:</b> $user[role] </li>
+    <li><b>Jabatan:</b> $jabatan </li>
     <li><b>Whatsapp:</b> $user[whatsapp] </li>
     <li>
       <b>TA Aktif:</b> 
