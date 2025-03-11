@@ -121,7 +121,9 @@ if (!$mhs['kelas']) {
   $tr = '';
   $i = 0;
   if (!mysqli_num_rows($q)) {
-    $jadwal .= div_alert('danger', "Belum ada Jadwal Kuliah untuk kelas [$mhs[kelas]]");
+    $pesan = "Belum ada Jadwal Kuliah untuk kelas [$mhs[kelas]]";
+    include 'hubungi.php';
+    $jadwal .= div_alert('danger', "$pesan $hubungi");
   } else {
     while ($d = mysqli_fetch_assoc($q)) {
       $i++;

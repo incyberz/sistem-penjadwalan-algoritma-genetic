@@ -21,9 +21,10 @@ AND a.semester = '$get_semester'
 AND a.id_shift = '$get_id_shift'
 AND a.id_ta = '$ta_aktif' 
 ";
+// echolog($s);
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 if (!mysqli_num_rows($q)) {
-  $pesan = "Belum ada Data Kelas untuk semester [$semester] kelas [$SHIFT] fakultas [$fakultas].";
+  $pesan = "Belum ada Data Kelas untuk semester [$get_semester] kelas [$SHIFT] fakultas [$fakultas].";
   alert("$pesan | <a href='?crud&tb=kelas&note=$pesan'>Manage Kelas</a>", 'danger mt4');
   exit;
 }
@@ -47,7 +48,7 @@ while ($d = mysqli_fetch_assoc($q)) {
 
   $nav_kelas .= "
     <div class=''>
-      <a class='nav_jadwal $nav_aktif' href='?jadwal&fakultas=$get_fakultas&id_shift=$get_id_shift&semester=$get_semester&id_kelas=$d[id]'>
+      <a class='nav_jadwal $nav_aktif' href='?jadwal&fakultas=$get_fakultas&id_shift=$get_id_shift&semester=$get_semester&weekday=$get_weekday&id_kelas=$d[id]'>
         <span>$d[singkatan]$d[semester]$d[counter]</span>
         $span_kumk_count
       </a>
@@ -61,7 +62,7 @@ foreach ($rshift as $id_shift => $value) {
   if ($get_id_shift == $id_shift) {
     $nav_shift .= "<div><span class='nav_jadwal nav_aktif'>$id_shift</span></div>";
   } else {
-    $nav_shift .= "<div><a class='nav_jadwal' href='?jadwal&fakultas=$get_fakultas&semester=$get_semester&id_shift=$id_shift'>$id_shift</a></div>";
+    $nav_shift .= "<div><a class='nav_jadwal' href='?jadwal&fakultas=$get_fakultas&semester=$get_semester&weekday=$get_weekday&id_shift=$id_shift'>$id_shift</a></div>";
   }
 }
 
@@ -71,7 +72,7 @@ for ($semester = 1; $semester <= 8; $semester++) {
     if ($get_semester == $semester) {
       $nav_semester .= "<div><span class='nav_jadwal nav_semester nav_aktif'>$semester</span></div>";
     } else {
-      $nav_semester .= "<div><a class='nav_jadwal nav_semester' href='?jadwal&fakultas=$get_fakultas&id_shift=$get_id_shift&semester=$semester'>$semester</a></div>";
+      $nav_semester .= "<div><a class='nav_jadwal nav_semester' href='?jadwal&fakultas=$get_fakultas&id_shift=$get_id_shift&weekday=$get_weekday&semester=$semester'>$semester</a></div>";
     }
   }
 }

@@ -43,7 +43,8 @@ echo "Login success...
   <div class='alert alert-danger'>Status Akun Anda belum terverifikasi.</div>
 ";
 
-$link_verif = "$nama_server?verifikasi_whatsapp&nama=$d[nama]&username=$d[username]&role=$d[role]&whatsapp=$d[whatsapp]";
+$nama_nospace = str_replace(' ', '-', $d['nama']);
+$link_verif = "$nama_server?verifikasi_whatsapp&nama=$nama_nospace&username=$d[username]&role=$d[role]&whatsapp=$d[whatsapp]";
 
 $text_asal = "```================================\nREQUEST VERIFIKASI AKUN\nfrom: $d[whatsapp] | UNCHECKED!\n================================```\n\nYth. Petugas Akademik ($petugas_default[nama]),\n\nMohon verifikasi akun saya atas nama:\n- *nama:* $d[nama]\n- *username:* $d[username]\n- *role:* $d[role] \n\nTerimakasih.\n\nLink:\n$link_verif$text_wa_from";
 $preview = str_replace("\n\n", '<br>.<br>', $text_asal);

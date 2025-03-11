@@ -6,6 +6,10 @@ session_start();
 # SESSION
 # ============================================================
 $username = $_SESSION['jadwal_username'] ?? '';
+
+# ============================================================
+# DEFAULT NULL VALUES
+# ============================================================
 $user = [];
 $dosen = [];
 $mhs = [];
@@ -13,6 +17,7 @@ $role = null;
 $pesan = null;
 $id_dosen = null;
 $id_mhs = null;
+$styles_badge_prodi = null;
 
 # ============================================================
 # CONFIGIRATION FILE
@@ -121,7 +126,13 @@ if ($username) {
   # ============================================================
   include 'pages/user.php';
   include 'pages/ta.php';
-  if ($role == 'AKD') include 'pages/rprodi.php';
+  // if ($role == 'AKD') include 'pages/rprodi.php';
+  include 'pages/rprodi.php';
+
+  # ============================================================
+  # GLOBAL ICONS
+  # ============================================================
+  $img_drop = img_icon('drop');
 } // end if $username
 
 
@@ -138,6 +149,7 @@ if ($username) {
   include 'global_gets_and_cookies.php';
   include 'includes/siakad_styles.php';
   include 'includes/siakad_functions.php';
+  echo "<style>$styles_badge_prodi</style>";
   ?>
 </head>
 
@@ -151,25 +163,18 @@ if ($username) {
     </main>
   </div>
   <?php
-  if ($role == 'AKD') {
-    # ============================================================
-    # SET SESSION IF NOT SET
-    # ============================================================
-    if ($get_id_prodi and $get_id_prodi != $session_id_prodi) $_SESSION['id_prodi'] = $get_id_prodi;
-    if ($get_id_shift and $get_id_shift != $session_id_shift) $_SESSION['id_shift'] = $get_id_shift;
-    if ($get_semester and $get_semester != $session_semester) $_SESSION['semester'] = $get_semester;
-    if ($get_counter and $get_counter != $session_counter) $_SESSION['counter'] = $get_counter;
-
+  if ($role) {
+    if ($role == 'AKD') {
+      # ============================================================
+      # SET SESSION IF NOT SET
+      # ============================================================
+      if ($get_id_prodi and $get_id_prodi != $session_id_prodi) $_SESSION['id_prodi'] = $get_id_prodi;
+      if ($get_id_shift and $get_id_shift != $session_id_shift) $_SESSION['id_shift'] = $get_id_shift;
+      if ($get_semester and $get_semester != $session_semester) $_SESSION['semester'] = $get_semester;
+      if ($get_counter and $get_counter != $session_counter) $_SESSION['counter'] = $get_counter;
+    }
     include 'pages/ontops.php';
   }
-
-  echo '<pre>';
-  var_dump($_SESSION);
-  echo '</pre>';
-
-  echo '<pre>';
-  var_dump($_GET);
-  echo '</pre>';
   ?>
 </body>
 

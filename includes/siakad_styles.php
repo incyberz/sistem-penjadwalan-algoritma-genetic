@@ -188,4 +188,13 @@
     }
 
   }
+
+  .badge-prodi {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    background: #007bff;
+    color: white;
+  }
 </style>

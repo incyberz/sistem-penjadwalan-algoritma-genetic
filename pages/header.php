@@ -38,8 +38,16 @@ if ($role == 'AKD') {
   $arr_4dosen = [];
   $arr_4dosen['ST'] = 'st';
   $arr_4dosen['Jadwal'] = 'jadwal';
-  $arr_4dosen['Progress'] = 'progress';
+  // $arr_4dosen['Progress'] = 'progress';
+  $arr_4dosen['Bimbingan'] = 'bimbingan';
   foreach ($arr_4dosen as $caption => $href) {
+    $li .= "<li><a href='?$href'>$caption</a></li>";
+  }
+} elseif ($role == 'MHS') {
+  $arr_4mhs = [];
+  // $arr_4mhs['Jadwal'] = 'jadwal';
+  $arr_4mhs['Bimbingan'] = 'bimbingan';
+  foreach ($arr_4mhs as $caption => $href) {
     $li .= "<li><a href='?$href'>$caption</a></li>";
   }
 }

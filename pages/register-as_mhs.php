@@ -1,4 +1,15 @@
 <?php
+# ============================================================
+# AUTO PROCESS ASSIGN DATA MHS DAN DATA USER JIKA NO_ID = NIM 
+# ============================================================
+$s = "UPDATE tb_mhs SET id_user=$user[id] WHERE nim = '$user[no_id]'";
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+jsurl();
+
+
+# ============================================================
+# OLD PROCESS
+# ============================================================
 if (isset($_POST['nim'])) {
   $s = "INSERT INTO tb_mhs (
     id_user,

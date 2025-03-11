@@ -106,12 +106,29 @@ if ($get_semester) {
   ");
 }
 
+# ============================================================
+# ONTOP LEVEL 5 COUNTER
+# ============================================================
 if ($session_counter || $get_counter) {
   $counter = $get_counter ?? $session_counter;
   echo  ontop($counter, "
   top: 160px;
   left: -10px;
   padding: 5px 8px 5px 15px;
+  background: #a4fDaA;
+  border-radius: 5px;
+  ");
+}
+
+
+# ============================================================
+# ONTOP BOTTOM RIGHT
+# ============================================================
+if ($role) {
+  echo  ontop($role, "
+  bottom: -8px;
+  right: -5px;
+  padding: 5px 15px 10px 8px;
   background: #a4fDaA;
   border-radius: 5px;
   ");

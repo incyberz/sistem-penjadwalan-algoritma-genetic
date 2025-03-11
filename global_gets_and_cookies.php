@@ -12,10 +12,10 @@ if ($get_tb) echo "<script>document.cookie='tb=$get_tb'</script>";
 # ============================================================
 # FAKULTAS
 # ============================================================
-// $session_fakultas = $_SESSION['fakultas'] ?? $default_fakultas;
-// $get_fakultas = $_GET['fakultas'] ?? $default_fakultas;
-// echo "<i id=get_fakultas class=hideit>$get_fakultas</i>";
-// if ($get_fakultas) echo "<script>document.cookie='fakultas=$get_fakultas'</script>";
+$session_fakultas = $_SESSION['fakultas'] ?? $default_fakultas;
+$get_fakultas = $_GET['fakultas'] ?? $default_fakultas;
+echo "<i id=get_fakultas class=hideit>$get_fakultas</i>";
+if ($get_fakultas) echo "<script>document.cookie='fakultas=$get_fakultas'</script>";
 
 # ============================================================
 # PRODI

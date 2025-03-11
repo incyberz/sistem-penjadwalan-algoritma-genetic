@@ -13,126 +13,60 @@ if (isset($_POST['username'])) {
   if (mysqli_num_rows($q)) {
     $pesan = "Username [ $username ] telah ada, silahkan pakai yang lain.";
   } else {
-    // $pesan = 'OK';
-    $s = "INSERT INTO tb_user (
-      nama,
-      username,
-      whatsapp,
-      role
-    ) VALUES (
-      '$_POST[nama]',
-      '$username',
-      '$_POST[whatsapp]',
-      '$_POST[role]'
-    )";
-    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-    die("
-      <div class='alert alert-success'>
-        <b>Insert akun sukses.</b><hr>
-        Silahkan login menggunakan akun default Anda:
-        <ul>
-          <li><b>username:</b> $username</li>
-          <li><b>password:</b> $username</li>
-        </ul>
-        <a class='btn btn-primary' href='?login&username=$username&password=$username'>Login</a>
-      </div>
-    ");
+    # ============================================================
+    # CEK NIM JIKA AVAILABLE 
+    # ============================================================
+    if ($_POST['role'] == 'MHS') {
+      $s = "SELECT 1 FROM tb_mhs WHERE nim = '$_POST[no_id]'";
+      $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+      if (mysqli_num_rows($q)) {
+        // OK, lanjut proses
+      } else {
+        $pesan = "NIM [ $_POST[no_id] ] tidak terdaftar, silahkan koreksi atau hubungi Petugas secara offline jika ada kesalahan.";
+      }
+    } elseif ($_POST['role'] == 'DOSEN') {
+      $s = "SELECT 1 FROM tb_dosen WHERE nidn = '$_POST[no_id]'";
+      $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+      if (mysqli_num_rows($q)) {
+        // OK, lanjut proses
+      } else {
+        $pesan = "NIP [ $_POST[no_id] ] tidak terdaftar, silahkan koreksi atau hubungi Petugas secara offline jika ada kesalahan.";
+      }
+    }
+
+    if (!$pesan) {
+      $s = "INSERT INTO tb_user (
+        nama,
+        username,
+        whatsapp,
+        role,
+        no_id
+      ) VALUES (
+        '$_POST[nama]',
+        '$username',
+        '$_POST[whatsapp]',
+        '$_POST[role]',
+        '$_POST[no_id]'
+      )";
+      $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+      die("
+        <div class='alert alert-success'>
+          <b>Insert akun sukses.</b><hr>
+          Silahkan login menggunakan akun default Anda:
+          <ul>
+            <li><b>username:</b> $username</li>
+            <li><b>password:</b> $username</li>
+          </ul>
+          <a class='btn btn-primary' href='?login&username=$username&password=$username'>Login</a>
+        </div>
+      ");
+    }
   }
 }
 $pesan = $pesan == '' ? $pesan : "<div class='alert alert-danger'>$pesan</div>";
 ?>
 
-<style>
-  * {
-    /* margin: 0;
-    padding: 0; */
-    font-family: 'Century Gothic', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  }
-
-  body {
-    background: linear-gradient(#eee, #ccf) !important;
-    min-height: 100vh;
-  }
-
-  .screen_login {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: center;
-    border: solid 1px red;
-    height: 100%;
-    text-align: center;
-  }
-
-  .form_login {
-    margin: auto;
-    max-width: 400px;
-    border: solid 1px #ccc;
-    border-radius: 15px;
-    padding: 30px 15px;
-    background: linear-gradient(#fff, #efe);
-  }
-
-  .logo {
-    width: 150px;
-  }
-
-  .login-input input {
-    /* background: #eef */
-    text-align: center;
-  }
-
-  .nama_universitas,
-  .judul_sim {
-    /* font-weight: bold; */
-    letter-spacing: 1px;
-    font-size: 20px;
-    color: blue
-  }
-
-  .span_login {
-    display: block;
-    letter-spacing: 2px;
-    font-size: 30px;
-    margin: 15px 0;
-  }
-
-  .deskripsi {
-    font-size: 12px;
-    color: gray;
-    font-style: italic;
-    margin: 12px 0 30px 0
-  }
-
-  .label {
-    font-size: 12px;
-    font-style: italic;
-    font-weight: bold;
-  }
-
-  .input_info {
-    font-size: 12px;
-    font-style: italic;
-    color: gray;
-    margin-bottom: 15px;
-  }
-
-  .label_active {
-    color: blue;
-    font-weight: bold;
-  }
-
-  label {
-    display: block;
-    cursor: pointer;
-  }
-
-  label:hover {
-    background: yellow;
-  }
-</style>
+<link rel="stylesheet" href="assets/css/register.css">
 <div class="screen_login">
   <form method=post class="form_login">
     <div class="nama_universitas">Universitas Anda</div>

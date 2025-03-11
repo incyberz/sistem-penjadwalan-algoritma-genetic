@@ -119,7 +119,23 @@ foreach ($rhari as $date => $v) {
 
   $weekday = $v['weekday'];
   $nama_hari = $arr_hari[$weekday];
-  $nav_hari .= "<div>$nama_hari</div>";
+  if ($weekday == $get_weekday) {
+    $nav_hari .= "
+      <div>
+        <span class='nav_jadwal nav_aktif'>
+          $nama_hari
+        </span>
+      </div>
+    ";
+  } else {
+    $nav_hari .= "
+      <div>
+        <a class='nav_jadwal' href='?jadwal&fakultas=$get_fakultas&id_shift=$get_id_shift&semester=$get_semester&id_kelas=$get_id_kelas&weekday=$weekday'>
+          $nama_hari
+        </a>
+      </div>
+    ";
+  }
   if ($weekday != $get_weekday) continue; // sembunyikan hari lain
 
   // hide all except get_weekday | default senin
@@ -287,12 +303,22 @@ foreach ($rhari as $date => $v) {
                       $radio_ruang
 
                       <hr />
-                      <label class='label_ruang'>
-                        <div>
-                          <input required type=radio name=id_ruang value=1  />
-                          Online / Zoom
+                      <div class=row>
+                        <div class=col-6>
+                          <label class='label_ruang'>
+                            <div>
+                              <input required type=radio name=id_ruang value=1  />
+                              Online / Zoom
+                            </div>
+                          </label>
                         </div>
-                      </label>
+                        <div class=col-6>
+                          <a class='label_ruang' href='?join_class' onclick='return confirm(`Join Class?\n\nJoin Class artinya satukan beberapa kelas mhs ke satu ruangan.`)'>
+                            Join Class
+                          </a>
+                        </div>
+                      </div>
+                      <hr />
 
                     </div>
                     <button class='btn btn-primary w-100 mb2' name=btn_book value='$v[weekday]__$id_sesi'>Book</button>
@@ -325,7 +351,7 @@ foreach ($rhari as $date => $v) {
 
   $blok_jadwal .= "
     <div class='$hide_hari blok_hari' id=blok_hari__$v[weekday]>
-      <h4 class='darkblue nama_hari p1 tengah'>$nama_hari</h4>
+      <h4 class='hideit ZZZ darkblue nama_hari p1 tengah'>$nama_hari</h4>
       <div class=blok_jadwal>
         $div_blok_kelas
       </div>
@@ -352,6 +378,7 @@ foreach ($rkumk_count as $id_kelas => $count) {
 }
 if ($script) $script = "<script>$(function() {;$script})</script>";
 echo "
+  <div class='d-flex justify-content-center gap-4 mb-4'>$nav_hari</div>
   $blok_jadwal
   $script
 ";
