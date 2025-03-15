@@ -30,7 +30,9 @@ $cocok_info = '';
 $jadwal = '';
 $info_posisi_smt = '';
 if (!$mhs['kelas']) {
-
+  # ============================================================
+  # PILIH KELAS AKTIF JIKA BELUM PUNYA
+  # ============================================================
   $s = "SELECT * FROM tb_kelas a WHERE a.id_ta = $ta_aktif
   AND semester <= $my_semester -- boleh masuk ke kelas lebih kecil
   AND id_shift = '$mhs[id_shift]' 
@@ -179,5 +181,18 @@ echo "
   $form
   $cocok_info
   $jadwal
-
 ";
+
+
+
+
+# ============================================================
+# CEK JIKA PUNYA JADWAL BIMBINGAN 
+# ============================================================
+$s = "SELECT 1 FROM tb_peserta_bimbingan a WHERE a.id_mhs = $id_mhs";
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+if (!mysqli_num_rows($q)) {
+  echo div_alert('info', 'Kamu belum punya Data Bimbingan');
+} else {
+  echo div_alert('info', 'Klik <a href=?bimbingan>Menu Bimbingan</a> untuk akses data bimbingan kamu.');
+}

@@ -56,6 +56,7 @@ if ($username) {
     'date_managements',
     'div_alert',
     'echolog',
+    'erid',
     'hak_akses',
     'tanggal',
     'img_icon',

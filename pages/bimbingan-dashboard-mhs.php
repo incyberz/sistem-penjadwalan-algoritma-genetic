@@ -61,7 +61,11 @@ while ($d = mysqli_fetch_assoc($q)) {
         <span class='badge bg-$d[bg]'>$d[status]</span>
       </td>
       <td>$d[komentar]</td>
-      <td><a href='?bimbingan&p=detail_laporan&id=$d[id]' class='proper btn btn-sm btn-$d[bg_aksi]'>$d[aksi]</a></td>
+      <td>
+        <a href='?bimbingan&p=detail_laporan&id=$d[id]' class='proper btn btn-sm btn-$d[bg_aksi]'>
+          $d[aksi]
+        </a>
+      </td>
     </tr>
   ";
 }
@@ -142,16 +146,16 @@ $form_upload = "
   <div class='card mt-4'>
     <div class='card-header bg-success text-white'>Kirim Laporan Bimbingan</div>
     <div class='card-body'>
-      <form id='formLaporan'>
+      <form method=post enctype='multipart/form-data' id='formLaporan'>
         <div class='mb-3'>
           <label for='fileLaporan' class='form-label'>Unggah Laporan</label>
-          <input type='file' class='form-control' id='fileLaporan' required>
+          <input type='file' class='form-control' name='fileLaporan' required accept=.docx>
         </div>
         <div class='mb-3'>
           <label for='catatan' class='form-label'>Catatan untuk Dosen</label>
-          <textarea class='form-control' id='catatan' rows='3'></textarea>
+          <textarea class='form-control' name='catatan' rows='3' required></textarea>
         </div>
-        <button type='submit' class='btn btn-primary'>Kirim</button>
+        <button type='submit' class='btn btn-primary' name=btn_kirim_laporan value='$bimbingan[id_peserta_bimbingan]'>Kirim Laporan</button>
       </form>
     </div>
   </div>

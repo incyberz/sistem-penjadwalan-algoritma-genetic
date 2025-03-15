@@ -4,8 +4,10 @@ if (!isset($pesan) || !$pesan) die('pesan tidak ada @hubungi.php');
 $link_login = '';
 $Petugas = 'Petugas Akademik';
 
-$pelapor = "$user[nama] - $mhs[nim]";
-$phone = $petugas_default['whatsapp'];
+$nim = $mhs['nim'] ?? '';
+$nidn = $dosen['nidn'] ?? '';
+$pelapor = "$user[nama] - $nim$nidn";
+$phone = $phone ?? $petugas_default['whatsapp'];
 $text_wa = "```================================\nNOTIF FROM MHS\n================================```\n\nSelamat $waktu $Petugas,\n\n$pesan. Terimakasih.\n\nDari:\n$pelapor\n\n$link_login$text_wa_from";
 $text_wa = urlencode($text_wa);
 

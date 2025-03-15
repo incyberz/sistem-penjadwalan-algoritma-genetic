@@ -9,6 +9,23 @@ if (0) {
   $id_mhs = 15; // aena
 }
 
+function hitungMingguDari($tanggal_awal)
+{
+  $tanggal_awal = new DateTime($tanggal_awal);
+  $tanggal_sekarang = new DateTime(); // Tanggal hari ini
+
+  $selisih_hari = $tanggal_awal->diff($tanggal_sekarang)->days;
+  return ceil($selisih_hari / 7); // Konversi ke minggu
+}
+
+
+$awal_bimbingan = '2025-02-03'; // awal TA
+echo "awal_bimbingan: $awal_bimbingan<br>";
+$minggu_ke = hitungMingguDari($awal_bimbingan);
+echo "minggu_ke: $minggu_ke<br>";
+
+
+
 set_h2("Bimbingan", "Bimbingan Mahasiswa PAL, PKL, dan TA");
 $arr_hari = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 $p = $_GET['p'] ?? null;

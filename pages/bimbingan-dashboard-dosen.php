@@ -1,5 +1,4 @@
 <?php
-
 $checks_hari = '';
 for ($i = 1; $i < 6; $i++) {
   $checks_hari .= "
@@ -87,21 +86,27 @@ if ($bimbingan) {
   ";
 }
 
+# ============================================================
+# ARRAY STATUS 
+# ============================================================
+$s = "SELECT * FROM tb_status_bimbingan_mhs ";
+$q =  mysqli_query($cn, $s) or die(mysqli_error($cn));
+$rStatus = [];
+$tr_status = '';
+while ($d = mysqli_fetch_assoc($q)) {
+  $rStatus[$d['id']] = $d['status'];
+  $tr_status .= "
+    <tr>
+      <td>$d[id]</td>
+      <td>$d[status]</td>
+    </tr>
+  ";
+}
 
 # ============================================================
 # DAFTAR PESERTA BIMBINGAN
 # ============================================================
 if ($bimbingan) {
-  # ============================================================
-  # ARRAY STATUS 
-  # ============================================================
-  $s = "SELECT * FROM tb_status_bimbingan_mhs ";
-  $q =  mysqli_query($cn, $s) or die(mysqli_error($cn));
-  $rStatus = [];
-  while ($d = mysqli_fetch_assoc($q)) {
-    $rStatus[$d['id']] = $d['status'];
-  }
-
   # ============================================================
   # MY BIMIBNGAN
   # ============================================================
@@ -117,12 +122,23 @@ if ($bimbingan) {
     $badge_prodi = badge_prodi($d['prodi']);
 
     # ============================================================
-    # CREATE PROGRESS BAR
+    # PROGRESS TIAP MHS
     # ============================================================
-    $progress = "<div class='progress'>
-    <div class='progress-bar progress-bar-striped progress-bar-animated' role='progressbar' aria-valuenow='75' aria-valuemin='0' aria-valuemax='100' style='width: 75%'>75%</div>
-    </div>";
+    $id_status = $d['id_status_bimbingan'];
+    $status = $rStatus[$id_status] ?? '<b class=red>Belum Pernah Bimbingan<b>';
+    $count = count($rStatus);
+    $persen = $id_status ? round($id_status / $count * 100) : 0;
 
+    $progress = "
+      <div>Status: $status</div>
+      <div class='progress'>
+        <div class='progress-bar progress-bar-striped progress-bar-animated' role='progressbar' aria-valuenow='$persen' aria-valuemin='0' aria-valuemax='100' style='width: $persen%'>$persen%</div>
+      </div>
+    ";
+
+    # ============================================================
+    # FINAL TR MY BIMBINGAN
+    # ============================================================
     $tr .= "
       <tr>
         <td>$i</td>
@@ -132,11 +148,12 @@ if ($bimbingan) {
         </td>
         <td>$progress</td>
         <td class='text-success'>Sudah Update</td>
-        <td><button class='btn btn-sm btn-info'>Lihat Detail</button></td>
+        <td><a href='?bimbingan&p=riwayat_laporan&id_mhs=$d[id_mhs]' class='btn btn-sm btn-info'>Lihat Detail</a></td>
       </tr>
     ";
   }
 }
+
 
 ?>
 <h3 class="mb-4">Dashboard Bimbingan Dosen</h3>
@@ -198,23 +215,23 @@ if ($bimbingan) {
   </div>
 </div>
 
-<?php
-// $s = "SELECT * FROM tb_status_bimbingan_mhs ";
-// $q =  mysqli_query($cn, $s) or die(mysqli_error($cn));
-// $tr = '';
-// while ($d = mysqli_fetch_assoc($q)) {
-//   $tr .= "
-//     <tr>
-//       <td>$d[id]</td>
-//       <td>$d[status]</td>
-//     </tr>
-//   ";
-// }
+<div class="card mt-4">
+  <div class="card-header bg-primary text-white">Kode Status Bimbingan</div>
+  <div class="card-body">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?= $tr_status ?>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-// echo "<table class=table>$tr</table>";
-
-
-?>
 
 
 

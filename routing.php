@@ -22,9 +22,10 @@ $home = $role == 'MHS' ? 'home_mhs' : 'home';
 $arr_route = [
   '' => $home,
   '?' => $home,
-  'add-peserta-bimbingan' => 'bimbingan-add_peserta_bimbingan',
-  'add-dosen-pembimbing' => 'bimbingan&p=add_dosen_pembimbing',
-  'daftar-peserta-bimbingan' => 'bimbingan&p=daftar_peserta_bimbingan',
+  // 'add-peserta-bimbingan' => 'bimbingan-add_peserta_bimbingan',
+  // 'add-dosen-pembimbing' => 'bimbingan&p=add_dosen_pembimbing',
+  // 'daftar-peserta-bimbingan' => 'bimbingan&p=daftar_peserta_bimbingan',
+  // 'riwayat-laporan-bimbingan' => 'bimbingan&p=riwayat_laporan',
 ];
 
 
