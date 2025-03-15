@@ -5,11 +5,13 @@ $user = mysqli_fetch_assoc($q);
 if (!$user) {
   // unset($_SESSION['jadwal_username']);
   // die("User [$username] tidak ada.");
+} else {
+  $_SESSION['jadwal_role'] = $user['role'];
+  $id_user = $user['id'];
+  $role = $user['role'];
+  echo "<span class=hideit id=id_user>$id_user</span>";
+  echo "<span class=hideit id=role>$role</span>";
 }
-$id_user = $user['id'];
-$role = $user['role'];
-echo "<span class=hideit id=id_user>$id_user</span>";
-echo "<span class=hideit id=role>$role</span>";
 
 if ($role == 'AKD') {
   $s = "SELECT a.*,

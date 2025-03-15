@@ -11,6 +11,7 @@
 <?php
 $allowed_ekstensions = ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'];
 $allowed_ekstensions_str = implode(', ', $allowed_ekstensions);
+$path = "uploads/bimbingan/$id_mhs";
 
 $s = "SELECT 
 a.id as id_peserta_bimbingan,
@@ -44,30 +45,77 @@ $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $total_laporan = mysqli_num_rows($q);
 $laporan_disetujui = 0;
 $perlu_revisi = 0;
-$tr = '';
-while ($d = mysqli_fetch_assoc($q)) {
-  if ($d['id_status'] >= 4) { // disetujui || disahkan
-    $laporan_disetujui++;
-  } elseif ($d['id_status'] == 3) {
-    $perlu_revisi++;
-  }
-
-  $tgl = date('d M Y', strtotime($d['tanggal']));
-
-  $tr .= "
+if (!$total_laporan) {
+  $tr = "
     <tr>
-      <td>$tgl</td>
-      <td>
-        <span class='badge bg-$d[bg]'>$d[status]</span>
-      </td>
-      <td>$d[komentar]</td>
-      <td>
-        <a href='?bimbingan&p=detail_laporan&id=$d[id]' class='proper btn btn-sm btn-$d[bg_aksi]'>
-          $d[aksi]
-        </a>
+      <td colspan=100%>
+        <div class='alert alert-danger'>
+          Kamu belum pernah bimbingan. Segera kirim laporan kamu!
+        </div>
       </td>
     </tr>
   ";
+} else {
+  $tr = '';
+  while ($d = mysqli_fetch_assoc($q)) {
+    if ($d['id_status'] >= 5) { // disetujui || disahkan
+      $laporan_disetujui++;
+    } elseif ($d['id_status'] == 3) {
+      $perlu_revisi++;
+    }
+
+    $tgl = date('d M Y', strtotime($d['tanggal']));
+    $nama_file = str_replace("$id_mhs-", '', substr($d['file'], 0, -18));
+
+    $reply = "<i class='f12 abu'>menunggu reply...</i>";
+    # ============================================================
+    # REPLY DARI DOSEN
+    # ============================================================
+    if ($d['reply_date']) {
+      $at = date('d M, Y, H:i', strtotime($d['reply_date']));
+
+      $reply = "
+        <a target=_blank href='$path/$d[reply_file]'>$img_docx <span class=f12>$nama_file-replied</span></a>
+        <div class=''>$d[komentar]</div>
+        <div class='f10 abu'>at $at</div>
+      ";
+    }
+
+    # ============================================================
+    # MASIH BISA HAPUS JIKA BELUM ADA REPLY
+    # ============================================================
+    $form_hapus = '';
+    if ($d['id_status'] < 3) {
+      $form_hapus = "
+        <form method=post class=d-inline>
+          <button class='btn-transparan' onclick='return confirm(`Yakin hapus laporan ini?`)' name=btn_delete_laporan value='$bimbingan[id_peserta_bimbingan]-$d[id_laporan]'>$img_delete</button>
+        </form>
+      ";
+    }
+
+
+
+
+    $tr .= "
+      <tr>
+        <td>$tgl</td>
+        <td>
+          <a target=_blank href='$path/$d[file]'>
+            $img_docx 
+            <span class='f12'>$nama_file</span>
+          </a>
+          <div class='f12 abu'>$d[catatan]</div>
+        </td>
+        <td>
+          $form_hapus
+          $reply
+        </td>
+        <td>
+          <span class='badge bg-$d[bg]'>$d[status]</span>
+        </td>
+      </tr>
+    ";
+  }
 }
 
 
@@ -100,9 +148,9 @@ $riwayat_laporan = "
         <thead>
           <tr>
             <th>Tanggal</th>
+            <th>Laporan</th>
+            <th>Reply</th>
             <th>Status</th>
-            <th>Komentar Dosen</th>
-            <th>Aksi</th>
           </tr>
         </thead>
         <tbody id='daftarLaporan'>
@@ -132,7 +180,7 @@ $statistik = "
       </div>
     </div>
     <div class='col-md-4'>
-      <div class='card text-white bg-warning mb-3'>
+      <div class='card text-white bg-danger mb-3'>
         <div class='card-body'>
           <h5 class='card-title'>Perlu Revisi</h5>
           <p class='card-text' id='perlu_revisi'>$perlu_revisi</p>
@@ -141,6 +189,25 @@ $statistik = "
     </div>
   </div>
 ";
+
+$radio_bab = '';
+for ($i = 1; $i <= 5; $i++) {
+  $radio_bab .= "
+    <div>
+      <label>
+        <input type=radio required name=bab value=$i> Bab $i
+      </label>
+    </div>
+  ";
+}
+$radio_bab .= "
+  <div>
+    <label>
+      <input type=radio required name=bab value=6> Lampiran
+    </label>
+  </div>
+";
+
 
 $form_upload = "
   <div class='card mt-4'>
@@ -154,6 +221,9 @@ $form_upload = "
         <div class='mb-3'>
           <label for='catatan' class='form-label'>Catatan untuk Dosen</label>
           <textarea class='form-control' name='catatan' rows='3' required></textarea>
+        </div>
+        <div class='flexy mb2'>
+          $radio_bab
         </div>
         <button type='submit' class='btn btn-primary' name=btn_kirim_laporan value='$bimbingan[id_peserta_bimbingan]'>Kirim Laporan</button>
       </form>

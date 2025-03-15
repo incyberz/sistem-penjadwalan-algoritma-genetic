@@ -29,6 +29,8 @@ echo "minggu_ke: $minggu_ke<br>";
 set_h2("Bimbingan", "Bimbingan Mahasiswa PAL, PKL, dan TA");
 $arr_hari = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 $p = $_GET['p'] ?? null;
+$img_docx = img_icon('word');
+
 
 
 # ============================================================

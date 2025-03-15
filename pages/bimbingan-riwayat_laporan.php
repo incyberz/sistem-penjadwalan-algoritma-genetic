@@ -4,7 +4,6 @@
 // $allowed_ekstensions_str = implode(', ', $allowed_ekstensions);
 $get_id_mhs = $_GET['id_mhs'] ?? die(erid('id_mhs'));
 $path = "uploads/bimbingan/$get_id_mhs";
-$img_docx = img_icon('word');
 
 # ============================================================
 # DATA BIMBINGAN
@@ -71,7 +70,8 @@ if (!mysqli_num_rows($q)) {
 } else {
   while ($d = mysqli_fetch_assoc($q)) {
     $id_status = $d['id_status'];
-    if ($id_status >= 4) { // disetujui || disahkan
+    $nama_file = str_replace("$get_id_mhs-", '', substr($d['file'], 0, -18));
+    if ($id_status >= 4) { // revised || disetujui || disahkan
       $laporan_disetujui++;
     } elseif ($id_status == 2) {
       $perlu_review++;
@@ -94,7 +94,7 @@ if (!mysqli_num_rows($q)) {
     # ============================================================
     $file = $d['file'] ?? 'file is null.';
     if ($file and file_exists("$path/$file")) {
-      $file = "<a target=_blank href='$path/$d[file]'>$img_docx</a>";
+      $file = "<a target=_blank href='$path/$d[file]'>$img_docx <span class=f12>$nama_file</span></a>";
     } else {
       $file = "<b class=red>file hilang.</b>";
     }
@@ -113,29 +113,54 @@ if (!mysqli_num_rows($q)) {
               </label> 
 
               <label class='d-block col-6 hover pointer'>
-                <input type=radio class=radio_reply name=id_status_reply value=4> Laporan Anda Setujui (4)
+                <input type=radio class=radio_reply name=id_status_reply value=5> Laporan Anda Setujui (5)
               </label> 
             </div>
 
-            <div id=blok_file_reply class=hideit>
+            <div id=blok_reply_file class=hideit>
             <div class='mt4 f12 mb1'>File Bimbingan (yang sudah Anda komentari)</div>
-            <input class='form-control mb2' type=file name=file_reply id=file_reply required accept=.docx>
+            <input class='form-control mb2' type=file name=reply_file id=reply_file required accept=.docx>
             </div>
 
-            <button class='btn btn-primary w-100' name=btn_reply_bimbingan value=$d[id_laporan]>Reply Bimbingan</button>
+            <button class='btn btn-primary w-100' name=btn_reply_bimbingan value='$d[id_peserta_bimbingan]-$d[id_laporan]'>Reply Bimbingan</button>
           </div>
         </form>
       ";
     } else {
-      $reply = "$d[komentar]<hr><b class='red f10'>unhandle reply</b>";
+      $reply = "$d[komentar] ";
+      # ============================================================
+      # REPLY DARI DOSEN
+      # ============================================================
+      if ($d['reply_date']) {
+        $at = date('d M, Y, H:i', strtotime($d['reply_date']));
+
+        $reply = "
+        <a target=_blank href='$path/$d[reply_file]'>$img_docx <span class=f12>$nama_file-replied</span></a>
+        <div class=''>$d[komentar]</div>
+        <div class='f10 abu'>at $at</div>
+      ";
+      }
     }
+
+    # ============================================================
+    # FORM HAPUS
+    # ============================================================
+    $form_hapus = '';
+    if ($role == 'DSN') {
+      $form_hapus = "
+        <form method=post class=d-inline>
+          <button class='btn-transparan' onclick='return confirm(`Yakin hapus laporan ini?`)' name=btn_delete_laporan value='$bimbingan[id_peserta_bimbingan]-$d[id_laporan]'>$img_delete</button>
+        </form>
+      ";
+    }
+
 
     # ============================================================
     # FINAL TR
     # ============================================================
     $tr .= "
       <tr>
-        <td>$tgl</td>
+        <td>$form_hapus$tgl</td>
         <td>
           <span class='badge bg-$d[bg]'>$d[id_status] - $d[status]</span>
         </td>
@@ -215,7 +240,7 @@ $statistik = "
 ";
 
 
-
+set_title("Riwayat Laporan");
 echo "
   $statistik 
   $riwayat_laporan
@@ -228,11 +253,11 @@ echo "
     $('.radio_reply').click(function() {
       let id_status = parseInt($(this).val());
       if (id_status == 3) { // perlu revisi
-        $('#blok_file_reply').slideDown();
-        $('#file_reply').prop('required', true);
+        $('#blok_reply_file').slideDown();
+        $('#reply_file').prop('required', true);
       } else {
-        $('#blok_file_reply').slideUp();
-        $('#file_reply').prop('required', false);
+        $('#blok_reply_file').slideUp();
+        $('#reply_file').prop('required', false);
       }
     })
   })
