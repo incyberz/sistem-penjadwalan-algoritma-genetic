@@ -10,11 +10,13 @@ $path = "uploads/bimbingan/$get_id_mhs";
 # ============================================================
 $s = "SELECT 
 a.id as id_peserta_bimbingan,
+a.id_status_bimbingan,
 c.id as id_pembimbing,
 c.nama as pembimbing,
 c.nidn,
 d.whatsapp as whatsapp_pembimbing,
 d.image as image_pembimbing,
+e.nama as nama_mhs,
 (
   SELECT p.whatsapp FROM tb_user p 
   JOIN tb_mhs q ON q.id_user=p.id 
@@ -26,6 +28,7 @@ FROM tb_peserta_bimbingan a
 JOIN tb_bimbingan b ON b.id=a.id_bimbingan 
 JOIN tb_dosen c ON c.id=b.id_dosen 
 JOIN tb_user d ON c.id_user=d.id 
+JOIN tb_mhs e ON a.id_mhs=e.id 
 WHERE a.id_mhs = $get_id_mhs -- TARGET MHS
 AND c.id = $id_dosen -- SAYA SENDIRI
 ";
@@ -100,6 +103,22 @@ if (!mysqli_num_rows($q)) {
     }
 
     if ($id_status == 2) {
+      $radio_status_bimbingan = '';
+      $s2 = "SELECT * FROM tb_status_bimbingan";
+      $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
+      while ($d2 = mysqli_fetch_assoc($q2)) {
+        $checked = $bimbingan['id_status_bimbingan'] == $d2['id'] ? 'checked' : '';
+        $radio_status_bimbingan .= "
+          <label class='d-block'>
+            <input class=radio_status_bimbingan type=radio name=status_bimbingan value=$d2[id] $checked> $d2[status] ($d2[id])
+          </label>        
+        ";
+      }
+
+
+      # ============================================================
+      # Form Reply Bimbingan
+      # ============================================================
       $reply = "
         <form method=post enctype=multipart/form-data class='card'>
           <div class='card-header bg-primary text-white f10 '>Form Reply Bimbingan</div>
@@ -118,8 +137,13 @@ if (!mysqli_num_rows($q)) {
             </div>
 
             <div id=blok_reply_file class=hideit>
-            <div class='mt4 f12 mb1'>File Bimbingan (yang sudah Anda komentari)</div>
-            <input class='form-control mb2' type=file name=reply_file id=reply_file required accept=.docx>
+              <div class='mt4 f12 mb1'>File Bimbingan (yang sudah Anda komentari)</div>
+              <input class='form-control mb2' type=file name=reply_file id=reply_file required accept=.docx>
+            </div>
+
+            <div id=blok_status_bimbingan class='hideit mb2'>
+              <div class='mt4 f12 mb2'>Update Status Bimbingan untuk $bimbingan[nama_mhs]: </div>
+              $radio_status_bimbingan
             </div>
 
             <button class='btn btn-primary w-100' name=btn_reply_bimbingan value='$d[id_peserta_bimbingan]-$d[id_laporan]'>Reply Bimbingan</button>
@@ -134,8 +158,9 @@ if (!mysqli_num_rows($q)) {
       if ($d['reply_date']) {
         $at = date('d M, Y, H:i', strtotime($d['reply_date']));
 
+        $link_file = !$d['reply_file'] ? '' : "<a target=_blank href='$path/$d[reply_file]'>$img_docx <span class=f12>$nama_file-replied</span></a>";
         $reply = "
-        <a target=_blank href='$path/$d[reply_file]'>$img_docx <span class=f12>$nama_file-replied</span></a>
+        $link_file
         <div class=''>$d[komentar]</div>
         <div class='f10 abu'>at $at</div>
       ";
@@ -255,9 +280,13 @@ echo "
       if (id_status == 3) { // perlu revisi
         $('#blok_reply_file').slideDown();
         $('#reply_file').prop('required', true);
+        $('#blok_status_bimbingan').slideUp();
+        $('.radio_status_bimbingan').prop('required', false);
       } else {
         $('#blok_reply_file').slideUp();
+        $('#blok_status_bimbingan').slideDown();
         $('#reply_file').prop('required', false);
+        $('.radio_status_bimbingan').prop('required', true);
       }
     })
   })

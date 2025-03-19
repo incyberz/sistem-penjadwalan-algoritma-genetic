@@ -37,7 +37,7 @@ $bimbingan = mysqli_fetch_assoc($q);
 # ============================================================
 # COUNT LAPORAN
 # ============================================================
-$s = "SELECT * 
+$s = "SELECT *, a.id as id_laporan  
 FROM tb_laporan_bimbingan a 
 JOIN tb_status_laporan_bimbingan b ON b.id=a.id_status
 WHERE a.id_peserta_bimbingan = '$bimbingan[id_peserta_bimbingan]'";
@@ -74,8 +74,10 @@ if (!$total_laporan) {
     if ($d['reply_date']) {
       $at = date('d M, Y, H:i', strtotime($d['reply_date']));
 
+      $link_file = !$d['reply_file'] ? '' : "<a target=_blank href='$path/$d[reply_file]'>$img_docx <span class=f12>$nama_file-replied</span></a>";
+
       $reply = "
-        <a target=_blank href='$path/$d[reply_file]'>$img_docx <span class=f12>$nama_file-replied</span></a>
+        $link_file
         <div class=''>$d[komentar]</div>
         <div class='f10 abu'>at $at</div>
       ";

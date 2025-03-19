@@ -20,9 +20,10 @@ function hitungMingguDari($tanggal_awal)
 
 
 $awal_bimbingan = '2025-02-03'; // awal TA
-echo "awal_bimbingan: $awal_bimbingan<br>";
+// echo "awal_bimbingan: $awal_bimbingan<br>";
 $minggu_ke = hitungMingguDari($awal_bimbingan);
-echo "minggu_ke: $minggu_ke<br>";
+// echo "minggu_ke: $minggu_ke<br>";
+
 
 
 
@@ -39,6 +40,14 @@ $img_docx = img_icon('word');
 include 'bimbingan-processors.php';
 
 # ============================================================
+# GESER KE MINGGU SEBELUMNYA JIKA HARI INI AHAD
+# ============================================================
+$ahad_acuan = $ahad_skg;
+if ($w == 0) {
+  $ahad_acuan = date('Y-m-d', strtotime("-7 day", strtotime($ahad_skg)));
+}
+
+# ============================================================
 # SELECT PESERTA BIMBINGAN
 # ============================================================
 $select_peserta_bimbingan = "SELECT 
@@ -48,7 +57,16 @@ b.nama as nama_mhs,
 b.nim,
 d.id as id_dosen,
 d.nama as nama_dosen,
-e.singkatan as prodi 
+e.singkatan as prodi,
+( 
+  SELECT COUNT(1) FROM tb_laporan_bimbingan 
+  WHERE id_peserta_bimbingan=a.id 
+  AND tanggal >= '$ahad_acuan') count_laporan_mingguan, 
+( 
+  SELECT COUNT(1) FROM tb_laporan_bimbingan 
+  WHERE id_peserta_bimbingan=a.id 
+  AND id_status=2 -- perlu review | sedang diperiksa
+  ) perlu_review
 
 FROM tb_peserta_bimbingan a 
 JOIN tb_mhs b ON b.id=a.id_mhs 

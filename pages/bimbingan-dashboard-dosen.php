@@ -1,4 +1,10 @@
 <?php
+$perlu_review_count = 0;
+$belum_update_count = 0;
+$sudah_update_count = 0;
+$laporan_mingguan_count = 0;
+$jumlah_mhs_bimbingan = 0;
+
 $checks_hari = '';
 for ($i = 1; $i < 6; $i++) {
   $checks_hari .= "
@@ -28,7 +34,7 @@ if ($bimbingan) {
     $haris .= "$koma$arr_hari[$weekday]";
   }
 
-  $jumlah_bimbingan = $bimbingan['jumlah_bimbingan'] ? "$bimbingan[jumlah_bimbingan] mhs" : "<b class=red>Belum ada mhs bimbingan. Silahkan Add Mhs Bimbingan</b>";
+  $jumlah_bimbingan_show = $bimbingan['jumlah_bimbingan'] ? "$bimbingan[jumlah_bimbingan] mhs" : "<b class=red>Belum ada mhs bimbingan. Silahkan Add Mhs Bimbingan</b>";
 
   $opsi_bimbingan = "
     <table class='table'>
@@ -89,7 +95,7 @@ if ($bimbingan) {
 # ============================================================
 # ARRAY STATUS 
 # ============================================================
-$s = "SELECT * FROM tb_status_bimbingan_mhs ";
+$s = "SELECT * FROM tb_status_bimbingan ";
 $q =  mysqli_query($cn, $s) or die(mysqli_error($cn));
 $rStatus = [];
 $tr_status = '';
@@ -114,8 +120,12 @@ if ($bimbingan) {
     $select_peserta_bimbingan -- lihat di bimbingan.php
     AND d.id = $id_dosen -- saya sendiri
   ";
-  $tr = '';
+  // echo '<pre>';
+  // var_dump($s);
+  // echo '</pre>';
+  $tr_mhs = '';
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  $jumlah_mhs_bimbingan = mysqli_num_rows($q);
   $i = 0;
   while ($d = mysqli_fetch_assoc($q)) {
     $i++;
@@ -125,7 +135,7 @@ if ($bimbingan) {
     # PROGRESS TIAP MHS
     # ============================================================
     $id_status = $d['id_status_bimbingan'];
-    $status = $rStatus[$id_status] ?? '<b class=red>Belum Pernah Bimbingan<b>';
+    $status = $rStatus[$id_status] ?? '<b class=text-danger>Belum Pernah Bimbingan<b>';
     $count = count($rStatus);
     $persen = $id_status ? round($id_status / $count * 100) : 0;
 
@@ -137,9 +147,30 @@ if ($bimbingan) {
     ";
 
     # ============================================================
-    # FINAL TR MY BIMBINGAN
+    # CEK APAKAH SUDAH LAPORAN ATAU BELUM
     # ============================================================
-    $tr .= "
+    $td_status = "<td class='text-danger'>Belum Update</td>";
+    if ($d['count_laporan_mingguan']) {
+      $td_status = "<td class='text-success'>Sudah Update</td>";
+      $laporan_mingguan_count += $d['count_laporan_mingguan'];
+      $sudah_update_count++;
+    }
+
+    # ============================================================
+    # APAKAH PERLU REVIEW DARI MHS INI?
+    # ============================================================
+    $Lihat_Detail = 'Lihat Detail';
+    $btn_info = 'btn-info';
+    if ($d['perlu_review']) {
+      $perlu_review_count++;
+      $Lihat_Detail = 'Review Laporan';
+      $btn_info = 'btn-danger';
+    }
+
+    # ============================================================
+    # FINAL TR MY MHS BIMBINGAN
+    # ============================================================
+    $tr_mhs .= "
       <tr>
         <td>$i</td>
         <td>
@@ -147,12 +178,14 @@ if ($bimbingan) {
           <div class='f10 abu'>$d[nim]</div>
         </td>
         <td>$progress</td>
-        <td class='text-success'>Sudah Update</td>
-        <td><a href='?bimbingan&p=riwayat_laporan&id_mhs=$d[id_mhs]' class='btn btn-sm btn-info'>Lihat Detail</a></td>
+        $td_status
+        <td><a href='?bimbingan&p=riwayat_laporan&id_mhs=$d[id_mhs]' class='btn btn-sm $btn_info'>$Lihat_Detail</a></td>
       </tr>
     ";
   }
 }
+
+$belum_update_count = $jumlah_mhs_bimbingan - $sudah_update_count;
 
 
 ?>
@@ -164,7 +197,7 @@ if ($bimbingan) {
     <div class="card text-white bg-primary mb-3">
       <div class="card-body">
         <h5 class="card-title">Mahasiswa Bimbingan</h5>
-        <p class="card-text" id="totalMahasiswa"><?= $jumlah_bimbingan ?></p>
+        <p class="card-text" id="totalMahasiswa"><?= $jumlah_bimbingan_show ?></p>
       </div>
     </div>
   </div>
@@ -172,23 +205,23 @@ if ($bimbingan) {
     <div class="card text-white bg-success mb-3">
       <div class="card-body">
         <h5 class="card-title">Laporan Minggu Ini</h5>
-        <p class="card-text" id="laporanMingguIni">0</p>
+        <p class="card-text" id="laporanMingguIni"><?= $laporan_mingguan_count ?></p>
       </div>
     </div>
   </div>
   <div class="col-md-3">
     <div class="card text-white bg-warning mb-3">
       <div class="card-body">
-        <h5 class="card-title">Perlu Ditinjau</h5>
-        <p class="card-text" id="perluDitinjau">0</p>
+        <h5 class="card-title">Belum Update</h5>
+        <p class="card-text" id="perluDitinjau"><?= $belum_update_count ?></p>
       </div>
     </div>
   </div>
   <div class="col-md-3">
     <div class="card text-white bg-danger mb-3">
       <div class="card-body">
-        <h5 class="card-title">Belum Update</h5>
-        <p class="card-text" id="belumUpdate">0</p>
+        <h5 class="card-title">Perlu Review</h5>
+        <p class="card-text" id="belumUpdate"><?= $perlu_review_count ?></p>
       </div>
     </div>
   </div>
@@ -198,6 +231,7 @@ if ($bimbingan) {
 <div class="card mt-4">
   <div class="card-header bg-primary text-white">Daftar Mahasiswa Bimbingan</div>
   <div class="card-body">
+    <p>Minggu saat ini: <?= date('d M', strtotime($ahad_acuan)) ?> s.d skg</p>
     <table class="table table-striped">
       <thead>
         <tr>
@@ -209,7 +243,7 @@ if ($bimbingan) {
         </tr>
       </thead>
       <tbody id="daftarMahasiswa">
-        <?= $tr ?>
+        <?= $tr_mhs ?>
       </tbody>
     </table>
   </div>

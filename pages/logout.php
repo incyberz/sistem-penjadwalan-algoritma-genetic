@@ -1,5 +1,7 @@
 <?php
 unset($_SESSION['jadwal_username']);
+unset($_SESSION['jadwal_role']);
+unset($_SESSION['fakultas']);
 include 'unset_session_akd.php';
 if ($_SESSION) {
   echo '<pre>';

@@ -57,6 +57,11 @@ $petugas_default = [
   'jabatan' => 'Sekprodi FKom',
   'whatsapp' => '62895338753271',
 ];
+$petugas_default = [
+  'nama' => 'Iin Sholihin',
+  'jabatan' => 'Developer',
+  'whatsapp' => '6287729007318',
+];
 
 
 # ============================================================

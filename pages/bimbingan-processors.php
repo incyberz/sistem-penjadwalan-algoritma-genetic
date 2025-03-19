@@ -24,6 +24,7 @@ if (isset($_POST['btn_assign_bimbingan'])) {
 
   $t = explode('-', $_POST['btn_reply_bimbingan']);
   $id_mhs = $t[2];
+  $id_peserta_bimbingan = "$t[0]-$t[1]-$t[2]";
   $id_laporan = $t[3] ?? die('undefined id_laporan');
   $path = "uploads/bimbingan/$id_mhs";
   $id_status_reply = $_POST['id_status_reply'] ?? die('undefined id_status_reply.');
@@ -33,10 +34,9 @@ if (isset($_POST['btn_assign_bimbingan'])) {
     # ============================================================
     # UPDATE STATUS MHS 
     # ============================================================
-    echo '<pre>';
-    var_dump($_SESSION);
-    echo '<b style=color:red>Developer SEDANG DEBUGING: exit(true)</b></pre>';
-    exit;
+    $s = "UPDATE tb_peserta_bimbingan SET id_status_bimbingan=$_POST[status_bimbingan] WHERE id='$id_peserta_bimbingan'";
+    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+
 
     # ============================================================
     # UPDATE LAPORAN DITERIMA (5)
@@ -64,11 +64,7 @@ if (isset($_POST['btn_assign_bimbingan'])) {
     echo '<br>Laporan terdahulu revised.';
 
 
-
-    echo '<pre>';
-    var_dump($_POST);
-    echo '<b style=color:red>Developer SEDANG DEBUGING: exit(true)</b></pre>';
-    exit;
+    jsurl();
   } else {
 
     # ============================================================
@@ -106,11 +102,11 @@ if (isset($_POST['btn_assign_bimbingan'])) {
 
   jsurl();
 } elseif (isset($_POST['btn_delete_laporan'])) {
-  dosen_only();
 
   $t = explode('-', $_POST['btn_delete_laporan']);
   $id_mhs = $t[2];
-  $id_laporan = $t[3];
+  $id_laporan = $t[3] ?? die('undefined id_laporan.');
+  if (!$id_laporan) die('id_laporan is empty.');
   $path = "uploads/bimbingan/$id_mhs";
 
   $s = "SELECT * FROM tb_laporan_bimbingan WHERE id=$id_laporan";
