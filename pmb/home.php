@@ -26,9 +26,9 @@ foreach ($_GET as $key => $value) {
 include 'session_manager.php';
 
 # ============================================================
-# AWAL PMB 
+# TAHUN, AWAL, AKHIR PMB 
 # ============================================================
-include 'awal_pmb.php';
+include 'tahun_pmb.php';
 
 
 ?>

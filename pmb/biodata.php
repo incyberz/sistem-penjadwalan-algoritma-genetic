@@ -1,5 +1,5 @@
 <?php
-if (!$username) die('belum login.');
+if (!$username) jsurl('./?login_pmb');
 $s = "SELECT * FROM tb_biodata WHERE username='$username'";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 if (mysqli_num_rows($q)) {

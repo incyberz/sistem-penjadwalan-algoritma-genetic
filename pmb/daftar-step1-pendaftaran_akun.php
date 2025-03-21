@@ -43,19 +43,19 @@
         <div class="row">
           <div class="col-lg-4">
             <div class='radio-toolbar'>
-              <input type='radio' name='tahun_lulus' id='tahun_skg' class='opsi_radio' required value='0'>
+              <input type='radio' name='jeda_tahun_lulus' id='tahun_skg' class='opsi_radio' required value='0'>
               <label class='proper' for='tahun_skg'>Tahun Skg</label>
             </div>
           </div>
           <div class="col-lg-4">
             <div class='radio-toolbar'>
-              <input type='radio' name='tahun_lulus' id='tahun_lalu' class='opsi_radio' required value='1'>
+              <input type='radio' name='jeda_tahun_lulus' id='tahun_lalu' class='opsi_radio' required value='1'>
               <label class='proper' for='tahun_lalu'>Tahun Lalu</label>
             </div>
           </div>
           <div class="col-lg-4">
             <div class='radio-toolbar'>
-              <input type='radio' name='tahun_lulus' id='tahun_lalu2' class='opsi_radio' required value='0'>
+              <input type='radio' name='jeda_tahun_lulus' id='tahun_lalu2' class='opsi_radio' required value='0'>
               <label class='proper' for='tahun_lalu2'>> Tahun Lalu</label>
             </div>
           </div>

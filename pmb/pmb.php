@@ -1,6 +1,18 @@
 <?php
-if (!$username) die('belum login.');
-$s = "SELECT * FROM tb_pmb WHERE username='$username'";
+if (!$username) jsurl('./?login_pmb');
+$s = "SELECT 
+a.*,
+b.nama as nama_pendaftar,
+b.whatsapp,
+b.jeda_tahun_lulus,
+b.active_status,
+b.whatsapp_status,
+c.*
+
+FROM tb_pmb a 
+JOIN tb_akun b ON a.username=b.username 
+JOIN tb_tahun_pmb c ON b.tahun_pmb=c.tahun_pmb 
+WHERE a.username='$username'";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 if (mysqli_num_rows($q)) {
   $pmb = mysqli_fetch_assoc($q);

@@ -54,10 +54,17 @@ foreach ($Fields as $field => $v) {
   ";
 }
 
+$tahun_lulus = $tahun_pmb - $akun['jeda_tahun_lulus'];
+
+
 
 ?>
 <h3 class="mt-3 text-center">Pengisian Data Sekolah</h3>
 <p class="text-center">Untuk kelancaran pengisian silahkan sediakan Buku Raport atau Copy Ijazah (SKL)!</p>
 <table class="table table-dark table-striped">
+  <tr>
+    <td class='kolom'>Tahun Lulus</td>
+    <td><?= $tahun_lulus ?></td>
+  </tr>
   <?= $tr_data_sekolah ?>
 </table>

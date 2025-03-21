@@ -1,11 +1,15 @@
 <?php
 set_title('Memilih Jurusan');
 include 'daftar-step6-memilih_jurusan-styles.php';
-include 'pmb.php';
 
+$id_prodi_terpilih = $pmb['id_prodi'] ?? null;
+$terpilih = $id_prodi_terpilih;
 
-$s = "SELECT * FROM tb_prodi a WHERE 1 
-ORDER BY fakultas";
+$sql_id_prodi = $terpilih ? "id=$terpilih" : '1';
+
+$s = "SELECT * FROM tb_prodi a 
+WHERE $sql_id_prodi 
+ORDER BY nomor, fakultas";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $rprodi = [];
 $styles_blok_prodi = '';
@@ -43,12 +47,41 @@ while ($d = mysqli_fetch_assoc($q)) {
   $btn_next = $i == $jumlah_prodi ? "<span class='btn btn-secondary w-100' disabled>Next</span>" :
     "<span class='btn btn-info w-100 btn_nav' id=next__$i>Next</span>";
 
+  $nav_prodi = $terpilih ? "
+    <form method=post>
+      <button class='btn btn-secondary mb2 w-100' onclick='return confirm(`Pilih Ulang Jurusan?`)' name=btn_pilih_ulang_jurusan value=$d[id]>Pilih Ulang</button>
+    </form>
+  " : "
+    <div class='mb-3 d-flex gap-2'>
+      <div>
+        $btn_prev
+      </div>
+      <div class=flex-fill>
+        <form method=post>
+          <button class='btn btn-primary w-100' onclick='return confirm(`Yakin dengan Jurusan ini?`)' name=btn_pilih_jurusan value=$d[id]>Pilih Jurusan ini</button>
+        </form>
+      </div>
+      <div>
+        $btn_next
+      </div>
+    </div>
+  ";
+
+  $prodi_of = $terpilih ? "
+    <div class='nama-fakultas'>Prodi Pilihan Anda:</div>
+    <div class='f20'>$d[nama] ($d[jenjang])</div>
+    <div class='mt2 f12 mb2'>Silahkan Next Steps atau boleh Pilih Ulang</div>
+  " : "
+    <div class='nama-fakultas mb-1'>Prodi $i of $jumlah_prodi - $d[fakultas] - $d[jenjang]</div>
+    $d[nama]
+  ";
+
 
   $prodis .= "
     <div class='hideit blok-prodi blok-prodi-$d[singkatan]' id=blok-prodi-$i>
       <h3 class='mt-4 text-center nama-prodi'>
-        <div class='nama-fakultas mb-1'>Prodi $i of $jumlah_prodi - $d[fakultas] - $d[jenjang]</div>
-        $d[nama]
+        $prodi_of
+        
       </h3>
 
       <p class='text-center deskripsi-prodi'>
@@ -59,17 +92,7 @@ while ($d = mysqli_fetch_assoc($q)) {
       <div class='mt-4 d-flex justify-content-center gap-2 flex-wrap'>$li_softskill</div>
 
       <div class=navigasi>
-        <div class='mb-3 d-flex gap-2'>
-          <div>
-            $btn_prev
-          </div>
-          <div class=flex-fill>
-            <button class='btn btn-primary w-100' onclick='return confirm(`Yakin dengan Jurusan ini?`)' name=btn_pilih_jurusan value=$d[id]>Pilih Jurusan ini</button>
-          </div>
-          <div>
-            $btn_next
-          </div>
-        </div>
+        $nav_prodi
 
         <div class='text-center more-info btn_aksi' id=more_info$d[singkatan]__toggle>More info...</div>
       </div>

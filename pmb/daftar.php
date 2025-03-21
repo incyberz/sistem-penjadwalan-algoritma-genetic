@@ -15,6 +15,7 @@ $post_tahun_lulus = $_POST['tahun_lulus'] ?? null;
 $pesan = null;
 
 include 'akun.php';
+include 'pmb.php';
 include 'daftar-styles.php';
 include 'daftar-process.php';
 

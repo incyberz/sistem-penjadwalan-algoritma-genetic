@@ -75,9 +75,10 @@ foreach ($Fields as $field => $v) {
   ";
 }
 
+$title = $rstep[$get_step];
 
 ?>
-<h3 class="mt-3 text-center">Pengisian Data Sekolah</h3>
+<h3 class="mt-3 text-center"><?= $title ?></h3>
 <p class="text-center">Untuk kelancaran pengisian silahkan sediakan Buku Raport atau Copy Ijazah (SKL)!</p>
 
 <table class="table table-dark table-striped">
