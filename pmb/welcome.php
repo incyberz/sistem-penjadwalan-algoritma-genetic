@@ -1,3 +1,6 @@
+<?php
+include "../conn.php";
+?>
 <!DOCTYPE html>
 <html lang="id">
 
@@ -25,7 +28,7 @@
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link" href="#about">Tentang Kami</a></li>
           <li class="nav-item"><a class="nav-link" href="#prodi">Program Studi</a></li>
-          <li class="nav-item"><a class="nav-link btn btn-danger text-white" href="?daftar">Daftar Sekarang</a></li>
+          <li class="nav-item"><a class="nav-link btn btn-danger text-white" href="./?daftar">Daftar Sekarang</a></li>
         </ul>
       </div>
     </div>
@@ -35,7 +38,7 @@
     <div class="container">
       <h1>Selamat Datang di Kampus Impian</h1>
       <p class="lead">Tempat terbaik untuk mewujudkan masa depan gemilang Anda!</p>
-      <a href="?daftar" class="btn btn-light btn-lg">Daftar Sekarang</a>
+      <a href="./?daftar" class="btn btn-light btn-lg">Daftar Sekarang</a>
     </div>
   </header>
 
@@ -58,7 +61,7 @@
     <div class="container">
       <h2>Jangan Tunda Lagi! Segera Daftar!</h2>
       <p>Jadilah bagian dari Kampus Impian dan raih masa depan cerah bersama kami.</p>
-      <a href="?daftar" class="btn btn-success btn-lg">Daftar Sekarang</a>
+      <a href="./?daftar" class="btn btn-success btn-lg">Daftar Sekarang</a>
     </div>
   </section>
 
