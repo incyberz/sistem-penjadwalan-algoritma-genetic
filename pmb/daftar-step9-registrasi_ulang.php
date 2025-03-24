@@ -1,3 +1,10 @@
+<style>
+  .blok-info-syarat {
+    margin: 0 -15px;
+    padding: 15px;
+    padding-bottom: 30px;
+  }
+</style>
 <?php
 set_title('Registrasi Ulang');
 $belum_lengkap = '<i class="f12 red">belum lengkap</i>';
@@ -54,12 +61,33 @@ $rsyarat = [
   ],
 ];
 
+$info_syarats = '';
+foreach ($rsyarat as $syarat => $v) {
+  $SYARAT = strtoupper(str_replace('_', ' ', $syarat));
+  $info_syarats .= "
+    <div class='blok-info-syarat border-top gradasi-merah'>
+      <b class=f12>$SYARAT</b>: 
+      <div><i class='red f12 '>belum memenuhi</i></div>
+    </div>
+  ";
+}
+
 echo "
     <div class='card mb3'>
       <div class='card-header bg-primary putih tengah'>
-        <h2>Syarat Registrasi:</h2>
+        Syarat Registrasi
       </div>
-      <div class='card-body tengah gradasi-toska'><i class=red>--Anda belum ujian--</i></div>
+      <div class='card-body gradasi-toska'>
+        $info_syarats
+        <div class='mt4 mb2 text-danger f14 miring'>
+          Silahkan penuhi dahulu semua persyaratan Registrasi Ulang.
+        </div>
+        <button class='btn btn-secondary w-100' disabled>Registrasi Ulang</button>
+        <hr/>
+        <p class='text-success'>
+          Jika semua persyaratan terpenuhi maka Anda akan mendapatkan <b>NIM</b>, <b>Jas Almamater</b>, dan terdaftar sebagai <b>Mahasiswa Baru</b> di Kampus Masoem University.
+        </p>
+      </div>
     </div>
 
 

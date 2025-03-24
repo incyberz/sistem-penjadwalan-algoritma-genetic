@@ -18,7 +18,7 @@ if (isset($_POST['btn_login'])) {
     $_SESSION['pmb_username'] = $_POST['username'];
 
     if ($d['whatsapp_status']) {
-      jsurl('./?daftar&step=3');
+      jsurl("./?daftar&step=$d[last_step]");
     } else {
       jsurl('./?daftar&step=2');
       // include 'login_pmb-verifikasi_akun.php';

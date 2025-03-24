@@ -1,113 +1,85 @@
 <?php
 set_title('Melengkapi Biodata');
-include 'biodata.php';
+$tb = 'biodata';
+include "$tb.php";
+$data = $biodata;
+$progress_h3 = 'Pengisian Biodata';
+$petunjuk = 'Untuk kelancaran pengisian silahkan sediakan Kartu Keluarga atau KTP Anda!';
 
-# ============================================================
-# DESCRIBE BIODATA 
-# ============================================================
-$s = "DESCRIBE tb_biodata";
-$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-$Fields = [];
-while ($d = mysqli_fetch_assoc($q)) {
-  if ($d['Field'] == 'username') continue;
-  $Fields[$d['Field']] = $d;
-}
-
-$tr_biodata = '';
-foreach ($Fields as $field => $v) {
-  $type = $v['Type'] == 'date' ? 'date' : '';
-  $type = strpos('salt' . $v['Type'], 'int(') > 0 ? 'number' : $type;
-
-  if ($field == 'gender') {
-    $input = "
-      <div class='py-1 d-flex gap-4'>
-        <label><input type=radio name=$field value=L> Laki-laki</label>
-        <label><input type=radio name=$field value=P> Perempuan</label>
-      </div>
-    ";
-  } elseif ($field == 'agama') {
-    $input = "
-      <div class='py-1 d-flex gap-3'>
-        <label><input type=radio name=$field value=0 checked> Islam</label>
-        <label><input type=radio name=$field value=1> Kristen</label>
-        <label><input type=radio name=$field value=2> Lainnya</label>
-      </div>
-    ";
-  } elseif ($field == 'warga_negara') {
-    $input = "
-      <div class='py-1 d-flex gap-3'>
-        <label><input type=radio name=$field value=0 checked> Indonesia</label>
-        <label><input type=radio name=$field value=1> Asing</label>
-      </div>
-    ";
-  } elseif ($field == 'cacat_fisik') {
-    $input = "
-      <div class='py-1 d-flex gap-3'>
-        <label><input type=radio name=$field value=0 checked> Tidak</label>
-        <label><input type=radio name=$field value=1> Disabilitas</label>
-      </div>
-    ";
-  } elseif ($field == 'sudah_bekerja') {
-    $input = "
-      <div class='py-1 d-flex gap-3'>
-        <label><input type=radio name=$field value=0 checked> Belum</label>
-        <label><input type=radio name=$field value=1> Sudah</label>
-      </div>
-    ";
-  } elseif ($field == 'punya_usaha') {
-    $input = "
-      <div class='py-1 d-flex gap-3'>
-        <label><input type=radio name=$field value=0 checked> Belum</label>
-        <label><input type=radio name=$field value=1> Punya</label>
-      </div>
-    ";
-  } else {
-    $input = "
-      <input 
-        type='$type' 
-        class='form-control editable editable-biodata' 
-        id=$field 
-        value='$biodata[$field]'
-      />
-    ";
-  }
-
-  $kolom = str_replace('_', ' ', $field);
-  $tr_biodata .= "
-    <tr>
-      <td class='kolom'>$kolom</td>
-      <td>$input</td>
-    </tr>
-  ";
-}
-
-
+include 'daftar-blok_pengisian_data.php';
 ?>
-<div class="card">
-  <div class="card-header bg-primary text-white text-center">
-    Info Akun
-  </div>
-  <div class="card-body">
-    <div class="mb-3">
-      <label for="username" class="form-label">Username</label>
-      <div class="input-group">
-        <span class="input-group-text"><i class="bi bi-person-circle"></i></span>
-        <input type="text" class="form-control" id="username" value="<?= $username ?>" disabled>
-      </div>
-    </div>
 
-    <div class="mb-3">
-      <label for="nama" class="form-label">Nama</label>
-      <div class="input-group">
-        <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-        <input type="text" class="form-control" id="nama" name=nama placeholder="Masukkan Nama" required minlength="3" maxlength="30" value="<?= $akun['nama'] ?>">
-      </div>
-    </div>
+<script>
+  $(function() {
+    $("#akun-nama").keyup(function() {
+      let val = $(this).val();
+      val = val.replace(/'/g, "`"); // Ubah tanda petik menjadi backtick
+      val = val.replace(/[^a-zA-Z` ]/g, ""); // Hanya huruf, spasi, dan tanda backtick
+      $(this).val(val.toUpperCase()); // Ubah ke uppercase
+    });
 
-  </div>
-</div>
-<h3 class="mt-3 text-center">Pengisian Biodata</h3>
-<p class="text-center">Untuk kelancaran pengisian silahkan sediakan Kartu Keluarga atau KTP Anda!</p>
-<table class="table table-dark table-striped">
-  <?= $tr_biodata ?>
-</table>
+    $("#biodata-desa").keyup(function() {
+      $(this).val($(this).val().toUpperCase());
+    });
+
+    $("#biodata-blok_dusun").keyup(function() {
+      $(this).val($(this).val().toUpperCase());
+    });
+
+    $("#biodata-suku").keyup(function() {
+      $(this).val($(this).val().toUpperCase());
+    });
+
+    $("#biodata-cita_cita").keyup(function() {
+      $(this).val($(this).val().toUpperCase());
+    });
+
+    $("#biodata-hobby_olahraga").keyup(function() {
+      $(this).val($(this).val().toUpperCase());
+    });
+
+    $("#biodata-hobby_lainnya").keyup(function() {
+      $(this).val($(this).val().toUpperCase());
+    });
+
+    $("#biodata-kontak_whatsapp_lainnya").keyup(function() {
+      let tid = $(this).prop('id');
+      $('#' + tid + '-info').text('whatsapp bisnis, whatsapp saudara serumah, atau masukan strip (-) jika tidak ada.');
+      let val = $(this).val();
+      if (val.length >= 4) {
+        val = val.replace(/[^0-9]/g, ""); // Hanya angka
+        if (val.startsWith("08")) {
+          val = "628" + val.substring(2);
+        } else if (!val.startsWith("628") && val.length >= 4) {
+          val = "";
+        }
+        $(this).val(val);
+
+      }
+    });
+    $("#biodata-kontak_whatsapp_lainnya").focus(function() {
+      let tid = $(this).prop('id');
+      $('#' + tid + '-info').text('whatsapp bisnis, whatsapp saudara serumah, atau masukan strip (-) jika tidak ada.');
+    });
+    $("#biodata-kontak_whatsapp_lainnya").focusout(function() {
+      let tid = $(this).prop('id');
+      $('#' + tid + '-info').text('');
+    });
+
+
+    $("#biodata-nomor_ktp").keyup(function() {
+      $(this).val($(this).val().replace(/[^0-9]/g, "").substring(0, 16));
+      let val = $(this).val();
+      if (val.length == 16) {
+        $('#biodata-nomor_ktp-info').text('');
+      } else {
+        let separated =
+          val.substring(0, 4) + '-' +
+          val.substring(4, 8) + '-' +
+          val.substring(8, 12) + '-' +
+          val.substring(12, 16);
+        $('#biodata-nomor_ktp-info').html(`Anda mengetik <span class=f30>${val.length}</span> dari 16 digit<div class=consolas>${separated}</div>`);
+      }
+    });
+  });
+</script>

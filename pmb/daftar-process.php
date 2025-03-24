@@ -92,7 +92,124 @@ if (isset($_POST['btn_set_password'])) {
   }
 
   jsurl();
+} elseif (isset($_POST['btn_set_next_step'])) {
+  $next_step = $_POST['btn_set_next_step'];
+  if ($next_step > $akun['last_step']) {
+    $s = "UPDATE tb_akun SET last_step = $next_step WHERE username='$username'";
+    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  }
+
+  if ($next_step == 5) { // sebelumnya step data sekolah, cek jika sekolah baru
+    $s = "SELECT * FROM tb_data_sekolah WHERE username='$username'";
+    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+    $data_sekolah = mysqli_fetch_assoc($q);
+    $id_sekolah = $data_sekolah['id_sekolah'];
+    if (!$id_sekolah) {
+      # ============================================================
+      # INSERT DATA SEKOLAH BARU
+      # ============================================================
+      $s = "SELECT (max(id)+1) as new_id_sekolah FROM tb_sekolah";
+      $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+      $d = mysqli_fetch_assoc($q);
+      $new_id_sekolah = $d['new_id_sekolah'];
+
+      $s = "INSERT INTO tb_sekolah (
+        id,
+        nama_sekolah,
+        jenis_sekolah,
+        sekolah_negeri,
+        alamat_sekolah,
+        kecamatan,
+        jurusans
+      ) VALUES (
+        $new_id_sekolah,
+        '$data_sekolah[nama_sekolah]',
+        '$data_sekolah[jenis_sekolah]',
+        '$data_sekolah[sekolah_negeri]',
+        '$data_sekolah[alamat_sekolah]',
+        '$data_sekolah[kecamatan]',
+        '$data_sekolah[jurusan]'
+      )";
+      echo '<pre>';
+      var_dump($s);
+      echo '</pre>';
+      $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+
+      $s = "UPDATE tb_data_sekolah SET id_sekolah=$new_id_sekolah WHERE username='$username'";
+      $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+    } else { // sudah ada id_sekolah
+      $s = "SELECT * FROM tb_sekolah WHERE id='$id_sekolah'";
+      $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+      $sekolah = mysqli_fetch_assoc($q);
+
+      # ============================================================
+      # HANYA MENAMBAH JURUSAN KE DATA SEKOLAH YANG ADA
+      # ============================================================
+      $jurusan_telah_ada = 0;
+      $t = explode(';', $sekolah['jurusans']);
+      foreach ($t as $key => $value) {
+        $value = trim($value);
+        if ($value == $data_sekolah['jurusan']) {
+          $jurusan_telah_ada = 1;
+          break;
+        }
+      }
+
+      echo '<pre>';
+      var_dump($jurusan_telah_ada);
+      echo '</pre>';
+
+      if (!$jurusan_telah_ada) {
+        array_push($t, $data_sekolah['jurusan']);
+        $jurusans = implode(';', $t);
+
+        $s = "UPDATE tb_sekolah SET jurusans = '$jurusans' WHERE id='$id_sekolah'";
+        echo '<pre>';
+        var_dump($s);
+        echo '</pre>';
+        $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+      }
+    }
+  }
+
+  jsurl("./?daftar&step=$next_step");
+} elseif (isset($_POST['btn_submit_data_awal_ortu'])) {
+  $s = "UPDATE tb_data_orangtua SET 
+    ayah_meninggal = $_POST[ayah_meninggal],
+    ibu_meninggal = $_POST[ibu_meninggal],
+    ortu_cerai = $_POST[ortu_cerai],
+    tinggal_dengan = $_POST[tinggal_dengan],
+    punya_wali = $_POST[punya_wali] 
+  WHERE username='$username'";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+
+  if ($_POST['ayah_meninggal']) {
+    $s = "UPDATE tb_data_orangtua SET 
+      ayah_meninggal = $_POST[ayah_meninggal],
+      ibu_meninggal = $_POST[ibu_meninggal],
+      ortu_cerai = $_POST[ortu_cerai],
+      tinggal_dengan = $_POST[tinggal_dengan],
+      punya_wali = $_POST[punya_wali] 
+    WHERE username='$username'";
+    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  }
+
+  jsurl();
+} elseif (isset($_POST['btn_next_step'])) {
+  $next_step = $_POST['btn_next_step'] + 1;
+  $s = "SELECT last_step FROM tb_akun WHERE username='$username'";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  $d = mysqli_fetch_assoc($q);
+  $last_step = $d['last_step'] ?? 0;
+  if ($last_step < $next_step) {
+    $s = "UPDATE tb_akun SET last_step=$next_step WHERE username='$username'";
+    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  } else {
+    $next_step = $last_step;
+  }
+  jsurl("./?daftar&step=$next_step");
 } elseif ($_POST) {
+
   echo '<pre>';
   var_dump($_POST);
   echo '</pre>';

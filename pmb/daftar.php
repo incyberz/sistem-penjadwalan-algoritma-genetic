@@ -14,8 +14,10 @@ $post_tahun_lulus = $_POST['tahun_lulus'] ?? null;
 
 $pesan = null;
 
-include 'akun.php';
-include 'pmb.php';
+if ($username) {
+  include 'akun.php';
+  include 'pmb.php';
+}
 include 'daftar-styles.php';
 include 'daftar-process.php';
 
@@ -40,6 +42,7 @@ $rstep = [
 
 
 <div class="mx-auto" style="max-width: 500px;">
+  <div class="hideit" id="get_step"><?= $get_step ?></div>
   <?php
   include 'daftar-stepper.php';
   if ($pesan == 'OK') {
@@ -56,8 +59,21 @@ $rstep = [
   } else {
     $nama_step = strtolower(str_replace(' ', '_', $rstep[$get_step]));
     include "daftar-step$get_step-$nama_step.php";
+    echo "
+      <hr>
+      <div class='tengah mb4'>
+        <a onclick='return confirm(`Yakin logout?`)' href='./?logout_pmb'>Logout</a>
+      </div>
+      <hr>
+    ";
   }
+
+  if ($get_step < count($rstep)) {
+    $next_step = $get_step + 1;
+    $nama_next_step = $rstep[$next_step];
+    include 'daftar-form_next_step.php';
+  }
+
   ?>
-
-
 </div>
+<?php include 'daftar-script.php'; ?>

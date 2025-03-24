@@ -1,70 +1,128 @@
 <?php
-set_title('Melengkapi Biodata');
-include 'data_sekolah.php';
+set_title('Melengkapi Data Sekolah');
+$id_sekolah = $_GET['id_sekolah'] ?? '';
+$is_new_sekolah = $id_sekolah == 'new' ? 1 : 0;
 
-# ============================================================
-# DESCRIBE BIODATA 
-# ============================================================
-$s = "DESCRIBE tb_data_sekolah";
-$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-$Fields = [];
-while ($d = mysqli_fetch_assoc($q)) {
-  if ($d['Field'] == 'username') continue;
-  $Fields[$d['Field']] = $d;
-}
-
-$tr_data_sekolah = '';
-foreach ($Fields as $field => $v) {
-  $type = $v['Type'] == 'date' ? 'date' : '';
-  $type = strpos('salt' . $v['Type'], 'int(') > 0 ? 'number' : $type;
-
-  if ($field == 'jenis_sekolah') {
-    $input = "
-      <div class='py-1 d-flex gap-4'>
-        <label><input type=radio name=$field value=1> SMA</label>
-        <label><input type=radio name=$field value=2> SMK</label>
-        <label><input type=radio name=$field value=3> MA</label>
+$tb = 'data_sekolah';
+include "$tb.php";
+$data = $data_sekolah;
+if ($data['id_sekolah'] and !$id_sekolah) jsurl("./?daftar&step=4&id_sekolah=$data[id_sekolah]");
+if (!$id_sekolah) {
+  $sekolah = [];
+  echo "
+    <div class=card>
+      <div class='card-header bg-info putih tengah'>Ketik dan Pilih Sekolah</div>
+      <div class='card-body gradasi-kuning'>
+        <input id=keyword class='form-control tengah'>
+        <div id=list_sekolah class='mt1 bordered p2'></div>
       </div>
-    ";
-  } elseif ($field == 'sekolah_negeri') {
-    $input = "
-      <div class='py-1 d-flex gap-3'>
-        <label><input type=radio name=$field value=0> Swasta</label>
-        <label><input type=radio name=$field value=1> Negeri</label>
-        <label><input type=radio name=$field value=2> Inter</label>
-      </div>
-    ";
-  } else {
-    $input = "
-      <input 
-        type='$type' 
-        class='form-control editable editable-data_sekolah' 
-        id=$field 
-        value='$data_sekolah[$field]'
-      />
-    ";
-  }
-
-  $kolom = str_replace('_', ' ', $field);
-  $tr_data_sekolah .= "
-    <tr>
-      <td class='kolom'>$kolom</td>
-      <td>$input</td>
-    </tr>
+    </div>
   ";
-}
-
-$tahun_lulus = $tahun_pmb - $akun['jeda_tahun_lulus'];
-
-
-
 ?>
-<h3 class="mt-3 text-center">Pengisian Data Sekolah</h3>
-<p class="text-center">Untuk kelancaran pengisian silahkan sediakan Buku Raport atau Copy Ijazah (SKL)!</p>
-<table class="table table-dark table-striped">
-  <tr>
-    <td class='kolom'>Tahun Lulus</td>
-    <td><?= $tahun_lulus ?></td>
-  </tr>
-  <?= $tr_data_sekolah ?>
-</table>
+  <script>
+    $(function() {
+      $('#keyword').keyup(function() {
+        let keyword = $(this).val();
+        if (keyword.length < 3) {
+          $('#list_sekolah').html("<p class='abu miring tengah'>Silahkan ketik 3 karakter keyword...</p>");
+        } else {
+          $.ajax({
+            url: `daftar-ajax_cari_sekolah.php?keyword=${keyword}`,
+            success: function(a) {
+              $('#list_sekolah').html(a);
+            }
+          })
+
+        }
+      });
+      $('#keyword').keyup();
+      $('#keyword').focus();
+    })
+  </script>
+<?php
+} else { // jika ada id_sekolah || id_sekolah=='new'
+  if ($is_new_sekolah) {
+    $sekolah = [];
+    $progress_h3 = 'Pengisian Data Sekolah Baru';
+    if ($data_sekolah['id_sekolah']) {
+      # ============================================================
+      # AUTO-SAVE CLEAR DATA SEKOLAH
+      # ============================================================
+      $s = "UPDATE tb_data_sekolah SET 
+        id_sekolah=NULL,
+        jenis_sekolah=NULL, 
+        sekolah_negeri=NULL, 
+        nama_sekolah='$akun[asal_sekolah]', 
+        alamat_sekolah=NULL, 
+        kecamatan=NULL, 
+        jurusan=NULL 
+      WHERE username='$username'";
+      $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+    } else {
+      echo '<pre>';
+      var_dump('id_sekolah telah null');
+      echo '</pre>';
+    }
+  } else {
+    $s = "SELECT * FROM tb_sekolah WHERE id=$id_sekolah";
+    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+    $sekolah = mysqli_fetch_assoc($q);
+    $progress_h3 = "Pengisian Data Sekolah
+      <div class='f12 mt1'>$sekolah[nama_sekolah] | <a href='./?daftar&step=4'><span class=putih>Pilih Lainnya</span></a></div>
+    ";
+
+    # ============================================================
+    # AUTO-SAVE DATA SEKOLAH
+    # ============================================================
+    $s = "UPDATE tb_data_sekolah SET 
+      id_sekolah=$id_sekolah,
+      jenis_sekolah='$sekolah[jenis_sekolah]', 
+      sekolah_negeri='$sekolah[sekolah_negeri]', 
+      nama_sekolah='$sekolah[nama_sekolah]', 
+      alamat_sekolah='$sekolah[alamat_sekolah]', 
+      kecamatan='$sekolah[kecamatan]'
+
+    WHERE username='$username'";
+    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  }
+  //re -include
+  include "$tb.php";
+  $data = $data_sekolah;
+
+  $petunjuk = 'Untuk kelancaran pengisian silahkan sediakan Kartu Keluarga atau KTP Anda!';
+  $petunjuk = '';
+
+  include 'daftar-blok_pengisian_data.php';
+?>
+  <script>
+    $(function() {
+      $("#data_sekolah-nama_sekolah").keyup(function() {
+        $(this).val($(this).val().toUpperCase());
+      });
+      $("#data_sekolah-alamat_sekolah").keyup(function() {
+        $(this).val($(this).val().toUpperCase());
+      });
+      $("#data_sekolah-kecamatan").keyup(function() {
+        $(this).val($(this).val().toUpperCase());
+      });
+      $("#data_sekolah-jurusan").keyup(function() {
+        $(this).val($(this).val().toUpperCase());
+      });
+      $("#data_sekolah-no_ijazah").keyup(function() {
+        $(this).val($(this).val().toUpperCase());
+      });
+
+      $("#data_sekolah-no_ijazah").focus(function() {
+        let tid = $(this).prop('id');
+        $('#' + tid + '-info').text('jika belum ada, silahkan ganti dg Nomor Surat Keterangan Lulus.');
+      });
+      $("#data_sekolah-no_ijazah").focusout(function() {
+        let tid = $(this).prop('id');
+        $('#' + tid + '-info').text('');
+      });
+
+    });
+  </script>
+
+<?php
+}

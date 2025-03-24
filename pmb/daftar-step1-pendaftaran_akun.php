@@ -67,8 +67,8 @@
     </form>
   </div>
 </div>
-<div class="text-center mt-3">
-  <a href="?login_pmb">Login PMB</a>
+<div class="tengah mt-3">
+  Sudah punya akun? Silahkan <a href="?login_pmb">login</a>.
 </div>
 
 <script>
