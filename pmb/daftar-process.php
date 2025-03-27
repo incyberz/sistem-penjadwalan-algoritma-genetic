@@ -173,6 +173,10 @@ if (isset($_POST['btn_set_password'])) {
   }
 
   jsurl("./?daftar&step=$next_step");
+} elseif (isset($_POST['btn_reset_data_ortu'])) {
+  $s = "DELETE FROM tb_data_orangtua WHERE username='$username'";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  jsurl();
 } elseif (isset($_POST['btn_submit_data_awal_ortu'])) {
   $s = "UPDATE tb_data_orangtua SET 
     ayah_meninggal = $_POST[ayah_meninggal],
@@ -185,11 +189,32 @@ if (isset($_POST['btn_set_password'])) {
 
   if ($_POST['ayah_meninggal']) {
     $s = "UPDATE tb_data_orangtua SET 
-      ayah_meninggal = $_POST[ayah_meninggal],
-      ibu_meninggal = $_POST[ibu_meninggal],
-      ortu_cerai = $_POST[ortu_cerai],
-      tinggal_dengan = $_POST[tinggal_dengan],
-      punya_wali = $_POST[punya_wali] 
+      pendidikan_ayah = '-',
+      pekerjaan_ayah = '-',
+      pendapatan_ayah = 0,
+      whatsapp_ayah = '-' 
+    WHERE username='$username'";
+    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  }
+
+  if ($_POST['ibu_meninggal']) {
+    $s = "UPDATE tb_data_orangtua SET 
+      pendidikan_ibu = '-',
+      pekerjaan_ibu = '-',
+      pendapatan_ibu = 0,
+      whatsapp_ibu = '-' 
+    WHERE username='$username'";
+    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  }
+
+  if (!$_POST['punya_wali']) {
+    $s = "UPDATE tb_data_orangtua SET 
+      nama_wali = '-',
+      hubungan_dg_wali = '-',
+      pendidikan_wali = '-',
+      pekerjaan_wali = '-',
+      pendapatan_wali = 0,
+      whatsapp_wali = '-' 
     WHERE username='$username'";
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   }
@@ -208,6 +233,51 @@ if (isset($_POST['btn_set_password'])) {
     $next_step = $last_step;
   }
   jsurl("./?daftar&step=$next_step");
+} elseif (isset($_POST['btn_upload_bukti_registrasi_ulang'])) {
+  $jenis_berkas = 'REGISTRASI';
+  if (isset($_POST['btn_replace_bukti_registrasi_ulang']) || isset($_POST['btn_replace_bukti_registrasi_ulang'])) {
+    $src = $_POST['btn_replace_bukti_registrasi_ulang'];
+    # ============================================================
+    # DELETE DB
+    # ============================================================
+    $s = "DELETE FROM tb_berkas WHERE jenis_berkas='$jenis_berkas' AND username='$username'";
+    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+    # ============================================================
+    # DELETE FILE SEBELUMNYA
+    # ============================================================
+    unlink($src);
+    alert('Delete file sebelumnya berhasil.', 'success');
+  }
+
+  include '../includes/resize_img.php';
+
+  $file = $_FILES['file'];
+  $path = 'uploads/berkas';
+  $time = date('ymdHis');
+  $new_file = strtolower("$username-$jenis_berkas-$time.jpg");
+  $to = "$path/$new_file";
+
+  if (move_uploaded_file($file['tmp_name'], $to)) {
+    resize_img($to);
+    # ============================================================
+    # INSERT DB
+    # ============================================================
+    $s = "INSERT INTO tb_berkas (
+      username,
+      jenis_berkas,
+      file,
+      status
+    ) VALUES (
+      '$username',
+      '$jenis_berkas',
+      '$new_file',
+      NULL
+    )";
+    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+    alert('Upload sukses.', 'success');
+  }
+
+  jsurl();
 } elseif ($_POST) {
 
   echo '<pre>';

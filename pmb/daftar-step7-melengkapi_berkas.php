@@ -9,8 +9,8 @@ $image_missing = '<i class="red f14">berkas hilang</i>';
 $terverifikasi = "<i class='green f14'>terverifikasi $img_check</i>";
 $ditolak = "<b class='red f14'>$img_reject Berkas ditolak karena tidak sesuai dg ketentuan. Silahkan Replace!</b>";
 $path = 'uploads/berkas';
-$jumlah_upload = 0;
-$jumlah_verifikasi = 0;
+$jumlah_upload_berkas = 0;
+$jumlah_verifikasi_berkas = 0;
 $jumlah_reject = 0;
 $jumlah_syarat_berkas = 0;
 
@@ -32,17 +32,7 @@ $title = $rstep[$get_step];
 # ============================================================
 # GELOMBANG AKTIF
 # ============================================================
-$today = date('Y-m-d');
-$s = "SELECT * FROM tb_gelombang WHERE tahun_pmb=$tahun_pmb AND batas_akhir >= '$today' ORDER BY batas_akhir LIMIT 1";
-$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-if (!mysqli_num_rows($q)) {
-  alert("Tidak ada Gelombang Pendaftaran yang aktif untuk saat ini. Segera lapor Petugas!");
-  exit;
-} else {
-  $gelombang = mysqli_fetch_assoc($q);
-  $batas_akhir_show = date('d M Y', strtotime($gelombang['batas_akhir']));
-  $eta_gelombang = eta2($gelombang['batas_akhir']);
-}
+include 'gelombang_aktif.php';
 
 if ($pmb['id_jalur']) {
 
@@ -98,10 +88,10 @@ if ($pmb['id_jalur']) {
       $src = "$path/$file";
       if (file_exists($src)) {
         $gradasi = 'hijau';
-        $jumlah_upload++;
+        $jumlah_upload_berkas++;
         $status_berkas = $belum_diverifikasi;
         if ($d['status'] == 1) {
-          $jumlah_verifikasi++;
+          $jumlah_verifikasi_berkas++;
           $status_berkas = $terverifikasi;
         }
         if ($d['status'] == -1) {
@@ -132,7 +122,7 @@ if ($pmb['id_jalur']) {
     if ($jenis_berkas == 'PEMBAYARAN') {
       $biaya_daftar_show = number_format($pmb['biaya_daftar']);
       $last_digit_whatsapp = substr($pmb['whatsapp'], -3);
-      $diskon = $gelombang['persen_diskon'] ?? 0;
+      $diskon = $gelombang['diskon_biaya_daftar'] ?? 0;
       $nominal_transfer = (ceil($pmb['biaya_daftar'] * (100 - $diskon) / 100000) * 1000) + $last_digit_whatsapp;
       $nominal_transfer_show = number_format($nominal_transfer);
       $info_pembayaran = "
@@ -142,7 +132,7 @@ if ($pmb['id_jalur']) {
             <ul class='f14 m0'>
               <li><b>Gelombang</b>: $gelombang[nomor] - $tahun_pmb</li>
               <li><b>Biaya Pendaftaran</b>: Rp $biaya_daftar_show,-</li>
-              <li><b>Diskon Gelombang</b>: $gelombang[persen_diskon]%</li>
+              <li><b>Diskon Gelombang</b>: $gelombang[diskon_biaya_daftar]%</li>
               <li><b>Whatsapp</b>: <span class=consolas>...$last_digit_whatsapp</span></li>
               <li class='darkblue mt2 mb2'><b>Nominal Transfer</b>: <div class=f24>Rp $nominal_transfer_show,-</div></li>
               <li><b>No. Rekening</b>: <span class='f20 darkblue consolas'>$pmb[no_rek]</span></li>
@@ -175,8 +165,28 @@ if ($pmb['id_jalur']) {
     ";
   }
 
-  $persen = !$jumlah_syarat_berkas ? 0 : round($jumlah_upload * 100 / $jumlah_syarat_berkas);
-  $persen2 = !$jumlah_upload ? 0 : round($jumlah_verifikasi * 100 / $jumlah_upload);
+  $persen = !$jumlah_syarat_berkas ? 0 : round($jumlah_upload_berkas * 100 / $jumlah_syarat_berkas);
+  $persen2 = !$jumlah_upload_berkas ? 0 : round($jumlah_verifikasi_berkas * 100 / $jumlah_upload_berkas);
+
+  # ============================================================
+  # AUTO SAVE COUNT
+  # ============================================================
+  $s = "UPDATE tb_pmb SET 
+    jumlah_syarat_berkas = $jumlah_syarat_berkas,
+    jumlah_upload_berkas = $jumlah_upload_berkas,
+    jumlah_verifikasi_berkas = $jumlah_verifikasi_berkas
+  WHERE username='$username'";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+
+  if ($persen == 100) {
+    echo "
+      <script>
+        $(function() {
+          $('#form_next_step').slideDown();
+        })
+      </script>
+    ";
+  }
 
   echo "
     <style>.blok-syarat{
@@ -194,7 +204,7 @@ if ($pmb['id_jalur']) {
 
     <div class='darkblue tengah putih bg-primary p2' style='margin: 15px -15px'>
       <h3>Persyaratan Berkas</h3>
-      <div class='f14 mb1'>Upload: $jumlah_upload of $jumlah_syarat_berkas</div>
+      <div class='f14 mb1'>Upload: $jumlah_upload_berkas of $jumlah_syarat_berkas</div>
       <div class='p2 pl4 pr4' style='background: #ffffffaa; margin: 0 -15px -15px -15px'>
         <div class='progress mb1'>
           <div class='progress-bar progress-bar-striped progress-bar-animated' role='progressbar' aria-valuenow='$persen' aria-valuemin='0' aria-valuemax='100' style='width: $persen%'>$persen%</div>
@@ -204,7 +214,7 @@ if ($pmb['id_jalur']) {
 
     
     <div class='darkblue tengah putih bg-info p2 pl3 pr3' style='margin: 15px -15px'>
-      <div class='f14 mb1'>Verifikasi berkas: $jumlah_verifikasi of $jumlah_upload</div>
+      <div class='f14 mb1'>Verifikasi berkas: $jumlah_verifikasi_berkas of $jumlah_upload_berkas</div>
       <div class='progress mb1'>
         <div class='progress-bar progress-bar-striped progress-bar-animated' role='progressbar' aria-valuenow='$persen2' aria-valuemin='0' aria-valuemax='100' style='width: $persen2%'>$persen2%</div>
       </div>

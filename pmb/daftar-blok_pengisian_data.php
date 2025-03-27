@@ -18,7 +18,64 @@ $ktp = $biodata['nomor_ktp'] ?? null;
 $asal_sekolah = $akun['asal_sekolah'] ?? null;
 $tahun_lulus = $tahun_pmb - $akun['jeda_tahun_lulus'];
 
+if ($tb == 'data_orangtua') {
+  $rpendidikan = [
+    'TS' => 'Tidak Sekolah',
+    'SD' => 'SD',
+    'SL' => 'SLTP Sederajat',
+    'SA' => 'SMA Sederajat',
+    'D3' => 'Diploma (D3)',
+    'S1' => 'Sarjana (S1)',
+    'S2' => 'Magister (S2)',
+    'S3' => 'Doktor (S3)',
+  ];
+  $rpendapatan = [
+    0 => 'Tidak berpenghasilan',
+    1 => '0 s.d 1jt',
+    2 => '1 s.d 2jt',
+    3 => '2 s.d 3jt',
+    4 => '3jt lebih',
+  ];
+}
+
 foreach ($Fields as $field => $v) {
+
+  # ============================================================
+  # DATA ORANGTUA SKIP FIELDS
+  # ============================================================
+  if ($tb == 'data_orangtua') {
+
+    if (key_exists($field, $rpertanyaan_awal)) {
+      continue;
+    }
+
+    if ($data['ayah_meninggal']) {
+      if (
+        $field == 'pendidikan_ayah'
+        || $field == 'pekerjaan_ayah'
+        || $field == 'pendapatan_ayah'
+        || $field == 'whatsapp_ayah'
+      ) {
+        continue;
+      }
+    }
+
+    if ($data['ibu_meninggal']) {
+      if (
+        $field == 'pendidikan_ibu'
+        || $field == 'pekerjaan_ibu'
+        || $field == 'pendapatan_ibu'
+        || $field == 'whatsapp_ibu'
+      ) {
+        continue;
+      }
+    }
+  } // END DATA ORANGTUA SKIP FIELDS
+  # ============================================================
+
+  # ============================================================
+  # NORMAL LOOP
+  # ============================================================
   $type = $v['Type'] == 'date' ? 'date' : '';
   $type = strpos('salt' . $v['Type'], 'int(') > 0 ? 'number' : $type;
 
@@ -107,6 +164,32 @@ foreach ($Fields as $field => $v) {
       <div class='py-1 d-flex gap-3'>
         <label><input type=radio class='radio' id=$tb-$field-1 name=$field value=1 $checked1 $disabled> Negeri</label>
         <label><input type=radio class='radio' id=$tb-$field-2 name=$field value=2 $checked2 $disabled> Swasta</label>
+      </div>
+    ";
+  } elseif ($tb == 'data_orangtua' and substr($field, 0, 10) == 'pendidikan') {
+    $labels = '';
+    foreach ($rpendidikan as $k => $v) {
+      $checked = $k == $data[$field] ? 'checked' : '';
+      $labels .= "
+        <label class=d-block><input type=radio class='radio' id=$tb-$field-$k name=$field value=$k $checked $disabled> $v</label>
+      ";
+    }
+    $input = "
+      <div class='py-1'>
+        $labels
+      </div>
+    ";
+  } elseif ($tb == 'data_orangtua' and substr($field, 0, 10) == 'pendapatan') {
+    $labels = '';
+    foreach ($rpendapatan as $k => $v) {
+      $checked = ($k == $data[$field] and $data[$field] !== null) ? 'checked' : '';
+      $labels .= "
+        <label class=d-block><input type=radio class='radio' id=$tb-$field-$k name=$field value=$k $checked $disabled> $v</label>
+      ";
+    }
+    $input = "
+      <div class='py-1'>
+        $labels
       </div>
     ";
   } else {

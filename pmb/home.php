@@ -1,6 +1,7 @@
 <?php
 session_start();
 $now = date('Y-m-d H:i:s');
+$today = date('Y-m-d');
 $https_api_wa = 'https://api.whatsapp.com/send';
 $text_wa_from = "\n\n```From: Smart PMB System \nat $now```";
 $arr_hari = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];

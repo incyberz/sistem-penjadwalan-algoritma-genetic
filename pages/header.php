@@ -9,6 +9,7 @@ if ($role == 'AKD') {
   $arr_manage['ST'] = 'st';
   $arr_manage['Jadwal'] = 'jadwal';
   $arr_manage['ME'] = 'me';
+  $arr_manage['PMB'] = 'setting_pmb';
 
 
 

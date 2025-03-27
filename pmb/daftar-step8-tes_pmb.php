@@ -1,6 +1,7 @@
 <?php
 set_title('Tes PMB');
 $belum_tes = '<i class="f12 darkred">belum tes</i>';
+$is_lulus = false;
 
 $s = "SELECT a.*,
 b.title,
@@ -58,6 +59,17 @@ if (!mysqli_num_rows($q)) {
 
   $gradasi = $pmb['no_peserta_ujian'] ? 'hijau' : 'kuning';
 
+  echo '<pre>';
+  var_dump('is_lulus=1');
+  echo '<b style=color:red>Developer SEDANG DEBUGING: exit(true)</b></pre>';
+  $is_lulus = $pmb['lulus_tes_pmb'];
+  if ($is_lulus) {
+    $hasil_ujian_show = "<span class=green>Selamat! Anda Lulus Tes PMB.</span>";
+  } else {
+    $hasil_ujian_show = "<i class=red>--Anda belum ujian--</i>";
+  }
+
+
   echo "
     <div class='card mb3'>
       <div class='card-header bg-primary putih tengah'>Nomor Peserta Ujian</div>
@@ -74,8 +86,19 @@ if (!mysqli_num_rows($q)) {
 
     <div class='card mb3'>
       <div class='card-header bg-primary putih tengah'>Hasil Akhir Ujian</div>
-      <div class='card-body tengah gradasi-$gradasi'><i class=red>--Anda belum ujian--</i></div>
+      <div class='card-body tengah gradasi-$gradasi'>$hasil_ujian_show</div>
     </div>
     
     ";
+}
+
+
+if ($is_lulus) {
+  echo "
+    <script>
+      $(function() {
+        $('#form_next_step').slideDown();
+      })
+    </script>
+  ";
 }

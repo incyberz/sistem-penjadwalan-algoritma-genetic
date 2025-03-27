@@ -76,7 +76,6 @@ if ($ada_null) {
     }
     $pertanyaan_awal .= "
       <div class='pt2 pb2 tengah'>
-        <div class=debug>ZZZ field: $field</div>
         $rv[pertanyaan]
         <div class=row>$opsis</div>
       </div>
@@ -197,35 +196,65 @@ if ($ada_null) {
   </script>
 <?php
 } else { // pertanyaan awal lengkap
+  $li_info = '';
+  foreach ($rpertanyaan_awal as $field => $rv) {
+    $value = $rv['opsi'][$data_orangtua[$field]];
+    if ($field == 'ayah_meninggal' || $field == 'ibu_meninggal' || $field == 'punya_wali') {
+      $info = $value;
+    } elseif ($field == 'ortu_cerai') {
+      $info = "Orangtua $value";
+    } elseif ($field == 'tinggal_dengan') {
+      $info = "Saya tinggal dengan $value";
+    }
+    $li_info .= "
+      <li>$info</li>
+    ";
+  }
+
+  echo "
+    <form method=post class='card mb2'>
+      <div class='card-header bg-secondary putih tengah'>Info Awal</div>
+      <div class=card-body>
+        <ul>$li_info</ul>
+        <button class='btn btn-sm btn-secondary w-100' name=btn_reset_data_ortu onclick='return confirm(`Yakin untuk reset data orangtua?`)'>Reset Data Orangtua</button>
+      </div>
+    </form>
+  ";
 
   include 'daftar-blok_pengisian_data.php';
 ?>
   <script>
     $(function() {
-      $("#data_orangtua-nama_orangtua").keyup(function() {
+      $("#data_orangtua-nama_ayah").keyup(function() {
         $(this).val($(this).val().toUpperCase());
       });
-      $("#data_orangtua-alamat_orangtua").keyup(function() {
+      $("#data_orangtua-nama_ibu").keyup(function() {
         $(this).val($(this).val().toUpperCase());
       });
-      $("#data_orangtua-kecamatan").keyup(function() {
+      $("#data_orangtua-nama_wali").keyup(function() {
         $(this).val($(this).val().toUpperCase());
       });
-      $("#data_orangtua-jurusan").keyup(function() {
+      $("#data_orangtua-hubungan_dg_wali").keyup(function() {
         $(this).val($(this).val().toUpperCase());
       });
-      $("#data_orangtua-no_ijazah").keyup(function() {
+      $("#data_orangtua-pekerjaan_wali").keyup(function() {
+        $(this).val($(this).val().toUpperCase());
+      });
+      $("#data_orangtua-pekerjaan_ayah").keyup(function() {
+        $(this).val($(this).val().toUpperCase());
+      });
+      $("#data_orangtua-pekerjaan_ibu").keyup(function() {
         $(this).val($(this).val().toUpperCase());
       });
 
-      $("#data_orangtua-no_ijazah").focus(function() {
-        let tid = $(this).prop('id');
-        $('#' + tid + '-info').text('jika belum ada, silahkan ganti dg Nomor Surat Keterangan Lulus.');
-      });
-      $("#data_orangtua-no_ijazah").focusout(function() {
-        let tid = $(this).prop('id');
-        $('#' + tid + '-info').text('');
-      });
+      // $("#data_orangtua-no_ijazah").focus(function() {
+      //   let tid = $(this).prop('id');
+      //   $('#' + tid + '-info').text('jika belum ada, silahkan ganti dg Nomor Surat Keterangan Lulus.');
+      // });
+      // $("#data_orangtua-no_ijazah").focusout(function() {
+      //   let tid = $(this).prop('id');
+      //   $('#' + tid + '-info').text('');
+      // });
 
     });
   </script>

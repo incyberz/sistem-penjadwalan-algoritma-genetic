@@ -78,6 +78,21 @@
 
         } else if (tb == 'akun') {
           if (field == 'nama' && len >= 3 && len <= 30) go_save = true;
+        } else if (tb == 'data_orangtua') {
+          if ((
+              field == 'pekerjaan_ibu' ||
+              field == 'pekerjaan_ayah' ||
+              field == 'pekerjaan_wali' ||
+              field == 'hubungan_dg_wali' ||
+              field == 'nama_wali' ||
+              field == 'nama_ayah' ||
+              field == 'nama_ibu'
+            ) && len >= 3 && len <= 30) go_save = true;
+          if ((
+              field == 'whatsapp_wali' ||
+              field == 'whatsapp_ibu' ||
+              field == 'whatsapp_ayah'
+            ) && ((len >= 11 && len <= 14 || new_val == '-'))) go_save = true;
         }
 
         console.log('go_save', go_save);

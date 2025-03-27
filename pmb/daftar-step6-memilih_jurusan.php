@@ -5,6 +5,16 @@ include 'daftar-step6-memilih_jurusan-styles.php';
 $id_prodi_terpilih = $pmb['id_prodi'] ?? null;
 $terpilih = $id_prodi_terpilih;
 
+if ($terpilih) {
+?>
+  <script>
+    $(function() {
+      $('#form_next_step').slideDown();
+    })
+  </script>
+<?php
+}
+
 $sql_id_prodi = $terpilih ? "id=$terpilih" : '1';
 
 $s = "SELECT * FROM tb_prodi a 
@@ -94,7 +104,7 @@ while ($d = mysqli_fetch_assoc($q)) {
       <div class=navigasi>
         $nav_prodi
 
-        <div class='text-center more-info btn_aksi' id=more_info$d[singkatan]__toggle>More info...</div>
+        <div class='text-center more-info btn-aksi' id=more_info$d[singkatan]--toggle>More info...</div>
       </div>
       <div id=more_info$d[singkatan] class='hideit'>
         <div class=card>
@@ -112,22 +122,10 @@ echo "
   $prodis
 ";
 
+include '../includes/script_btn_aksi.php';
 ?>
 <script>
   $(function() {
-    $('.btn_aksi').click(function() {
-      let tid = $(this).prop('id');
-      let rid = tid.split('__');
-      let aksi = rid[0];
-      let id = rid[1];
-      console.log(aksi, id);
-      if (id == 'toggle') {
-        $('#' + aksi).slideToggle();
-      } else {
-        alert(`Belum ada handler untuk btn_aksi event [${id}]`);
-      }
-    });
-
     $('#blok-prodi-1').fadeIn();
 
     $('.btn_nav').click(function() {
