@@ -1,4 +1,13 @@
 <?php
+# ============================================================
+# SET AS PETUGAS
+# ============================================================
+if ($username) include 'akun.php';
+if (isset($akun) and $akun['role']) jsurl("./?$akun[role]");
+
+# ============================================================
+# NORMAL FLOW PENDAFTAR
+# ============================================================
 $bulan_skg = intval(date('m'));
 $tahun_skg = $bulan_skg >= 9 ? date('Y') : date('Y') - 1;
 $tahun_lalu = $tahun_skg - 1;
@@ -14,10 +23,8 @@ $post_tahun_lulus = $_POST['tahun_lulus'] ?? null;
 
 $pesan = null;
 
-if ($username) {
-  include 'akun.php';
-  include 'pmb.php';
-}
+
+if ($username) include 'pmb.php';
 include 'daftar-styles.php';
 include 'daftar-process.php';
 
@@ -25,17 +32,25 @@ include 'daftar-process.php';
 # MANAJEMEN STEP
 # ============================================================
 $get_step = $_GET['step'] ?? 1;
-$rstep = [
-  1 => 'Pendaftaran Akun',
-  2 => 'Verifikasi Akun',
-  3 => 'Melengkapi Biodata',
-  4 => 'Melengkapi Data Sekolah',
-  5 => 'Melengkapi Data Orangtua',
-  6 => 'Memilih Jurusan',
-  7 => 'Melengkapi Berkas',
-  8 => 'Tes PMB',
-  9 => 'Registrasi Ulang',
-];
+// $rstep = [
+//   1 => 'Pendaftaran Akun',
+//   2 => 'Verifikasi Akun',
+//   3 => 'Melengkapi Biodata',
+//   4 => 'Melengkapi Data Sekolah',
+//   5 => 'Melengkapi Data Orangtua',
+//   6 => 'Memilih Jurusan',
+//   7 => 'Melengkapi Berkas',
+//   8 => 'Tes PMB',
+//   9 => 'Registrasi Ulang',
+// ];
+
+$rstep = [];
+$s = "SELECT * FROM tb_status_pmb";
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+while ($d = mysqli_fetch_assoc($q)) {
+  $rstep[$d['id']] = $d['status'];
+}
+
 
 ?>
 

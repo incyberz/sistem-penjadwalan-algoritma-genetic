@@ -116,10 +116,10 @@ if ($pmb['id_jalur']) {
 
 
     # ============================================================
-    # EXCEPTION PEMBAYARAN
+    # EXCEPTION FORMULIR
     # ============================================================
     $info_pembayaran = '';
-    if ($jenis_berkas == 'PEMBAYARAN') {
+    if ($jenis_berkas == 'FORMULIR') {
       $biaya_daftar_show = number_format($pmb['biaya_daftar']);
       $last_digit_whatsapp = substr($pmb['whatsapp'], -3);
       $diskon = $gelombang['diskon_biaya_daftar'] ?? 0;

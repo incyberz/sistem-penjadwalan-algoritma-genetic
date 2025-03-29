@@ -1,0 +1,27 @@
+"DATA PMB 2025"
+~,active_status,1
+~,whatsapp_status,0
+~,sudah_bayar,0
+~,lulus_tes_pmb,0
+~,sudah_registrasi,0
+~,tanggal_awal,2025-03-19
+~,tanggal_akhir,2025-03-29
+" "
+username,created_at,tahun_pmb,nama,whatsapp,asal_sekolah,jeda_tahun_lulus,password,active_status,info_status,whatsapp_status,last_step,lulus_tes_pmb,jumlah_tes,role,file_bayar_formulir,file_bayar_registrasi
+erwin,"2025-03-24 10:21:16",2025,"ERWIN KURNIA",6287729007318,"SMK ALBAITI",1,771393b4e52f91157c7a2dc3ab198037,1,,1,2,,,,,
+wulan,"2025-03-23 10:21:16",2025,"WULAN DUWITA SARI ",6287729007318,"SMK ALBAITI",1,771393b4e52f91157c7a2dc3ab198037,1,,,2,,,,,
+risma,"2025-03-23 01:42:52",2025,"RISMA NURDIANI",6287729007318,"SMK ALBAITI",0,771393b4e52f91157c7a2dc3ab198037,1,,1,2,,,,,
+mochs,"2025-03-21 20:11:40",2025,"MOCH SANDI SATRIA PUTRA",6287729007318,"SMK ALBAITI",2,771393b4e52f91157c7a2dc3ab198037,1,,1,2,,,,,
+haidar,"2025-03-21 17:04:28",2025,"HAIDAR AKMALIANSYAH",6287729007318,"SMK ALBAITI",2,771393b4e52f91157c7a2dc3ab198037,1,,,2,,,,,
+delly,"2025-03-20 20:26:04",2025,"DELLY AKMAL SHINTIA ",6287729007318,"SMK ALBAITI",2,771393b4e52f91157c7a2dc3ab198037,1,,1,7,,,,,
+ardila,"2025-03-19 03:38:04",2025,"ARDILA SABILA",6287729007318,"SMK ALBAITI",1,771393b4e52f91157c7a2dc3ab198037,1,,1,2,,,,,
+chairu,"2025-03-19 01:57:16",2025,"CHAIRUL FATUR RAHMAN ",6287729007318,"SMK ALBAITI",2,771393b4e52f91157c7a2dc3ab198037,1,,,2,,,,,
+" "
+,,"JUMLAH HADIR: ",jumlah_hadir
+,,"TIDAK HADIR: ",jumlah_peserta
+,,"TOTAL PESERTA: ",jumlah_peserta
+" "
+,,"PENGAWAS UJIAN: ",d_paket
+,,"DATA FROM:","Gamified Learning DIPA Joiner "
+,,,http://iotikaindonesia.com/dipa
+,,"PRINTED AT:","March 29, 2025, 21:02:32"

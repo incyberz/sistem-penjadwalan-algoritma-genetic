@@ -62,7 +62,7 @@ if (!mysqli_num_rows($q)) {
   echo '<pre>';
   var_dump('is_lulus=1');
   echo '<b style=color:red>Developer SEDANG DEBUGING: exit(true)</b></pre>';
-  $is_lulus = $pmb['lulus_tes_pmb'];
+  $is_lulus = $akun['lulus_tes_pmb'];
   if ($is_lulus) {
     $hasil_ujian_show = "<span class=green>Selamat! Anda Lulus Tes PMB.</span>";
   } else {

@@ -11,7 +11,7 @@ if (isset($_POST['btn_set_awal_pmb'])) {
 }
 
 alert('Awal PMB belum ditentukan.');
-// adm_only();
+// petugas_only();
 
 
 $tahun_ta_berikutnya = $tahun_ta + 1;

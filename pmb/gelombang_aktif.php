@@ -8,4 +8,5 @@ if (!mysqli_num_rows($q)) {
   $gelombang = mysqli_fetch_assoc($q);
   $batas_akhir_show = date('d M Y', strtotime($gelombang['batas_akhir']));
   $eta_gelombang = eta2($gelombang['batas_akhir']);
+  $gelombang_aktif = $gelombang['nomor'];
 }

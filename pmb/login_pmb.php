@@ -17,7 +17,10 @@ if (isset($_POST['btn_login'])) {
     $d = mysqli_fetch_assoc($q);
     $_SESSION['pmb_username'] = $_POST['username'];
 
-    if ($d['whatsapp_status']) {
+    if ($d['role']) {
+      $_SESSION['pmb_role'] = $d['role'];
+      jsurl("./?$d[role]");
+    } elseif ($d['whatsapp_status']) {
       jsurl("./?daftar&step=$d[last_step]");
     } else {
       jsurl('./?daftar&step=2');

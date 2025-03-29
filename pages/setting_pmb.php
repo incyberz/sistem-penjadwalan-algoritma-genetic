@@ -26,6 +26,11 @@ $rsetting = [
     'title' => 'Setting Petugas PMB',
     'no_edit' => [],
   ],
+  4 => [
+    'tb' => 'go',
+    'nav' => 'Go!',
+    'title' => 'Go',
+  ],
 ];
 
 $nav = '';
@@ -38,6 +43,11 @@ $step = $_GET['step'] ?? 1;
 
 $setting = $rsetting[$step];
 $tb = $setting['tb'];
+if ($tb == 'go') {
+  alert("Back to <a href='?setting_pmb'>Setting PMB</a> | Go to <a href='pmb/'>Laman PMB</a>", 'success tengah');
+  exit;
+}
+
 $title = $setting['title'];
 $sql_where = $setting['sql_where'];
 

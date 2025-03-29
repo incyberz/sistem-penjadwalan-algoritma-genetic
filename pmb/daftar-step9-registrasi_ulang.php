@@ -87,7 +87,7 @@ $rsyarat = [
   ],
   'tes_pmb' => [
     'step' => 8,
-    'data' => $pmb['lulus_tes_pmb'],
+    'data' => $akun['lulus_tes_pmb'],
     'ok_value' => 1,
     'show_ok' => "<div class='f12 green'>Selamat! Anda Lulus tes PMB $img_check</div>",
     'show_not_ok' => '<i class="f12 darkred">belum tes</i>',
