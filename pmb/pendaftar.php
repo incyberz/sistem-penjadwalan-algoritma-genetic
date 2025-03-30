@@ -3,21 +3,28 @@ include '../includes/eta.php';
 include '../includes/key2kolom.php';
 include 'tahun_pmb.php';
 include 'gelombang_aktif.php';
-include 'info_hari_ini.php';
+// include 'info_hari_ini.php';
 include 'pendaftar-styles.php';
 petugas_only();
 set_title('Pendaftar PMB');
 
+$get_time = $_GET['time'] ?? 'all_time';
+$get_gel = $_GET['gel'] ?? $gelombang_aktif;
 
+# ============================================================
+# NAVS 
+# ============================================================
+// include 'petugas-dashboard-nav.php';
+// echo "<i id=awal_gel class=hideita>$awal</i>";
+// echo "<i id=akhir_gel class=hideita>$akhir</i>";
 
 echo "
-  $info_hari_ini
   <div class='d-flex flex-between'>
-    <div class=f12 style=min-width:200px>
+    <div class=f12 style='min-width:250px'>
       <a href=?petugas>Home Petugas</a>
     </div>
     <h2 class=' tengah'>Pendaftar PMB</h2>
-    <div style=min-width:200px>&nbsp;</div>
+    <div style='min-width:250px'>&nbsp;</div>
   </div>
 ";
 
@@ -95,6 +102,30 @@ if ($get_tanggal_akhir) {
   $hide_tanggal_akhir = '';
 }
 
+$opt_gels = '';
+$s = "SELECT * FROM tb_gelombang WHERE tahun_pmb=$tahun_pmb ORDER BY nomor";
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+$count_gel = mysqli_num_rows($q);
+$rgel = [];
+while ($d = mysqli_fetch_assoc($q)) {
+  $no_gel = $d['nomor'];
+  $rgel[$no_gel] = $d;
+  if ($no_gel == 1) {
+    $awal = $awal_pmb;
+    $akhir = $d['batas_akhir'];
+  } elseif ($no_gel > 1 and $no_gel <= $count_gel) {
+    $awal = date('Y-m-d', strtotime('+1 day', strtotime($rgel[$no_gel - 1]['batas_akhir'])));
+    $akhir = $d['batas_akhir'];
+  }
+  $selected = '';
+  if ($d['nomor'] == $get_gel) {
+    $selected = 'selected';
+    $value_tanggal_awal = $awal;
+    $value_tanggal_akhir = $akhir;
+  }
+  $opt_gels .= "<option value='$awal--$akhir' $selected>Gel-$d[nomor]</option>";
+}
+
 
 echo "
   <div class='card mt-4'>
@@ -108,6 +139,7 @@ echo "
                 <option>all time</option>
                 <option>di bulan ini</option>
                 <option>between</option>
+                $opt_gels
               </select>
             </div>
             <div>
@@ -258,13 +290,18 @@ echo "
     });
 
     $('#select_time').change(function() {
-      if ($(this).val() == 'between') {
+      let val = $(this).val();
+      if (val.length == 22) { // batasan tanggal
+        let t = val.split('--')
+        $('#tanggal_awal').val(t[0]);
+        $('#tanggal_akhir').val(t[1]);
+      } else if (val == 'between') {
         $('.input-tanggal').fadeIn();
         $('#tanggal_awal').val($('#awal_bulan_ini').text());
         $('#tanggal_akhir').val($('#today').text());
       } else {
         $('.input-tanggal').fadeOut();
-        if ($(this).val() == 'all time') {
+        if (val == 'all time') {
           $('.input-tanggal').val('');
         } else { // bulan ini
           $('#tanggal_awal').val($('#awal_bulan_ini').text());

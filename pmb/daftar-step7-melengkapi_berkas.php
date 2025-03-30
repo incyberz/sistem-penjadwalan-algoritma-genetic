@@ -65,7 +65,7 @@ if ($pmb['id_jalur']) {
     $info_pengganti = ')* wajib upload';
     if ($b['pengganti']) {
       $b2 = $rjenis_berkas[$b['pengganti']];
-      $info_pengganti = ")* dapat digantikan dengan [ <span class=hitam>$b2[title]</span> ]";
+      $info_pengganti = ")* dapat digantikan dengan [ <span class=hitam>$b2[nama_berkas]</span> ]";
     }
 
     $accept = '';
@@ -154,7 +154,7 @@ if ($pmb['id_jalur']) {
 
     $div_berkas .= "
       <form method=post enctype='multipart/form-data' class='border-top blok-syarat gradasi-$gradasi' id=$form_id>
-        <div class='darkblue mb2'>$i. <b>$b[title]</b>: $img_berkas</div>
+        <div class='darkblue mb2'>$i. <b>$b[nama_berkas]</b>: $img_berkas</div>
         <div class='d-flex gap-2'>
           <input required type=file name=file class='d-block flex-fill form-control' accept='$accept'> 
           $btn_upload

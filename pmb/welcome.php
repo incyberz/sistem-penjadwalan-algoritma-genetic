@@ -38,7 +38,7 @@ include "../conn.php";
     <div class="container">
       <h1>Selamat Datang di Kampus Impian</h1>
       <p class="lead">Tempat terbaik untuk mewujudkan masa depan gemilang Anda!</p>
-      <a href="./?daftar" class="btn btn-light btn-lg">Daftar Sekarang</a>
+      <a href="./?login_pmb" class="btn btn-light btn-lg">Login</a>
     </div>
   </header>
 

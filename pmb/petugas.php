@@ -14,3 +14,5 @@ echo "
   $info_hari_ini
 ";
 include 'petugas-dashboard.php';
+include 'petugas-dashboard_berkas.php';
+include 'petugas-dashboard_grafik.php';

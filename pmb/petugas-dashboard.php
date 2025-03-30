@@ -16,7 +16,12 @@ $sudah_registrasi = 0;
 $belum_registrasi = 0;
 
 $get_time = $_GET['time'] ?? 'all_time';
-$get_gelombang = $_GET['gelombang'] ?? $gelombang_aktif;
+$get_gel = $_GET['gel'] ?? $gelombang_aktif;
+
+# ============================================================
+# NAVS 
+# ============================================================
+include 'petugas-dashboard-nav.php';
 
 
 # ============================================================
@@ -62,7 +67,11 @@ a.jumlah_tes,
   WHERE status=1 -- berkas terverifikasi
   AND jenis_berkas = 'REGISTRASI' 
   AND username=a.username ) sudah_registrasi
-FROM tb_akun a WHERE a.role is null";
+FROM tb_akun a 
+WHERE a.role is null
+AND a.created_at >= '$awal'
+AND a.created_at <= '$akhir'
+";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $pendaftar_count = mysqli_num_rows($q);
 while ($d = mysqli_fetch_assoc($q)) {
@@ -122,6 +131,63 @@ foreach ($rstatus_pmb_count as $id_status => $count) {
 
 
 
+
+$rUI = [
+  'pendaftar' => [
+    'title' => 'Pendaftar',
+    'count' => $pendaftar_count,
+    'satuan' => 'baru mencoba',
+    'params' => '',
+    'bg' => 'bg-pendaftar',
+  ],
+  'peserta' => [
+    'title' => 'Peserta PMB',
+    'count' => $peserta_count,
+    'satuan' => 'peserta aktif',
+    'params' => 'whatsapp_status=1',
+    'bg' => 'bg-peserta',
+  ],
+  'lulus' => [
+    'title' => 'Peserta Tes',
+    'count' => $sudah_bayar_formulir,
+    'satuan' => 'peserta',
+    'params' => 'sudah_bayar=1',
+    'bg' => 'bg-lulus',
+  ],
+  'registrasi' => [
+    'title' => 'Mhs Baru',
+    'count' => $sudah_registrasi,
+    'satuan' => 'mhs',
+    'params' => 'sudah_bayar=1',
+    'bg' => 'bg-success',
+  ],
+];
+
+
+$cols = '';
+foreach ($rUI as $key => $rv) {
+  $cols .= "
+    <div class='col-3'>
+      <div class='card $rv[bg] mb-3'>
+        <div class='card-body'>
+          <a href='?pendaftar&gel=$get_gel&$rv[params]' class=hover>
+            <h5 class='card-title'>
+              <span class='putih'>$rv[title]</span>
+            </h5>
+            <div class='card-text f40'>
+              <span id='pendaftar-count' class=putih>$rv[count]</span>
+              <span class='f12 miring putih'>$rv[satuan]</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  ";
+}
+
+
+
+
 echo "
   <div class='d-lg-none'>
     <b class=red>Dashboard PMB hanya dapat diakses via laptop, minimal 992 pixel lebar layar.</b>
@@ -131,79 +197,16 @@ echo "
     <div class='card'>
       <div class='card-header '>
         <div class='d-flex justify-content-center gap-4'>
-          <div>
-            <span class='nav nav-time hover' id=nav-time-hari_ini>Hari ini</span>
-            <span class='nav nav-time hover' id=nav-time-bulan_ini>Bulan ini</span>
-            <span class='nav nav-time hover' id=nav-time-all_time>All time</span>
-          </div>
-          <div>
-            <span class='nav nav-gel hover' id=nav-gel-1>Gel-1</span>
-            <span class='nav nav-gel hover' id=nav-gel-2>Gel-2</span>
-            <span class='nav nav-gel hover' id=nav-gel-3>Gel-3</span>
-            <span class='nav nav-gel hover' id=nav-gel-4>Gel-4</span>
-          </div>
+          <div>$nav_times</div>
+          <div>$nav_gels</div>
         </div>
       </div>
       <div class='card-body gradasi-toska putih'>
-        <div class='row'>
-          <div class='col-3'>
-            <div class='card bg-pendaftar mb-3'>
-              <div class='card-body'>
-                <h5 class='card-title'>
-                  <a target=_blank href=?pendaftar&time=$get_time&gelombang=$get_gelombang><span class='putih hover'>Pendaftar</span></a>
-                </h5>
-                <div class='card-text f40'>
-                  <span id='pendaftar-count'>$pendaftar_count</span>
-                  <span class='f12 miring'>baru mencoba</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class='col-3'>
-            <div class='card bg-peserta mb-3'>
-              <div class='card-body'>
-                <h5 class='card-title'>
-                  <a target=_blank href=?pendaftar&time=$get_time&gelombang=$get_gelombang&whatsapp_status=1><span class='putih hover'>Peserta PMB</span></a>
-                </h5>
-                <div class='card-text f40'>
-                  <span id='peserta-count'>$peserta_count</span>
-                  <span class='f12 miring'>peserta aktif</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class='col-3'>
-            <div class='card bg-lulus mb-3'>
-              <div class='card-body'>
-                <h5 class='card-title'>
-                  <a target=_blank href=?pendaftar&time=$get_time&gelombang=$get_gelombang&sudah_bayar=1><span class='putih hover'>Peserta Tes</span></a>
-                </h5>
-                <div class='card-text f40'>
-                  <span id='lulus-count'>$sudah_bayar_formulir</span>
-                  <span class='f12 miring'>peserta</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class='col-3'>
-            <div class='card bg-success mb-3'>
-              <div class='card-body'>
-                <h5 class='card-title'>
-                  <a target=_blank href=?pendaftar&time=$get_time&gelombang=$get_gelombang&sudah_registrasi=1><span class='putih hover'>Mhs Baru</span></a>
-                </h5>
-                <div class='card-text f40'>
-                  <span id='maba-count'>$sudah_registrasi</span>
-                  <span class='f12 miring'>sudah pembayaran</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class='tengah abu f12'>
-          <span class='btn-aksi hover' id=detail_counts--toggle>Show Detail Counts</span>
-        </div>
+        <div class='abu tengah f12 mb2'><span class=text-primary>$awal_show</span> hingga <span class=text-primary>$akhir_show</span></div>
+        <div class='row'>$cols</div>
 
-        <div class='hideita' id=detail_counts>
+        <div class='tengah abu f12'><span class='btn-aksi hover' id=detail_counts--toggle>Show Detail Counts</span></div>
+        <div class='hideit' id=detail_counts>
           <div class='row mt2'>
             <div class='col-3'>
               <div class='card bg-pendaftar mb-3'>
@@ -258,17 +261,43 @@ echo "
 ";
 
 ?>
-<script>
-  let time = 'all_time';
-  let gelombang = $('#gelombang_aktif').text();
-  $('#nav-time-all_time').addClass('nav-active');
-  $('#nav-gel-' + gelombang).addClass('nav-active');
 
-  $(function() {
-    $('.nav-time').click(function() {
-      $('.nav-time').removeClass('nav-active');
-      $(this).addClass('nav-active');
-      time = $(this).text().replace(' ', '_').toLowerCase();
-    });
-  });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+  // let time = 'all_time';
+  // let gelombang = $('#gelombang_aktif').text();
+  // $('#nav-time-all_time').addClass('nav-active');
+  // $('#nav-gel-' + gelombang).addClass('nav-active');
+
+  // $(function() {
+  //   $('.nav-time').click(function() {
+  //     $('.nav-time').removeClass('nav-active');
+  //     $(this).addClass('nav-active');
+  //     time = $(this).text().replace(' ', '_').toLowerCase();
+  //   });
+  // });
 </script>
