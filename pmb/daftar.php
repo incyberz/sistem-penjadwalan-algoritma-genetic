@@ -32,6 +32,14 @@ include 'daftar-process.php';
 # MANAJEMEN STEP
 # ============================================================
 $get_step = $_GET['step'] ?? 1;
+if ($get_step > 1 and !$username) {
+  alert('Sesi login telah berakhir. <a href=?login_pmb>Silahkan relogin</a>!');
+  exit;
+  echo '<pre>';
+  var_dump($_SESSION);
+  echo '</pre>';
+  die('Silahkan relogin!');
+}
 // $rstep = [
 //   1 => 'Pendaftaran Akun',
 //   2 => 'Verifikasi Akun',

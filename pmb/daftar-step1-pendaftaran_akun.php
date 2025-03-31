@@ -106,7 +106,7 @@
 
     $("#username").on("keyup", function() {
       let val = $(this).val();
-      val = val.replace(/[^a-z0-9]/g, ""); // Hanya huruf kecil dan angka
+      val = val.replace(/[^a-zA-Z0-9]/g, ""); // Hanya huruf kecil dan angka
       $(this).val(val.toLowerCase()); // Ubah ke lowercase
     });
     $("#username").focusout(function() {

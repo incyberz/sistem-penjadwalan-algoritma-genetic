@@ -108,15 +108,17 @@
 
                 $('#' + tid).addClass('gradasi-hijau');
                 let t = a.split('--');
-                $('#lengkap-of').text(t[1]);
-                $('#total-of').text(t[2]);
-                let persen = t[3];
-                $('#progress-bar').attr('aria-valuenow', persen);
-                $('#progress-bar').prop('style', `width:${persen}%`);
-                $('#progress-bar').text(`${persen}%`);
-                if (persen == 100) {
-                  $('#form_next_step').slideDown();
-                  console.log("#form_next_step.slideDown");
+                if (tb != 'akun') { // exception, tidak ada progress untuk tb_akun
+                  $('#lengkap-of').text(t[1]);
+                  $('#total-of').text(t[2]);
+                  let persen = t[3];
+                  $('#progress-bar').attr('aria-valuenow', persen);
+                  $('#progress-bar').prop('style', `width:${persen}%`);
+                  $('#progress-bar').text(`${persen}%`);
+                  if (persen == 100) {
+                    $('#form_next_step').slideDown();
+                    console.log("#form_next_step.slideDown");
+                  }
                 }
               } else if (field == 'nomor_ktp') {
                 const obj = JSON.parse(a);

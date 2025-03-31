@@ -1,4 +1,18 @@
 <?php
+# ============================================================
+# CEK JIKA SEDANG LOGIN 
+# ============================================================
+if ($username) {
+  alert('Anda sedang login.', 'info');
+  $s = "SELECT last_step FROM tb_akun WHERE username='$username'";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  $d = mysqli_fetch_assoc($q);
+  jsurl("?daftar&step=$d[last_step]");
+}
+
+# ============================================================
+# NORMAL FLOW
+# ============================================================
 set_title('Login PMB');
 $pesan = '';
 $username = $_GET['username'] ?? null;

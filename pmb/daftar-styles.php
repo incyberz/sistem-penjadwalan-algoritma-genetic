@@ -4,8 +4,9 @@
   }
 
   .pesan {
-    font-size: 12px;
+    font-size: 14px;
     margin-left: 55px;
+    margin-top: 5px;
   }
 
   .pesan-error {
