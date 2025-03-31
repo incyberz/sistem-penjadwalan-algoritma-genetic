@@ -65,7 +65,7 @@
           if ((
               field == 'alamat_sekolah' ||
               field == 'nama_sekolah' ||
-              field == 'kecamatan' ||
+              field == 'kecamatan_sekolah' ||
               field == 'jurusan' ||
               field == 'nis'
             ) && len >= 2 && len <= 30) go_save = true;

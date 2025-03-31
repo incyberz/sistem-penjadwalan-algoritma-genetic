@@ -54,7 +54,7 @@ if (!$id_sekolah) {
         sekolah_negeri=NULL, 
         nama_sekolah='$akun[asal_sekolah]', 
         alamat_sekolah=NULL, 
-        kecamatan=NULL, 
+        kecamatan_sekolah=NULL, 
         jurusan=NULL 
       WHERE username='$username'";
       $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
@@ -80,7 +80,7 @@ if (!$id_sekolah) {
       sekolah_negeri='$sekolah[sekolah_negeri]', 
       nama_sekolah='$sekolah[nama_sekolah]', 
       alamat_sekolah='$sekolah[alamat_sekolah]', 
-      kecamatan='$sekolah[kecamatan]'
+      kecamatan_sekolah='$sekolah[kecamatan]'
 
     WHERE username='$username'";
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
@@ -102,7 +102,7 @@ if (!$id_sekolah) {
       $("#data_sekolah-alamat_sekolah").keyup(function() {
         $(this).val($(this).val().toUpperCase());
       });
-      $("#data_sekolah-kecamatan").keyup(function() {
+      $("#data_sekolah-kecamatan_sekolah").keyup(function() {
         $(this).val($(this).val().toUpperCase());
       });
       $("#data_sekolah-jurusan").keyup(function() {
