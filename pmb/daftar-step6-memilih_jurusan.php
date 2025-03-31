@@ -1,6 +1,7 @@
 <?php
 set_title('Memilih Jurusan');
 include 'daftar-step6-memilih_jurusan-styles.php';
+include '../includes/img_icon.php';
 
 $id_prodi_terpilih = $pmb['id_prodi'] ?? null;
 $terpilih = $id_prodi_terpilih;
@@ -50,7 +51,7 @@ while ($d = mysqli_fetch_assoc($q)) {
     $li_softskill .= "<div class='bidang bidang-softskill'>$v</div>";
   }
 
-  $d['deskripsi'] = $d['deskripsi'] ?? 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis in quod illo alias distinctio inventore aut dolorem laboriosam suscipit, aperiam laborum blanditiis quisquam eum animi reiciendis recusandae, perferendis officia eos!';
+  $d['deskripsi'] = $d['deskripsi'] ?? '<b class=red>belum ada deskripsi prodi</b>';
 
   $btn_prev = $i == 1 ? "<span class='btn btn-secondary w-100' disabled>Prev</span>" :
     "<span class='btn btn-info w-100 btn_nav' id=prev__$i>Prev</span>";
@@ -59,10 +60,10 @@ while ($d = mysqli_fetch_assoc($q)) {
 
   $nav_prodi = $terpilih ? "
     <form method=post>
-      <button class='btn btn-secondary mb2 w-100' onclick='return confirm(`Pilih Ulang Jurusan?`)' name=btn_pilih_ulang_jurusan value=$d[id]>Pilih Ulang</button>
+      <button class='btn btn-secondary w-100' onclick='return confirm(`Pilih Ulang Jurusan?`)' name=btn_pilih_ulang_jurusan value=$d[id]>Pilih Ulang</button>
     </form>
   " : "
-    <div class='mb-3 d-flex gap-2'>
+    <div class='d-flex gap-2'>
       <div>
         $btn_prev
       </div>
@@ -78,38 +79,76 @@ while ($d = mysqli_fetch_assoc($q)) {
   ";
 
   $prodi_of = $terpilih ? "
-    <div class='nama-fakultas'>Prodi Pilihan Anda:</div>
-    <div class='f20'>$d[nama] ($d[jenjang])</div>
+  <div style='padding: 30px 0'>
+    <div class='nama-fakultas mb1'>Prodi Pilihan Anda:</div>
+    <div class='f20 bold'>$d[nama] ($d[jenjang])</div>
+    <div class='tengah'>$img_check $img_check $img_check</div>
     <div class='mt2 f12 mb2'>Silahkan Next Steps atau boleh Pilih Ulang</div>
+  </div>
   " : "
     <div class='nama-fakultas mb-1'>Prodi $i of $jumlah_prodi - $d[fakultas] - $d[jenjang]</div>
     $d[nama]
   ";
 
+  # ============================================================
+  # GAMBAR ILUSTRASI
+  # ============================================================
+  $img_ilustrasi = '';
+  $path = '../assets/img/prodi';
+  $src = "$path/$d[singkatan].jpg";
 
+  if (file_exists($src)) {
+    $img_ilustrasi = "
+      <div class=blok_img_ilustrasi>
+        <img src='$src' class='img-fluid w-100'>
+      </div>
+    ";
+  }
+
+  # ============================================================
+  # PROFESI
+  # ============================================================
+  $profesis = '';
+  if ($d['profesis']) {
+    $t = explode(',', $d['profesis']);
+    foreach ($t as $profesi) {
+      $profesi = trim($profesi);
+      $profesis .= "<div class=profesi>$img_check $profesi</div>";
+    }
+  }
+
+  # ============================================================
+  # FINAL LOOP
+  # ============================================================
   $prodis .= "
     <div class='hideit blok-prodi blok-prodi-$d[singkatan]' id=blok-prodi-$i>
       <h3 class='mt-4 text-center nama-prodi'>
         $prodi_of
-        
       </h3>
+
+      <div class=navigasi>
+        $nav_prodi
+      </div>
 
       <p class='text-center deskripsi-prodi'>
         $d[deskripsi]
       </p>
 
-      <div class='mt-4 d-flex justify-content-center gap-2 flex-wrap'>$li_bidang_ilmu</div>
-      <div class='mt-4 d-flex justify-content-center gap-2 flex-wrap'>$li_softskill</div>
-
-      <div class=navigasi>
-        $nav_prodi
-
-        <div class='text-center more-info btn-aksi' id=more_info$d[singkatan]--toggle>More info...</div>
+      <div>
+        <div class='mt-4 d-flex justify-content-center gap-2 flex-wrap'>$li_bidang_ilmu</div>
+        <div class='mt-4 d-flex justify-content-center gap-2 flex-wrap'>$li_softskill</div>
       </div>
-      <div id=more_info$d[singkatan] class='hideit'>
-        <div class=card>
+
+      $img_ilustrasi
+      <div class='blok_profesis'>
+        $profesis
+      </div>
+
+      <div class='hideit text-center more-info btn-aksi putih' id=more_info$d[singkatan]--toggle>More info...</div>
+      <div id=more_info$d[singkatan] class='hideita mt4'>
+        <div class='card card_pemahaman'>
           <div class='card-body'>
-            <ul>$li_pemahaman</ul>
+            <ul class=''>$li_pemahaman</ul>
           </div>
         </div>
       </div>
