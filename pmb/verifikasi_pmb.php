@@ -33,6 +33,9 @@ if ($get_success) {
       <div class='card p-2 wa_preview' >$preview</div>
       <a target=_blank href='$link_wa' class='btn btn-primary w-100 mt-2'>Kirim Link ke User Baru</a>
     </div>
+    <div class='tengah mt2'>
+      <a href=?petugas>Home Petugas</a>
+    </div>
 
   ";
 } else {

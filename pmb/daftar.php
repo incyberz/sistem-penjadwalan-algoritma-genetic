@@ -6,6 +6,23 @@ if ($username) include 'akun.php';
 if (isset($akun) and $akun['role']) jsurl("./?$akun[role]");
 
 # ============================================================
+# DEFAULT WHATSAPP PETUGAS
+# ============================================================
+$s = "SELECT username, nama, whatsapp FROM tb_akun WHERE role='petugas' AND is_petugas_default=1";
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+if (!mysqli_num_rows($q)) {
+  alert('Belum ada Petugas PMB default.');
+  exit;
+} else {
+  $d = mysqli_fetch_assoc($q);
+  $nama_petugas = $d['nama'];
+  $default_whatsapp_petugas = $d['whatsapp'];
+  $whatsapp_petugas = $d['whatsapp'];
+  $username_petugas = $d['username'];
+}
+
+
+# ============================================================
 # NORMAL FLOW PENDAFTAR
 # ============================================================
 $bulan_skg = intval(date('m'));

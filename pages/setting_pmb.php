@@ -114,8 +114,15 @@ if (mysqli_num_rows($q)) {
           || $key == 'last_step'
           || $key == 'active_status'
           || $key == 'whatsapp_status'
+          || $key == 'info_status'
+          || $key == 'lulus_tes_pmb'
+          || $key == 'jumlah_tes'
+          || $key == 'verif_date'
+          || $key == 'verif_by'
         ) {
           continue;
+        } elseif ($key == 'whatsapp') {
+          $value =  substr($value, 0, 4) . '...' . substr($value, -3);
         }
       }
 
@@ -126,13 +133,14 @@ if (mysqli_num_rows($q)) {
       if ($Type == 'date') {
         $show_value = date('d-M-Y', strtotime($value));
         $input = "<input id=$four_id class='flex-fill form-control form-control-sm' type=date value='$value'>";
-      } elseif (strpos("salt$Type", 'int(')) {
+      } elseif (strpos("salt$Type", 'int')) {
         $show_value = number_format($value);
         $input = "<input id=$four_id class='flex-fill form-control form-control-sm' type=number value='$value'>";
       } elseif (strpos("salt$Type", 'char')) {
         $input = "<input id=$four_id class='flex-fill form-control form-control-sm' type=text value='$value'>";
-      } elseif ($Type == 'text') {
-        $input = "<textarea id=$four_id class='flex-fill form-control form-control-sm' rows=6>$value</textarea>";
+      } elseif ($Type == 'text' || $Type == 'timestamp') {
+        $info = $Type == 'timestamp' ? '<div class="f12 mt1 abu miring">format: YYYY-MM-DD HH:MM:SS</div>' : '';
+        $input = "<textarea id=$four_id class='flex-fill form-control form-control-sm' rows=6>$value</textarea>$info";
       } else if ($Type == 'enum' || $Type == 'set') {
         $t = explode(',', $Length);
         $opt = '';
@@ -194,6 +202,26 @@ if (mysqli_num_rows($q)) {
   }
 }
 
+# ============================================================
+# SET PETUGAS DEFAULT
+# ============================================================
+$set_petugas_default = '<b class=red>belum ada petugas default, silahkan tambahkan Petugas PMB minimal satu orang!</b>';
+$s = "SELECT username,nama,whatsapp FROM tb_akun WHERE role='petugas'";
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+if (mysqli_num_rows($q) == 1) {
+  $d = mysqli_fetch_assoc($q);
+  $nama = ucwords(strtolower($d['nama']));
+  $whatsapp_show = substr($d['whatsapp'], 0, 4) . '...' . substr($d['whatsapp'], -3);
+
+  $set_petugas_default = "<div class='alert alert-info'><b class=text-primary>Petugas default</b> adalah [ $nama ]. Semua notifikasi dan informasi tertuju pada whatsapp-nya [ $whatsapp_show ]. Jika ingin mengubah Petugas Default, tambahkan lagi Petugas PMB lainnya dan tunjuk sebagai Petugas Default.</div>";
+} else {
+  echo '<pre>';
+  var_dump($s);
+  echo "<b class=red>Belum ada handler untu Multiple Petugas PMB. Hapus salah satu Petugas! . not-exited</b></pre>";
+  // exit;
+}
+
+
 $nav = "<div class='d-flex gap-2 justify-content-center'>$nav</div>";
 set_h2('Setting PMB', $nav);
 
@@ -208,6 +236,7 @@ echo $tr ? "
       <table class=table>
         $tr
       </table>
+      $set_petugas_default
     </div>
   </div>
 " : div_alert('danger', "Data $tb tidak ditemukan.");

@@ -72,6 +72,11 @@ if (isset($_POST['btn_set_password'])) {
   $to = "$path/$new_file";
 
   if (move_uploaded_file($file['tmp_name'], $to)) {
+
+    $nomor_berkas = isset($_POST['nomor_berkas']) ? "'$_POST[nomor_berkas]'" : 'NULL';
+    $tanggal_berkas = isset($_POST['tanggal_berkas']) ? "'$_POST[tanggal_berkas]'" : 'NULL';
+    $nominal = isset($_POST['nominal']) ? "'$_POST[nominal]'" : 'NULL';
+
     resize_img($to);
     # ============================================================
     # INSERT DB
@@ -80,11 +85,17 @@ if (isset($_POST['btn_set_password'])) {
       username,
       jenis_berkas,
       file,
+      nomor_berkas,
+      tanggal_berkas,
+      nominal,
       status
     ) VALUES (
       '$username',
       '$jenis_berkas',
       '$new_file',
+      $nomor_berkas,
+      $tanggal_berkas,
+      $nominal,
       NULL
     )";
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
@@ -278,6 +289,20 @@ if (isset($_POST['btn_set_password'])) {
   }
 
   jsurl();
+} elseif (isset($_POST['btn_kirim_notifikasi'])) {
+  $s = "UPDATE tb_berkas SET last_notif = CURRENT_TIMESTAMP WHERE id = $_POST[btn_kirim_notifikasi]";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+
+  echo "
+    <script>
+      location.replace(\"$_POST[link_wa]\")
+    </script>
+  ";
+
+  echo '<pre>';
+  var_dump($_POST);
+  echo '</pre>';
+  exit;
 } elseif ($_POST) {
 
   echo '<pre>';

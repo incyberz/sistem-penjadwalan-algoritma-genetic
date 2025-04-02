@@ -47,4 +47,13 @@
   .td-values-input-data {
     padding-right: 10px;
   }
+
+  .verif-progress-header {
+    display: inline-block;
+    background: #ffffffaa;
+    padding: 10px 20px;
+    font-size: 20px;
+    border-radius: 20px;
+    margin-bottom: 5px;
+  }
 </style>

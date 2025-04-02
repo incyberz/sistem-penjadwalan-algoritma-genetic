@@ -18,8 +18,7 @@ echo "<i id=counts class=hideit>$counts</i>";
 
 ?>
 
-<script src="../assets/js/apexcharts.min.js"></script>
-<div class="hideit card mt4" id=grafik_pendaftar>
+<div class="card mt4 gradasi-toska" id=grafik_pendaftar>
   <div class="card-body">
     <h5 class="card-title">Pendaftar Harian - All Time</h5>
 

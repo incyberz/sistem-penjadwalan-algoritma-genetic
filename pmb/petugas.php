@@ -14,5 +14,9 @@ echo "
   $info_hari_ini
 ";
 include 'petugas-dashboard.php';
-include 'petugas-dashboard_berkas.php';
+include 'petugas-dashboard-berkas.php';
+include 'petugas-dashboard-stuck.php';
+include 'petugas-dashboard-feedback.php';
+include 'petugas-dashboard-peta_pendaftar.php';
+include 'petugas-dashboard-sekolah_asal.php';
 include 'petugas-dashboard_grafik.php';

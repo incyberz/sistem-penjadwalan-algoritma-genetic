@@ -3,7 +3,7 @@ session_start();
 $now = date('Y-m-d H:i:s');
 $today = date('Y-m-d');
 $https_api_wa = 'https://api.whatsapp.com/send';
-$text_wa_from = "\n\n```From: Smart PMB System \nat $now```";
+$text_wa_footer = "Smart PMB Notification System \n" . date('D, F d, Y, H:i:s');
 $arr_hari = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 $arr_bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 $arr = explode('?', $_SERVER['REQUEST_URI']);

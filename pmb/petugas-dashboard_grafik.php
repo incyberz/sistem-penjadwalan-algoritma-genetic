@@ -1,23 +1,18 @@
-<div class="tengah abu f14 mt2" id=toggle_show>
-  <span class="hover">Show Grafik Pendaftar Harian</span>
+<script src="../assets/js/apexcharts.min.js"></script>
+<div class="row mt4">
+  <div class="col-5">
+    <?php include 'grafik_prodi.php'; ?>
+  </div>
+  <div class="col-7">
+    <div class="row">
+      <div class="col-6">
+        <?php include 'grafik_jalur.php'; ?>
+      </div>
+      <div class="col-6">
+        <?php include 'grafik_gelombang.php'; ?>
+      </div>
+    </div>
+  </div>
 </div>
-<div id="hasil_ajax"></div>
-
-<script>
-  $(function() {
-    $('#toggle_show').click(function() {
-      $('#toggle_show').slideUp();
-      $('#grafik_pendaftar').slideDown();
-
-      // $.ajax({
-      //   url: 'grafik_pendaftar.php',
-      //   success: function(a) {
-      //     $('#hasil_ajax').html(a)
-      //   }
-      // })
-    })
-  })
-</script>
-
 <?php
-include 'grafik_pendaftar.php';
+include 'grafik_pendaftar_harian.php';
