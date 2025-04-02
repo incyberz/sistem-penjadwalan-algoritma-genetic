@@ -102,6 +102,7 @@ $kondisi = $rstatus_berkas[$get_status]['kondisi'];
 # ============================================================
 $s = "SELECT a.*,
 b.nama as nama_peserta,
+b.whatsapp,
 c.* 
 FROM tb_berkas a 
 JOIN tb_akun b ON a.username=b.username 
@@ -146,7 +147,30 @@ if ($total_berkas) {
           }
 
           if ($d[$field]) { // jika sudah ada datanya
-            $info_field_wajibs .= "<li><b>$kolom</b>: $value_show</li>";
+            # ============================================================
+            # SHOW NOMINAL SEHARUSNYA DI GELOMBANG INI
+            # ============================================================
+            $nominal_tepat = '';
+            if ($d['jenis_berkas'] == 'FORMULIR' || $d['jenis_berkas'] == 'REGISTRASI') {
+              include 'gelombang_aktif.php';
+              include '../includes/img_icon.php';
+
+              $last_digit_whatsapp = substr($d['whatsapp'], -3);
+              if ($d['jenis_berkas'] == 'FORMULIR') {
+                $kolom2 = "Biaya Formulir Gel-$gelombang_aktif";
+                $biaya_db = $gelombang['biaya_daftar'];
+                $diskon = $gelombang['diskon_biaya_daftar'];
+              } else {
+                $kolom2 = "Biaya Registrasi Gel-$gelombang_aktif";
+                $biaya_db = $gelombang['biaya_registrasi_ulang'];
+                $diskon = $gelombang['diskon_registrasi_ulang'];
+              }
+              $cbiaya = ceil(($biaya_db - ($diskon * $biaya_db / 100)) / 1000) . $last_digit_whatsapp;
+              $cbiaya_show = 'Rp ' . number_format($cbiaya) . ',-';
+              $info_field_wajibs .= "<li><b>$kolom2</b>: $cbiaya_show</li>";
+              $nominal_tepat = $cbiaya == $d[$field] ? "(nominal tepat) $img_check" : "(selisih nominal) $img_warning";
+            }
+            $info_field_wajibs .= "<li><b>$kolom</b>: $value_show $nominal_tepat</li>";
           }
         }
       }

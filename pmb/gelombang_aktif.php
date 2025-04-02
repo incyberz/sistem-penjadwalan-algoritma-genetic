@@ -1,5 +1,8 @@
 <?php
-$s = "SELECT * FROM tb_gelombang WHERE tahun_pmb=$tahun_pmb AND batas_akhir >= '$today' ORDER BY batas_akhir LIMIT 1";
+$s = "SELECT * FROM tb_gelombang a 
+JOIN tb_tahun_pmb b ON a.tahun_pmb=b.tahun_pmb
+WHERE a.tahun_pmb=$tahun_pmb AND a.batas_akhir >= '$today' 
+ORDER BY a.batas_akhir LIMIT 1";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 if (!mysqli_num_rows($q)) {
   alert("Tidak ada Gelombang Pendaftaran yang aktif untuk saat ini. Segera lapor Petugas!");
