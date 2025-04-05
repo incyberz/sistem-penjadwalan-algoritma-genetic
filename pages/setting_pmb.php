@@ -115,8 +115,6 @@ if (mysqli_num_rows($q)) {
           || $key == 'active_status'
           || $key == 'whatsapp_status'
           || $key == 'info_status'
-          || $key == 'lulus_tes_pmb'
-          || $key == 'jumlah_tes'
           || $key == 'verif_date'
           || $key == 'verif_by'
         ) {

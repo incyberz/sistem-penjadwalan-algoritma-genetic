@@ -100,7 +100,7 @@ if (!($lulus_tes_pmb || $sudah_registrasi)) {
 if ($lulus_tes_pmb) {
   include '../includes/eta.php';
   $rhide = array_filter($rhide, fn($item) => $item != 'lulus_tes_pmb');
-  $sql_lulus_tes_pmb = "a.lulus_tes_pmb is not null";
+  $sql_lulus_tes_pmb = "b.tanggal_lulus_tes is not null";
 } else {
   $sql_lulus_tes_pmb = 1;
 }
@@ -120,7 +120,7 @@ $select_fields = $get_csv ? "
   a.asal_sekolah,
   a.jeda_tahun_lulus as tahun_lulus_akun,
   a.info_status as info_batal_pmb,
-  a.lulus_tes_pmb as tanggal_lulus_pmb,
+  b.tanggal_lulus_tes,
   (SELECT 1 FROM tb_pmb WHERE username=a.username) ada_data_pmb,
   (SELECT 1 FROM tb_biodata WHERE username=a.username) ada_biodata,
   (SELECT 1 FROM tb_data_sekolah WHERE username=a.username) ada_data_sekolah,
@@ -151,6 +151,7 @@ $select_fields,
 
 
 FROM tb_akun a 
+JOIN tb_pmb b ON a.username=b.username
 WHERE a.role is null 
 AND $sql_active_status 
 AND $sql_whatsapp_status 
@@ -193,7 +194,7 @@ if (!$num_rows) {
       (SELECT nama FROM tb_prodi WHERE id=a.id_prodi) nama_prodi,
       (SELECT nama_jalur FROM tb_jalur_pmb WHERE id=a.id_jalur) nama_jalur,
       a.id_gelombang as gelombang,
-      a.no_peserta_ujian,
+      a.nomor_peserta,
       a.jumlah_syarat_berkas,
       a.jumlah_upload_berkas,
       a.jumlah_verifikasi_berkas,

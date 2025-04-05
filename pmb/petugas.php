@@ -15,6 +15,7 @@ echo "
 ";
 include 'petugas-dashboard.php';
 include 'petugas-dashboard-berkas.php';
+include 'petugas-dashboard-jadwal_tes.php';
 include 'petugas-dashboard-stuck.php';
 include 'petugas-dashboard-feedback.php';
 include 'petugas-dashboard-peta_pendaftar.php';

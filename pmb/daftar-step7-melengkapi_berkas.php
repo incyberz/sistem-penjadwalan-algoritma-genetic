@@ -82,10 +82,12 @@ if ($pmb['id_jalur']) {
     $img_berkas = $belum_upload;
     $gradasi = 'merah';
     $btn_upload = "<button class='d-block btn btn-sm btn-primary' name=btn_upload_berkas value=$jenis_berkas>Upload</button>";
+    $status = null;
 
     if (mysqli_num_rows($q) > 1) die(alert("Dual berkas detected. username [$username], jenis_berkas: [$jenis_berkas] "));
     if (mysqli_num_rows($q)) {
       $d = mysqli_fetch_assoc($q);
+      $status = $d['status'];
       $file = $d['file'];
       $src = "$path/$file";
       if (file_exists($src)) {
@@ -222,7 +224,7 @@ if ($pmb['id_jalur']) {
     }
 
     $form_id = 'form_' . strtolower($jenis_berkas);
-    $blok_btn_upload = $d['status'] == 1 ? '' : "
+    $blok_btn_upload = $status == 1 ? '' : "
       <div class='d-flex gap-2'>
         <input required type=file name=file class='d-block flex-fill form-control' accept='$accept'> 
         $btn_upload

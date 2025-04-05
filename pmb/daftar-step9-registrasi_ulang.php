@@ -87,8 +87,8 @@ $rsyarat = [
   ],
   'tes_pmb' => [
     'step' => 8,
-    'data' => $akun['lulus_tes_pmb'],
-    'ok_value' => 1,
+    'data' => $pmb['tanggal_lulus_tes'],
+    'ok_value' => 'not_null',
     'show_ok' => "<div class='f12 green'>Selamat! Anda Lulus tes PMB $img_check</div>",
     'show_not_ok' => '<i class="f12 darkred">belum tes</i>',
   ],
@@ -199,7 +199,6 @@ foreach ($rsyarat as $syarat => $v) {
     include 'gelombang_aktif.php';
 
     $biaya_registrasi_ulang_show = number_format($pmb['biaya_registrasi_ulang']);
-    $last_digit_whatsapp = substr($pmb['whatsapp'], -3);
     $diskon = $gelombang['diskon_registrasi_ulang'] ?? 0;
     $nominal_transfer = (ceil($pmb['biaya_registrasi_ulang'] * (100 - $diskon) / 100000) * 1000) + $last_digit_whatsapp;
     $nominal_transfer_show = number_format($nominal_transfer);
@@ -219,7 +218,7 @@ foreach ($rsyarat as $syarat => $v) {
             <div class='btn-aksi' id=info_pembayaran--toggle>Info Pembayaran:</div>
             <ul class='f14 m0 $hideit_info' id=info_pembayaran >
               <li><b>Gelombang</b>: $gelombang[nomor] - $tahun_pmb</li>
-              <li><b>Biaya Pendaftaran</b>: Rp $biaya_registrasi_ulang_show,-</li>
+              <li><b>Biaya Registrasi</b>: Rp $biaya_registrasi_ulang_show,-</li>
               <li><b>Diskon Gelombang</b>: $diskon_show%</li>
               <li><b>Whatsapp</b>: <span class=consolas>...$last_digit_whatsapp</span></li>
               <li class='darkblue mt2 mb2'><b>Nominal Transfer</b>: <div class=f24>Rp $nominal_transfer_show,-</div></li>

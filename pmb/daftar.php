@@ -101,8 +101,13 @@ while ($d = mysqli_fetch_assoc($q)) {
     include "daftar-step$get_step-$nama_step.php";
     echo "
       <hr>
-      <div class='tengah mb4'>
-        <a onclick='return confirm(`Yakin logout?`)' href='./?logout_pmb'>Logout</a>
+      <div class='d-flex flex-between mb4'>
+        <div class=text-secondary>
+          Login as <span class='text-black'>$nama_user</span>
+        </div>
+        <div>
+          <a onclick='return confirm(`Yakin logout?`)' href='./?logout_pmb'>Logout</a>
+        </div>
       </div>
       <hr>
     ";

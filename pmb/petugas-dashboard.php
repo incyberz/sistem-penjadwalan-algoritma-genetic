@@ -55,8 +55,8 @@ $s = "SELECT
 a.active_status, 
 a.whatsapp_status, 
 a.last_step, 
-a.lulus_tes_pmb, 
-a.jumlah_tes, 
+b.tanggal_lulus_tes, 
+(0) jumlah_tes, -- ZZZ
 (
   SELECT 1 FROM tb_berkas 
   WHERE status=1 -- berkas terverifikasi
@@ -68,6 +68,7 @@ a.jumlah_tes,
   AND jenis_berkas = 'REGISTRASI' 
   AND username=a.username ) sudah_registrasi
 FROM tb_akun a 
+JOIN tb_pmb b ON a.username=b.username
 WHERE a.role is null
 AND a.created_at >= '$awal'
 AND a.created_at <= '$akhir'
@@ -80,7 +81,7 @@ while ($d = mysqli_fetch_assoc($q)) {
       $peserta_count++;
       if ($d['sudah_bayar_formulir']) {
         $sudah_bayar_formulir++;
-        if ($d['lulus_tes_pmb']) {
+        if ($d['tanggal_lulus_tes']) {
           $lulus_tes++;
           if ($d['sudah_registrasi']) {
             $sudah_registrasi++;
