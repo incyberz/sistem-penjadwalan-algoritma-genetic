@@ -9,6 +9,7 @@ $arr_bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'A
 $arr = explode('?', $_SERVER['REQUEST_URI']);
 $nama_server = "$_SERVER[REQUEST_SCHEME]://$_SERVER[SERVER_NAME]$arr[0]";
 $username = $_SESSION['pmb_username'] ?? null;
+$role = $_SESSION['pmb_role'] ?? null;
 
 include '../conn.php';
 include '../config.php';
@@ -57,10 +58,11 @@ include 'tahun_pmb.php';
 </head>
 
 <body>
-  <div class="container mt-5">
+  <div class="container mt-5zzz">
     <?php
-
-    if ($p) {
+    if ($p == 'cetak_pmb') {
+      jsurl('cetak_pmb.php');
+    } elseif ($p) {
       if ($awal_pmb) {
         include "$p.php";
       } else {

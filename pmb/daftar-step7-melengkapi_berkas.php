@@ -51,7 +51,7 @@ if ($pmb['id_jalur']) {
   # ============================================================
   # SELECT SELECTED JALUR
   # ============================================================
-  $s = "SELECT * FROM tb_jalur_pmb WHERE id=$pmb[id_jalur]";
+  $s = "SELECT * FROM tb_jalur WHERE id=$pmb[id_jalur]";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   $jalur = mysqli_fetch_assoc($q);
 
@@ -181,10 +181,10 @@ if ($pmb['id_jalur']) {
             <div class='mt2 f14 mb4'>Status Berkas: $status_berkas</div>
           </div>
         ";
-      } else {
+      } else { // file berkas hilang
         $img_berkas = $image_missing;
       }
-    }
+    } // end if rows
 
 
 
@@ -234,7 +234,7 @@ if ($pmb['id_jalur']) {
 
     $input_wajibs = '';
     $info_field_wajibs = '';
-    if ($b['field_wajibs'] and !$d['status']) {
+    if ($b['field_wajibs'] and $d['status'] != 1) {
       $field_wajibs = explode(';', $b['field_wajibs']);
       foreach ($field_wajibs as $field) {
         if ($field) {
@@ -266,6 +266,12 @@ if ($pmb['id_jalur']) {
         }
       }
       $info_field_wajibs = "<ul class='mt4 mb4'>$info_field_wajibs</ul>";
+    } else {
+      if ($jenis_berkas == 'KK') {
+        echo '<hr>FIELD WAJIB IGNORED ' . $jenis_berkas;
+        var_dump($b['field_wajibs']);
+        var_dump($d['status']);
+      }
     }
 
 
@@ -359,7 +365,7 @@ if ($pmb['id_jalur']) {
   # RADIO JALUR PENDAFTARAN
   # ============================================================
   $radio_jalur = '';
-  $s = "SELECT * FROM tb_jalur_pmb WHERE tahun_pmb=$tahun_pmb";
+  $s = "SELECT * FROM tb_jalur WHERE tahun_pmb=$tahun_pmb";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   if (!mysqli_num_rows($q)) {
     alert("Belum ada Gelombang Pendaftaran PMB untuk tahun $tahun_pmb");

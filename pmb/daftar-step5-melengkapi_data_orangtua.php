@@ -3,6 +3,7 @@
 set_title('Melengkapi Data Orangtua');
 $tb = 'data_orangtua';
 include "$tb.php";
+include "rfield_$tb.php"; // shared array fields
 $data = $data_orangtua;
 
 $progress_h3 = 'Pengisian Data Orangtua';
@@ -11,42 +12,23 @@ $petunjuk = '';
 $rpertanyaan_awal = [
   'ayah_meninggal' => [
     'pertanyaan' => 'Apakah Ayah masih hidup?',
-    'opsi' => [
-      0 => 'Ayah masih hidup.',
-      1 => 'Ayah sudah meninggal.',
-    ]
+    'opsi' => $rfield[$tb]['ayah_meninggal']['fields'],
   ],
   'ibu_meninggal' => [
     'pertanyaan' => 'Apakah Ibu masih hidup?',
-    'opsi' => [
-      0 => 'Ibu masih hidup.',
-      1 => 'Ibu sudah meninggal.',
-    ]
+    'opsi' => $rfield[$tb]['ibu_meninggal']['fields'],
   ],
   'ortu_cerai' => [
     'pertanyaan' => 'Apakah Ayah dan Ibu masih berumahtangga?',
-    'opsi' => [
-      0 => 'Ayah dan Ibu berumahtangga.',
-      1 => 'Bercerai atau meninggal.',
-    ]
+    'opsi' => $rfield[$tb]['ortu_cerai']['fields'],
   ],
   'tinggal_dengan' => [
     'pertanyaan' => 'Sekarang tinggal dengan siapa?',
-    'opsi' => [
-      0 => 'Ayah dan Ibu',
-      1 => 'Ayah',
-      2 => 'Ibu',
-      3 => 'Wali',
-      4 => 'Sendirian',
-      5 => 'Di Asrama',
-    ]
+    'opsi' => $rfield[$tb]['tinggal_dengan']['fields'],
   ],
   'punya_wali' => [
     'pertanyaan' => 'Apakah Anda punya Wali yang membiayai?',
-    'opsi' => [
-      0 => 'Tidak punya.',
-      1 => 'Saya punya wali.',
-    ]
+    'opsi' => $rfield[$tb]['punya_wali']['fields'],
   ],
 ];
 

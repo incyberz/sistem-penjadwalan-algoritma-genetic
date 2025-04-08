@@ -192,13 +192,13 @@ if (!$num_rows) {
 
       $s2['pmb'] = "SELECT 
       (SELECT nama FROM tb_prodi WHERE id=a.id_prodi) nama_prodi,
-      (SELECT nama_jalur FROM tb_jalur_pmb WHERE id=a.id_jalur) nama_jalur,
+      (SELECT nama_jalur FROM tb_jalur WHERE id=a.id_jalur) nama_jalur,
       a.id_gelombang as gelombang,
       a.nomor_peserta,
       a.jumlah_syarat_berkas,
       a.jumlah_upload_berkas,
       a.jumlah_verifikasi_berkas,
-      a.tanggal_registrasi_ulang
+      a.tanggal_finish_registrasi
       FROM tb_pmb a WHERE a.username='$d[username]'";
 
       $s2['biodata'] = "SELECT a.* FROM tb_biodata a WHERE a.username='$d[username]'";

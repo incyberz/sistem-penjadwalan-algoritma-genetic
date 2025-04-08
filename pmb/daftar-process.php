@@ -48,8 +48,8 @@ if (isset($_POST['btn_set_password'])) {
 } elseif (isset($_POST['btn_upload_berkas']) || isset($_POST['btn_replace_berkas'])) {
   if (isset($_POST['btn_replace_berkas'])) {
     $t = explode('--', $_POST['btn_replace_berkas']);
-    $jenis_berkas = $t[0];
-    $src = $t[1];
+    $jenis_berkas = $t[0] ?? die('jenis_berkas undefined.');
+    $src = $t[1] ?? die('src undefined.');
     # ============================================================
     # DELETE DB
     # ============================================================
@@ -244,50 +244,9 @@ if (isset($_POST['btn_set_password'])) {
     $next_step = $last_step;
   }
   jsurl("./?daftar&step=$next_step");
-} elseif (isset($_POST['btn_upload_bukti_registrasi_ulang'])) {
-  $jenis_berkas = 'REGISTRASI';
-  if (isset($_POST['btn_replace_bukti_registrasi_ulang']) || isset($_POST['btn_replace_bukti_registrasi_ulang'])) {
-    $src = $_POST['btn_replace_bukti_registrasi_ulang'];
-    # ============================================================
-    # DELETE DB
-    # ============================================================
-    $s = "DELETE FROM tb_berkas WHERE jenis_berkas='$jenis_berkas' AND username='$username'";
-    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-    # ============================================================
-    # DELETE FILE SEBELUMNYA
-    # ============================================================
-    unlink($src);
-    alert('Delete file sebelumnya berhasil.', 'success');
-  }
-
-  include '../includes/resize_img.php';
-
-  $file = $_FILES['file'];
-  $path = 'uploads/berkas';
-  $time = date('ymdHis');
-  $new_file = strtolower("$username-$jenis_berkas-$time.jpg");
-  $to = "$path/$new_file";
-
-  if (move_uploaded_file($file['tmp_name'], $to)) {
-    resize_img($to);
-    # ============================================================
-    # INSERT DB
-    # ============================================================
-    $s = "INSERT INTO tb_berkas (
-      username,
-      jenis_berkas,
-      file,
-      status
-    ) VALUES (
-      '$username',
-      '$jenis_berkas',
-      '$new_file',
-      NULL
-    )";
-    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-    alert('Upload sukses.', 'success');
-  }
-
+} elseif (isset($_POST['btn_finish_registrasi'])) {
+  $s = "UPDATE tb_pmb SET tanggal_finish_registrasi = CURRENT_TIMESTAMP WHERE username = '$username'";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   jsurl();
 } elseif (isset($_POST['btn_kirim_notifikasi'])) {
   $s = "UPDATE tb_berkas SET last_notif = CURRENT_TIMESTAMP WHERE id = $_POST[btn_kirim_notifikasi]";
@@ -298,10 +257,6 @@ if (isset($_POST['btn_set_password'])) {
       location.replace(\"$_POST[link_wa]\")
     </script>
   ";
-
-  echo '<pre>';
-  var_dump($_POST);
-  echo '</pre>';
   exit;
 } elseif ($_POST) {
 

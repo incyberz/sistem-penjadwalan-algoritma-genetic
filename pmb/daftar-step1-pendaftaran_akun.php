@@ -1,3 +1,9 @@
+<?php
+if ($username) {
+  alert("Anda sudah berada pada Step-$akun[last_step], redirecting...");
+  jsurl("./?daftar&step=$akun[last_step]", 3000);
+}
+?>
 <div class="card">
   <div class="card-header bg-primary text-white text-center">
     <h3>Pendaftaran Akun</h3>

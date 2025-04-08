@@ -1,7 +1,7 @@
 <?php
 set_title('Tes PMB');
 require_once '../includes/img_icon.php';
-$belum_tes = '<i class="f12 darkred consolas">--belum tes--</i>';
+$belum_tes = '<i class="d-inline-block f12 darkred consolas" style="min-width:100px">--belum-tes--</i>';
 $belum_ada_jadwal = "<i class=darkred>belum ada jadwal</i>";
 $anda_belum_ujian = "<i class=red>--Anda belum ujian--</i>";
 $sedang_proses_ujian = "<i class=red>--sedang proses ujian--</i>";
@@ -21,7 +21,7 @@ $s = "SELECT a.*,
 b.title,
 b.ket,
 (SELECT 1 FROM tb_jadwal_tes WHERE id_tes=a.id AND awal > '$now') ada_jadwal, 
-(SELECT 1 FROM tb_hasil_tes WHERE id_tes=a.id) ada_hasil 
+(SELECT 1 FROM tb_hasil_tes WHERE id_tes=a.id AND username = '$username') ada_hasil 
 FROM tb_tes_pmb a 
 JOIN tb_jenis_tes b ON a.jenis_tes=b.jenis_tes 
 WHERE a.tahun_pmb = $tahun_pmb";

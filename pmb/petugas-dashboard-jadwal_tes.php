@@ -1,18 +1,11 @@
 <?php
 $rUI = [
   'belum_tes' => [
-    'title' => 'Peserta Belum Tes',
+    'title' => 'Belum Tes/Mengulang',
     'satuan' => 'peserta',
     'href' => '?jadwal_tes',
     'bg' => 'bg-danger',
-    'sql' => "SELECT 1 FROM tb_pmb WHERE nomor_peserta is not null AND tanggal_lulus_tes is null AND last_test is null",
-  ],
-  'mengulang' => [
-    'title' => 'Mengulang Tes',
-    'satuan' => 'peserta',
-    'href' => '?jadwal_tes&mengulang=1',
-    'bg' => 'bg-warning',
-    'sql' => "SELECT 1 FROM tb_pmb WHERE nomor_peserta is not null AND tanggal_lulus_tes is null AND last_test is not null",
+    'sql' => "SELECT 1 FROM tb_pmb WHERE nomor_peserta is not null AND tanggal_lulus_tes is null",
   ],
   'belum_dilaksanakan' => [
     'title' => 'Belum Dilaksanakan',

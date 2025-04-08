@@ -25,6 +25,7 @@ $path = 'uploads/berkas';
 $sudah_upload = false;
 $sudah_terverifikasi = false;
 $ditolak = false;
+$jumlah_ok = 0;
 
 
 $prodi_terpilih = $pmb['prodi_terpilih'] ? "<div>$pmb[prodi_terpilih]</div>" : '';
@@ -111,6 +112,7 @@ foreach ($rsyarat as $syarat => $v) {
       if ($v['data']) {
         $status = $v['show_ok'];
         $merah = 'hijau';
+        $jumlah_ok++;
       } else {
         $status = $v['show_not_ok'];
       }
@@ -139,6 +141,7 @@ foreach ($rsyarat as $syarat => $v) {
 
     if ($jumlah_upload_berkas == $jumlah_syarat_berkas and $jumlah_verifikasi_berkas == $jumlah_syarat_berkas) {
       $merah = 'hijau';
+      $jumlah_ok++;
     }
   } elseif ($syarat == 'pembayaran_registrasi_ulang') {
     $jenis_berkas = 'REGISTRASI';
@@ -150,7 +153,7 @@ foreach ($rsyarat as $syarat => $v) {
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
     $img_berkas = $belum_upload;
     $merah = 'merah';
-    $btn_upload = "<button class='btn btn-primary' name=btn_upload_bukti_registrasi_ulang>Upload</button>";
+    $btn_upload = "<button class='btn btn-primary' name=btn_upload_berkas value=$jenis_berkas>Upload</button>";
 
     if (mysqli_num_rows($q) > 1) die(alert("Dual berkas detected. username [$username], jenis_berkas: [$jenis_berkas] "));
     if (mysqli_num_rows($q)) {
@@ -159,6 +162,7 @@ foreach ($rsyarat as $syarat => $v) {
       $src = "$path/$file";
       if (file_exists($src)) {
         $merah = 'hijau';
+        $jumlah_ok++;
         $status_berkas_show = $belum_diverifikasi;
         $sudah_upload = 1;
         $hideit_info = 'hideit';
@@ -168,10 +172,15 @@ foreach ($rsyarat as $syarat => $v) {
         }
         if ($d['status'] == -1) {
           $merah = 'merah';
-          $status_berkas_show = $berkas_ditolak;
+          $status_berkas_show = "
+            $berkas_ditolak
+            <hr>
+            <div class=red><b>alasan</b>: $d[alasan_reject]</div>
+            <hr>
+          ";
           $ditolak = 1;
         }
-        $btn_upload = "<button class='d-block btn btn-sm btn-secondary' name=btn_replace_bukti_registrasi_ulang value='$src' onclick='return confirm(`Replace berkas?`)'>Replace</button>";
+        $btn_upload = "<button class='d-block btn btn-sm btn-secondary' name=btn_replace_berkas value='$jenis_berkas--$src' onclick='return confirm(`Replace berkas?`)'>Replace</button>";
         $img_berkas = "
           <div class='mt2'>
             <a href='$src' target=_blank>
@@ -208,6 +217,11 @@ foreach ($rsyarat as $syarat => $v) {
       <form method=post enctype=multipart/form-data class='card mt2'>
         <div class='card-header tengah'>Form Upload Bukti Bayar Registrasi Ulang</div>
         <div class='card-body'>
+          <div class='mb3'>
+            <div class='f12 mb1'>Nominal yang Anda bayarkan:</div>
+            <input type=number name=nominal required class='form-control' min=100000 max=100000000>
+          </div>
+          <div class='f12 mb1'>Bukti Transfer (Bukti Bayar):</div>
           <div class='d-flex gap-2'>
             <input type=file name=file accept=.jpg required class='form-control d-block flex-fill'>
             $btn_upload
@@ -248,6 +262,36 @@ foreach ($rsyarat as $syarat => $v) {
   ";
 }
 
+$btn_reg = $jumlah_ok == count($rsyarat) ? "
+  <div class='alert alert-success mt4 tengah'>Semua Data dan Berkas sudah lengkap.</div>
+  <form method=post class='mt2'>
+    <div class=mb3>
+      <label class=d-block>
+        <input required type=checkbox>
+        Saya sudah melunasi seluruh pembayaran PMB
+      </label>
+      <label class=d-block>
+        <input required type=checkbox>
+        Pilihan Prodi dan Jalur yang saya pilih telah benar
+      </label>
+      <label class=d-block>
+        <input required type=checkbox>
+        Saya mengisi seluruh data sesuai dokumen fisik
+      </label>
+      <label class=d-block>
+        <input required type=checkbox>
+        Saya bersedia diminta berkas fisik (copy asli)
+      </label>
+    </div>
+    <button class='btn btn-primary w-100' name=btn_finish_registrasi>Finish Registrasi</button>
+  </form>  
+" : "
+  <div class='mt4 mb2 text-danger f14 miring'>
+    Silahkan penuhi dahulu semua persyaratan Registrasi Ulang.
+  </div>
+  <button class='btn btn-secondary w-100' disabled>Registrasi Ulang</button>
+";
+
 echo "
     <div class='card mb3'>
       <div class='card-header bg-primary putih tengah'>
@@ -255,10 +299,7 @@ echo "
       </div>
       <div class='card-body gradasi-toska'>
         $info_syarats
-        <div class='mt4 mb2 text-danger f14 miring'>
-          Silahkan penuhi dahulu semua persyaratan Registrasi Ulang.
-        </div>
-        <button class='btn btn-secondary w-100' disabled>Registrasi Ulang</button>
+        $btn_reg
         <hr/>
         <p class='text-success'>
           Jika semua persyaratan terpenuhi maka Anda akan mendapatkan <b>NIM</b>, <b>Jas Almamater</b>, dan terdaftar sebagai <b>Mahasiswa Baru</b> di Kampus Masoem University.

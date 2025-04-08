@@ -9,7 +9,7 @@ b.active_status,
 b.whatsapp_status,
 c.*,
 (SELECT nama FROM tb_prodi WHERE id=a.id_prodi) prodi_terpilih,
-(SELECT nama_jalur FROM tb_jalur_pmb WHERE id=a.id_jalur) jalur_terpilih
+(SELECT nama_jalur FROM tb_jalur WHERE id=a.id_jalur) jalur_terpilih
 
 FROM tb_pmb a 
 JOIN tb_akun b ON a.username=b.username 

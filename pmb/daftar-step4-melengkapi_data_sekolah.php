@@ -5,6 +5,8 @@ $is_new_sekolah = $id_sekolah == 'new' ? 1 : 0;
 
 $tb = 'data_sekolah';
 include "$tb.php";
+include "rfield_$tb.php"; // shared array fields
+
 $data = $data_sekolah;
 if ($data['id_sekolah'] and !$id_sekolah) jsurl("./?daftar&step=4&id_sekolah=$data[id_sekolah]");
 if (!$id_sekolah) {

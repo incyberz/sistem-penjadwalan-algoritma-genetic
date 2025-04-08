@@ -1,0 +1,62 @@
+ * {
+ margin: 0;
+ padding: 0;
+ }
+
+ body {
+ background: black;
+ color: white;
+ text-align: center;
+ }
+
+ a{
+  text-decoration: none;
+ }
+
+ .kertas {
+  position: relative;
+ height: 297mm;
+ width: 210mm;
+ color: black;
+ background: white;
+ margin: auto;
+ text-align: left;
+ padding: 1cm;
+ }
+
+ .qr-code{
+  position: absolute;
+  bottom: 3cm;
+  right: 1cm;
+  width: 150px;
+  height: 170px;
+  /* background: red; */
+ }
+
+ .qr-code-header{
+  font-size: 12px;
+  font-family: consolas, 'Courier New', Courier, monospace;
+  margin-bottom: 8px;
+}
+
+ .kertas-footer{
+  position: absolute;
+  bottom: 1cm;
+  left: 1cm;
+  right: 1cm;
+  border-top: solid 1px #ccc;
+  font-size: 14px;
+  color: rgb(70, 70, 70);
+  padding: 10px 0;
+ }
+
+ .card-header{
+  padding: 2px !important;
+}
+.card-body{
+  font-size: 14px;
+  padding: 10px !important;
+}
+.card-body ul{
+  margin: 0;
+}

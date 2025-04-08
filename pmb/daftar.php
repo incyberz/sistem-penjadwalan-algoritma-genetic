@@ -2,7 +2,11 @@
 # ============================================================
 # SET AS PETUGAS
 # ============================================================
-if ($username) include 'akun.php';
+if ($username) {
+  include 'akun.php';
+  if ($akun['last_step']) include 'pmb.php';
+  if ($pmb['tanggal_finish_registrasi']) jsurl('?dashboard_pendaftar');
+}
 if (isset($akun) and $akun['role']) jsurl("./?$akun[role]");
 
 # ============================================================
