@@ -462,6 +462,7 @@ if ($is_login) {
 <body>
   <div class="unprint">
     <?= $header ?>
+    <div class="d-md-none alert alert-danger my-4 bold text-danger">Sebaiknya Anda mengakses page ini via tablet atau laptop karena banyak elemen yang terpotong.</div>
   </div>
   <div class="kertas">
     <?= $blok_pmb ?>

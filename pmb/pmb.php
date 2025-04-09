@@ -9,7 +9,12 @@ b.active_status,
 b.whatsapp_status,
 c.*,
 (SELECT nama FROM tb_prodi WHERE id=a.id_prodi) prodi_terpilih,
-(SELECT nama_jalur FROM tb_jalur WHERE id=a.id_jalur) jalur_terpilih
+(SELECT nama_jalur FROM tb_jalur WHERE id=a.id_jalur) jalur_terpilih,
+(
+  SELECT COUNT(1) FROM tb_hasil_tes a 
+  JOIN tb_tes_pmb b ON a.id_tes=b.id 
+  WHERE a.username = '$username' 
+  AND b.tahun_pmb = $tahun_pmb) pernah_tes
 
 FROM tb_pmb a 
 JOIN tb_akun b ON a.username=b.username 

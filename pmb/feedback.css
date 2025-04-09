@@ -1,0 +1,26 @@
+.form-toggle input[type='checkbox'] {
+  display: none;
+}
+
+.form-toggle label {
+  cursor: pointer;
+  display: inline-block;
+  background-color: #e0e0e0;
+  border-radius: 25px;
+  padding: 0.3rem 1.2rem;
+  transition: background-color 0.3s ease;
+}
+
+.form-toggle input[type='checkbox']:checked+label {
+  background-color: #198754;
+  color: white;
+}
+
+.belum_terisi {
+  background: linear-gradient(#fee, #fdd) !important;
+}
+
+.blok_feedback {
+  padding: 30px 15px;
+  background: linear-gradient(#d1fadacb, rgba(238, 255, 246, 0.966));
+}

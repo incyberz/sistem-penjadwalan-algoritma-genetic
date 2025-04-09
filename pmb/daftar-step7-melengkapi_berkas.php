@@ -163,20 +163,23 @@ if ($pmb['id_jalur']) {
             $kirim_notif_ke_petugas
           </div>
         ";
-        if ($d['status'] == 1) {
-          $jumlah_verifikasi_berkas++;
-          $status_berkas = $terverifikasi;
-        }
         if ($d['status'] == -1) {
           $jumlah_reject++;
           $gradasi = 'merah';
           $status_berkas = "$ditolak<hr><b class=red>alasan: [ $d[alasan_reject] ]</b><hr>";
+          $img = "<img class='img-fluid' src='$src'>";
+        } elseif ($d['status'] == 1) {
+          $img = 'Lihat File';
+          $jumlah_verifikasi_berkas++;
+          $status_berkas = $terverifikasi;
         }
+
         $btn_upload = "<button class='d-block btn btn-sm btn-secondary' name=btn_replace_berkas value='$jenis_berkas--$src' onclick='return confirm(`Replace berkas?`)'>Replace</button>";
+
         $img_berkas = "
           <div class='mt2'>
             <a href='$src' target=_blank>
-              <img class='img-fluid' src='$src'>
+              $img
             </a>
             <div class='mt2 f14 mb4'>Status Berkas: $status_berkas</div>
           </div>
