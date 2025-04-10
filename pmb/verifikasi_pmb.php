@@ -19,7 +19,7 @@ if ($get_success) {
 
   $link_login = "$nama_server?login_pmb&username=$get_username";
 
-  $text_asal = "```================================\nVERIFIKASI SUKSES\nfrom: Admin System\n================================```\n\nSelamat $get_nama,\n\nAkun Anda sudah kami verifikasi, silahkan melanjutkan Pendaftaran PMB menggunakan link berikut. Terimakasih.\n\nLink:\n$link_login$text_wa_from";
+  $text_asal = "```================================\nVERIFIKASI SUKSES\nfrom: Admin System\n================================```\n\nSelamat $get_nama,\n\nAkun Anda sudah kami verifikasi, silahkan melanjutkan Pendaftaran PMB menggunakan link berikut. Terimakasih.\n\nLink:\n$link_login\n\n```From: Smart PMB System \nat $now```";
   $preview = str_replace("\n\n", '<br>.<br>', $text_asal);
   $preview = str_replace("\n", '<br>', $preview);
   $preview = str_replace('```', '', $preview);

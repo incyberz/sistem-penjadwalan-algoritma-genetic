@@ -232,6 +232,12 @@ if (isset($_POST['btn_set_password'])) {
 
   jsurl();
 } elseif (isset($_POST['btn_next_step'])) {
+
+  if (isset($_POST['id_kanal'])) {
+    $s = "UPDATE tb_pmb SET id_kanal=$_POST[id_kanal] WHERE username='$username'";
+    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  }
+
   $next_step = $_POST['btn_next_step'] + 1;
   $s = "SELECT last_step FROM tb_akun WHERE username='$username'";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));

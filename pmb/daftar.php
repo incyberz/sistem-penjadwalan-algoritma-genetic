@@ -104,27 +104,32 @@ while ($d = mysqli_fetch_assoc($q)) {
     $nama_step = strtolower(str_replace(' ', '_', $rstep[$get_step]));
     include "daftar-step$get_step-$nama_step.php";
 
-    $isi_feedback = !$pmb['pernah_tes'] ? '' : "
-      <div>
-        <a target=_blank onclick='return confirm(`Isi Feedback PMB?`)' href='./?feedback'>Isi Feedback</a>
-      </div>
-    ";
-
-    echo "
-      <hr>
-      <div class='d-flex flex-between mb4'>
-        <div class=text-secondary>
-          <i class=f12>Login as</i> <span class='text-black'>$nama_user</span>
-        </div>
-        $isi_feedback
+    if ($username) {
+      $isi_feedback = !$pmb['pernah_tes'] ? '' : "
         <div>
-          <a onclick='return confirm(`Yakin logout?`)' href='./?logout_pmb'>Logout</a>
+          <a target=_blank onclick='return confirm(`Isi Feedback PMB?`)' href='./?feedback'>Isi Feedback</a>
         </div>
-      </div>
-      <hr>
-      <div style='height:100px'>&nbsp;</div>
+      ";
 
-    ";
+      # ============================================================
+      # LOGIN AS | LOGOUT | ISI FEEDBACK
+      # ============================================================
+      echo "
+        <hr>
+        <div class='d-flex flex-between mb4'>
+          <div class=text-secondary>
+            <i class=f12>Login as</i> <span class='text-black'>$nama_user</span>
+          </div>
+          $isi_feedback
+          <div>
+            <a onclick='return confirm(`Yakin logout?`)' href='./?logout_pmb'>Logout</a>
+          </div>
+        </div>
+        <hr>
+        <div style='height:100px'>&nbsp;</div>
+  
+      ";
+    }
   }
 
   if ($get_step < count($rstep)) {

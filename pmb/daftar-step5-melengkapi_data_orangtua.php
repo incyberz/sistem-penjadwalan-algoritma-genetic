@@ -229,14 +229,14 @@ if ($ada_null) {
         $(this).val($(this).val().toUpperCase());
       });
 
-      // $("#data_orangtua-no_ijazah").focus(function() {
-      //   let tid = $(this).prop('id');
-      //   $('#' + tid + '-info').text('jika belum ada, silahkan ganti dg Nomor Surat Keterangan Lulus.');
-      // });
-      // $("#data_orangtua-no_ijazah").focusout(function() {
-      //   let tid = $(this).prop('id');
-      //   $('#' + tid + '-info').text('');
-      // });
+      $(".whatsapp_ortu").focus(function() {
+        let tid = $(this).prop('id');
+        $('#' + tid + '-info').text('Sangat disarankan Anda memasukan whatsapp orangtua agar proses verifikasi dan laporan data kemahasiswaan Anda menjadi menjadi lebih cepat. Namun jika orangtua Anda tidak punya whatsapp, silahkan masukkan tanda strip (-)');
+      });
+      $(".whatsapp_ortu").focusout(function() {
+        let tid = $(this).prop('id');
+        $('#' + tid + '-info').text('');
+      });
 
     });
   </script>

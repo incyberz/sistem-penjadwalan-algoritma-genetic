@@ -190,10 +190,13 @@ foreach ($Fields as $field => $v) {
     # INPUT TEXT FIELDS
     # ============================================================
 
+    $whatsapp_ortu_class = '';
     if ($field == 'nama_sekolah') {
       if (!$data[$field]) $data[$field] = $asal_sekolah;
     } elseif ($field == 'tahun_lulus') {
       if (!$data[$field]) $data[$field] = $tahun_lulus;
+    } elseif ($field == 'whatsapp_ayah' || $field == 'whatsapp_ibu' || $field == 'whatsapp_wali') {
+      $whatsapp_ortu_class = 'whatsapp_ortu';
     }
 
 
@@ -202,7 +205,7 @@ foreach ($Fields as $field => $v) {
       <input 
         $disabled
         type='$type' 
-        class='form-control input-editable' 
+        class='form-control input-editable $whatsapp_ortu_class' 
         id='$tb-$field' 
         value='$data[$field]'
       />
