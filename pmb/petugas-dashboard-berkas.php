@@ -8,14 +8,14 @@ $rUI = [
     'kondisi' => '1',
   ],
   'verified' => [
-    'title' => 'Verified',
+    'title' => 'Berkas Verified',
     'satuan' => 'files',
     'href' => '?berkas&status=1',
     'bg' => 'bg-success',
     'kondisi' => 'a.status=1',
   ],
   'rejected' => [
-    'title' => 'Rejected',
+    'title' => 'Berkas Rejected',
     'satuan' => 'files',
     'href' => '?berkas&status=-1',
     'bg' => 'bg-warning',
@@ -68,12 +68,12 @@ foreach ($rUI as $key => $rv) {
 </div>
 
 <div class='d-none d-lg-block'>
-  <div class='card mt4'>
-    <div class='card-header bg-info putih tengah'>Berkas PMB - All Time</div>
+  <!-- <div class='card mt4'>
+    <div class='card-header bg-info putih tengah'>Berkas PMB</div>
     <div class='card-body gradasi-toska putih'>
-      <div class='row'>
-        <?= $cols ?>
-      </div>
     </div>
+  </div> -->
+  <div class='row mt4'>
+    <?= $cols ?>
   </div>
 </div>

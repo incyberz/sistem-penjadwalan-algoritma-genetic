@@ -2,6 +2,20 @@
 <?php
 set_title('Form Feedback Peserta PMB');
 include 'feedback-process.php';
+// include 'pmb.php';
+
+# ============================================================
+# BLOK FEEDBACK JIKA BELUM PERNAH TES
+# ============================================================
+$s = "SELECT 1 FROM tb_hasil_tes WHERE username='$username'";
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+if (!mysqli_num_rows($q)) {
+  // stop("
+  //   Anda belum bisa mengisi feedback karena belum pernah mengikuti Tes PMB.
+  //   <hr>
+  //   <a class='btn btn-sm btn-primary' href=?daftar&step=8>Menuju Laman Tes PMB</a>
+  // ");
+}
 
 $feedback_terisi = 0;
 $last_update = null;
@@ -86,8 +100,8 @@ while ($d = mysqli_fetch_assoc($q)) {
   $hal = $d['hal'];
   $pertanyaan = $d['pertanyaan'] ?? mati('pertanyaan');
   $pertanyaan = ucfirst(str_replace('??', '?', trim($pertanyaan) . '?'));
-  $sub_value_db = $rvalue[$id]['sub_value'];
-  $value_db = $rvalue[$id]['value'];
+  $sub_value_db = $rvalue[$id]['sub_value'] ?? null;
+  $value_db = $rvalue[$id]['value'] ?? null;
   if ($value_db) $feedback_terisi++;
 
   # ============================================================
@@ -155,6 +169,47 @@ while ($d = mysqli_fetch_assoc($q)) {
     } else {
       $jawabans .= "<textarea $params rows='3'>$value_db</textarea>$length_info";
     }
+  } elseif ($d['tipe'] == 'rating') {
+    $id_no = 0;
+    $title_sub = [
+      1 => 'Poor',
+      2 => 'Low',
+      3 => 'Average',
+      4 => 'Good',
+      5 => 'Perfect',
+    ];
+    for ($k = 1; $k <= 5; $k++) {
+      $id_no++;
+      $value = $k;
+      $title = "$k <div class='f10'>$title_sub[$k]</div>";
+      $checked = $value == $value_db ? 'checked' : '';
+      $required = $value == $value_db ? '' : 'required';
+      $jawabans .= "
+        <input
+          $checked
+          $required
+          type='radio'
+          class='btn-check radio'
+          name='radio--$id'
+          id='radio-$id_no--$id'
+          value='$value'
+          />
+        <label class='btn btn-outline-$rbg[$k]' for='radio-$id_no--$id'>$title</label>          
+      ";
+    }
+
+
+    # ============================================================
+    # GROUPING PILIHAN JAWABAN
+    # ============================================================
+    $jawabans = "
+      <input type=hidden id=skala--$id class=feedback value='$value_db'>
+      <div class='btn-group w-100' role='group'>
+        $jawabans
+      </div>
+    ";
+    # ============================================================
+
   } else {
     stop("belum ada handler untuk tipe feedback: $d[tipe]");
   }
@@ -238,9 +293,8 @@ $Ulang = $rvalue ? 'Ulang' : '';
 $last_update_info = !$last_update ? '' : "
   <div class='alert alert-success mt-2'>
     <b class='text-primary'>Halo responden!<br>Anda pernah memberikan feedback sebelumnya.</b>
-    <div class='mt2'>
-      <a href='?daftar'>Back to Home</a>
-    </div>
+    <hr>
+    <a class='btn btn-sm btn-primary' href='?daftar'>Back to Home</a>
     <hr>
     Last Update: " . date('d-M-Y H:i', strtotime($last_update)) . "
     <div class='mt1 f12 abu '>Jika ingin mengubahnya silahkan Kirim Ulang Feedback Anda</div>

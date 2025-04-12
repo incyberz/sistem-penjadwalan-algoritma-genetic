@@ -53,7 +53,9 @@ function hitung_terisi(id) {
     let input = "-"; // ketikan input dari user, default true/strip
     let minlength = parseInt($("#minlength--" + id).text());
 
-    if (tipe == "pilihan") {
+    if (tipe == "rating") {
+      input = $("#skala--" + id).val();
+    } else if (tipe == "pilihan") {
       let sub_pertanyaan = $("#sub_pertanyaan--" + id).text();
       if (sub_pertanyaan) {
         if (skala == 1) {
@@ -72,7 +74,7 @@ function hitung_terisi(id) {
     } else if (tipe == "komentar" || tipe == "input") {
       input = verif_jawaban(id);
     } else {
-      alert(`Belum ada handler untuk tipe: [${tipe}]`);
+      alert(`Belum ada script handler untuk tipe: [${tipe}]`);
       return;
     }
     // console.log(
