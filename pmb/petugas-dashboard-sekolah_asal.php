@@ -34,3 +34,7 @@
     </div>
   </div>
 </div>
+
+<?php
+$s = "SELECT * FROM"
+include 'grafik_sekolah.php';
