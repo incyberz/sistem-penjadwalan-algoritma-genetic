@@ -85,6 +85,10 @@ foreach ($rpie as $pie => $arr) {
     padding-bottom: 10px;
   }
 </style>
-<div class='row mt-4'>
+
+<div class="card mt4 mb2">
+  <div class="card-header bg-info putih tengah">PMB Pie Charts</div>
+</div>
+<div class='row'>
   <?= $pie_charts ?>
 </div>

@@ -7,10 +7,10 @@
   include 'petugas-dashboard-stuck.php';
   include 'petugas-dashboard-feedback.php';
 
-  include 'petugas-dashboard-chart_count_calculations.php';
-  include 'petugas-dashboard-terbaik_charts.php';
-  include 'petugas-dashboard-pie_charts.php';
-  // include 'petugas-dashboard_grafik.php';
+  include 'petugas-dashboard-charts-count_calculations.php';
+  include 'petugas-dashboard-charts-bar.php';
+  include 'petugas-dashboard-charts-pie.php';
+
   include 'grafik_pendaftar_harian.php';
 
   ?>
