@@ -16,6 +16,10 @@ while ($d = mysqli_fetch_assoc($q)) {
   $nav_gels2 .= "<a class='nav $nav_active hover' href=?pendaftar&gel=$d[nomor]><span class=putih>Gel-$d[nomor]</span></a>";
 }
 
+$nav_active = $get_gel == 'all' ? 'nav-active' : '';
+$nav_gels .= "<a class='nav $nav_active hover' href=?petugas&time=all_time&gel=all><span class=putih>All</span></a>";
+
+
 $rtime = [
   'hari_ini' => [
     'title' => 'Hari ini',

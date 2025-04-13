@@ -4,12 +4,12 @@
 
     <!-- FROM DB -->
     <?php
-    if (!isset($lokasi_names['kab']) || !$lokasi_names['kab']) stop('kab_names tidak boleh kosong pada grafik kabupaten.');
-    if (!isset($lokasi_counts['kab']) || !$lokasi_counts['kab']) stop('kab_counts tidak boleh kosong pada grafik kabupaten.');
+    if (!isset($label_names['kab']) || !$label_names['kab']) stop('kab_names tidak boleh kosong pada grafik kabupaten.');
+    if (!isset($label_counts['kab']) || !$label_counts['kab']) stop('kab_counts tidak boleh kosong pada grafik kabupaten.');
 
     echo "
-      <div class='hideit' id='kab_names'>$lokasi_names[kab]</div>
-      <div class='hideit' id='kab_counts'>$lokasi_counts[kab]</div>
+      <div class='hideit' id='kab_names'>$label_names[kab]</div>
+      <div class='hideit' id='kab_counts'>$label_counts[kab]</div>
     ";
     ?>
 

@@ -58,7 +58,7 @@ include 'tahun_pmb.php';
 </head>
 
 <body>
-  <div class="container mt-5zzz">
+  <div class="container my-5">
     <?php
     if ($p == 'cetak_pmb') {
       jsurl('cetak_pmb.php');

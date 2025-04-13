@@ -13,11 +13,12 @@ echo "
   <h2 class='mb-4 tengah'>Dashboard Petugas PMB</h2>
   $info_hari_ini
 ";
-include 'petugas-dashboard.php';
-include 'petugas-dashboard-berkas.php';
-include 'petugas-dashboard-jadwal_tes.php';
-include 'petugas-dashboard-stuck.php';
-include 'petugas-dashboard-feedback.php';
-include 'petugas-dashboard-peta_pendaftar.php';
-include 'petugas-dashboard-sekolah_asal.php';
-include 'petugas-dashboard_grafik.php';
+?>
+
+<div class='d-lg-none'>
+  <b class=red>Dashboard PMB hanya dapat diakses via laptop, minimal 992 pixel lebar layar.</b>
+</div>
+
+<div class='d-none d-lg-block'>
+  <?php include 'petugas-dashboard.php'; ?>
+</div>

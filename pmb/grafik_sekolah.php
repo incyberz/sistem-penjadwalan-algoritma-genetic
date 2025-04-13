@@ -4,12 +4,12 @@
 
     <!-- FROM DB -->
     <?php
-    if (!isset($lokasi_names['sekolah']) || !$lokasi_names['sekolah']) stop('sekolah_names tidak boleh kosong pada grafik Sekolah ini.');
-    if (!isset($lokasi_counts['sekolah']) || !$lokasi_counts['sekolah']) stop('sekolah_counts tidak boleh kosong pada grafik Sekolah ini.');
+    if (!isset($label_names['sekolah']) || !$label_names['sekolah']) stop('sekolah_names tidak boleh kosong pada grafik Sekolah ini.');
+    if (!isset($label_counts['sekolah']) || !$label_counts['sekolah']) stop('sekolah_counts tidak boleh kosong pada grafik Sekolah ini.');
 
     echo "
-      <div class='hideit' id='sekolah_names'>$lokasi_names[sekolah]</div>
-      <div class='hideit' id='sekolah_counts'>$lokasi_counts[sekolah]</div>
+      <div class='hideit' id='sekolah_names'>$label_names[sekolah]</div>
+      <div class='hideit' id='sekolah_counts'>$label_counts[sekolah]</div>
     ";
     ?>
 
