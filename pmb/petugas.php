@@ -20,5 +20,7 @@ echo "
 </div>
 
 <div class='d-none d-lg-block'>
-  <?php include 'petugas-dashboard.php'; ?>
+  <?php
+  include 'petugas-dashboard.php';
+  ?>
 </div>

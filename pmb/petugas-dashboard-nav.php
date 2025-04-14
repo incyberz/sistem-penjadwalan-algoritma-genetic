@@ -4,20 +4,22 @@
 # ============================================================
 $nav_gels = '';
 $nav_gels2 = '';
-$s = "SELECT * FROM tb_gelombang WHERE tahun_pmb=$tahun_pmb ORDER BY nomor";
-$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-$count_gel = mysqli_num_rows($q);
-if (!$count_gel) die("Belum ada data Gelombang untuk tahun ini.");
-$rgel = [];
-while ($d = mysqli_fetch_assoc($q)) {
-  $rgel[$d['nomor']] = $d;
-  $nav_active = $get_gel == $d['nomor'] ? 'nav-active' : '';
-  $nav_gels .= "<a class='nav $nav_active hover' href=?petugas&time=all_time&gel=$d[nomor]><span class=putih>Gel-$d[nomor]</span></a>";
-  $nav_gels2 .= "<a class='nav $nav_active hover' href=?pendaftar&gel=$d[nomor]><span class=putih>Gel-$d[nomor]</span></a>";
+if ($get_time == 'all_time') {
+  $s = "SELECT * FROM tb_gelombang WHERE tahun_pmb=$tahun_pmb ORDER BY nomor";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  $count_gel = mysqli_num_rows($q);
+  if (!$count_gel) die("Belum ada data Gelombang untuk tahun ini.");
+  $rgel = [];
+  while ($d = mysqli_fetch_assoc($q)) {
+    $rgel[$d['nomor']] = $d;
+    $nav_active = $get_gel == $d['nomor'] ? 'nav-active' : '';
+    $nav_gels .= "<a class='nav $nav_active hover' href=?petugas&time=all_time&gel=$d[nomor]><span class=putih>Gel-$d[nomor]</span></a>";
+    $nav_gels2 .= "<a class='nav $nav_active hover' href=?pendaftar&gel=$d[nomor]><span class=putih>Gel-$d[nomor]</span></a>";
+  }
 }
 
 $nav_active = $get_gel == 'all' ? 'nav-active' : '';
-$nav_gels .= "<a class='nav $nav_active hover' href=?petugas&time=all_time&gel=all><span class=putih>All</span></a>";
+$nav_gels .= "<a class='nav $nav_active hover' href=?petugas&time=all_time&gel=all><span class=putih>All Gelombang</span></a>";
 
 
 $rtime = [

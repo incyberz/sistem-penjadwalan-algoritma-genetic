@@ -77,7 +77,11 @@ if ($pmb['id_jalur']) {
       $accept = ".$b[ekstensi]";
     }
 
-    $s = "SELECT * FROM tb_berkas WHERE username='$username' AND jenis_berkas = '$jenis_berkas'";
+    $s = "SELECT a.* FROM tb_berkas a 
+    JOIN tb_akun b ON a.username=b.username 
+    WHERE b.tahun_pmb = $tahun_pmb
+    AND a.username='$username' 
+    AND a.jenis_berkas = '$jenis_berkas'";
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
     $img_berkas = $belum_upload;
     $gradasi = 'merah';
@@ -187,7 +191,8 @@ if ($pmb['id_jalur']) {
       } else { // file berkas hilang
         $img_berkas = $image_missing;
       }
-    } // end if rows
+    }
+
 
 
 
@@ -237,18 +242,22 @@ if ($pmb['id_jalur']) {
 
     $input_wajibs = '';
     $info_field_wajibs = '';
-    if ($b['field_wajibs'] and $d['status'] != 1) {
+    if (
+      $b['field_wajibs']
+      and $status != 1
+    ) {
       $field_wajibs = explode(';', $b['field_wajibs']);
       foreach ($field_wajibs as $field) {
+        $d_field = $d[$field] ?? null;
         if ($field) {
-          $value_show = $d[$field];
+          $value_show = $d_field ?? '-';
           $type = 'text';
           if ($field == 'nomor_berkas') {
             $kolom = "Nomor $b[nama_berkas]";
           } elseif ($field == 'tanggal_berkas') {
             $kolom = "Tanggal $b[nama_berkas]";
             $type = 'date';
-            $value_show = date('d-M-Y', strtotime($d[$field]));
+            $value_show = date('d-M-Y', strtotime($d_field));
           } elseif ($field == 'nominal') {
             $type = 'number';
             $kolom = "Nominal Transfer";
@@ -263,7 +272,7 @@ if ($pmb['id_jalur']) {
             </div>
           ";
 
-          if ($d[$field]) { // jika sudah ada datanya
+          if ($d_field) { // jika sudah ada datanya
             $info_field_wajibs .= "<li class=''><b>$kolom</b>: $value_show</li>";
           }
         }

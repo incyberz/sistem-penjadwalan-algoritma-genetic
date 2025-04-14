@@ -2,14 +2,16 @@
   <?php
   include 'petugas-dashboard-pendaftar_counts.php';
 
-  include 'petugas-dashboard-berkas.php';
-  include 'petugas-dashboard-jadwal_tes.php';
-  include 'petugas-dashboard-stuck.php';
-  include 'petugas-dashboard-feedback.php';
+  if ($get_gel == 'all' and $get_time == 'all_time') {
+    include 'petugas-dashboard-berkas.php';
+    include 'petugas-dashboard-jadwal_tes.php';
+    include 'petugas-dashboard-stuck.php';
+    include 'petugas-dashboard-feedback.php';
 
-  include 'petugas-dashboard-charts-count_calculations.php';
-  include 'petugas-dashboard-charts-bar.php';
-  include 'petugas-dashboard-charts-pie.php';
+    include 'petugas-dashboard-charts-count_calculations.php';
+    include 'petugas-dashboard-charts-bar.php';
+    include 'petugas-dashboard-charts-pie.php';
+  }
 
   include 'grafik_pendaftar_harian.php';
 

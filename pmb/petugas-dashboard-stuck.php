@@ -1,6 +1,8 @@
 <?php
 include '../includes/img_icon.php';
 include '../includes/key2kolom.php';
+require_once '../includes/eta.php';
+require_once '../includes/script_btn_aksi.php';
 
 $rstuck = [];
 
@@ -10,6 +12,7 @@ $rstuck_at = [
     'th' => 'Last Daftar',
     'no_data' => "Semua Pendaftar sudah bayar Formulir",
     'sql' => "SELECT 
+      a.username,
       a.nama,
       a.created_at as last_date,
       (
@@ -17,10 +20,10 @@ $rstuck_at = [
         AND jenis_berkas='FORMULIR') sudah_bayar_formulir
 
       FROM tb_akun a 
+      JOIN tb_pmb b ON a.username=b.username
       WHERE a.active_status = 1 -- hanya pendaftar aktif
       ORDER BY sudah_bayar_formulir,
       a.created_at 
-      LIMIT 3
     ",
   ],
   'berkas' => [
@@ -28,6 +31,7 @@ $rstuck_at = [
     'th' => 'Belum Upload',
     'no_data' => "Semua Peserta sudah Upload Berkas",
     'sql' => "SELECT 
+      a.username,
       a.nama,
       b.upload_at as last_date,
       (
@@ -43,7 +47,6 @@ $rstuck_at = [
       AND a.active_status = 1 -- hanya pendaftar aktif
       ORDER BY belum_upload_count DESC,
       b.upload_at 
-      LIMIT 3
     ",
   ],
   'registrasi' => [
@@ -51,6 +54,7 @@ $rstuck_at = [
     'th' => 'Tanggal Lulus Tes',
     'no_data' => "Semua Peserta Tes saat ini sudah Registrasi Ulang",
     'sql' => "SELECT 
+      a.username,
       a.nama,
       b.tanggal_lulus_tes as last_date,
       (
@@ -64,40 +68,190 @@ $rstuck_at = [
       AND b.tanggal_finish_registrasi is null -- hanya peserta yang belum registrasi
       ORDER BY sudah_registrasi,
       a.created_at 
-      LIMIT 3
     ",
   ],
 ];
 
-foreach ($rstuck_at as $k => $v) {
-  $q = mysqli_query($cn, $v['sql']) or die(mysqli_error($cn));
+$get_at = $get_at ?? null;
+$get_username = $get_username ?? null;
+$navs = '';
+$link_back = '';
 
-  $rstuck[$k] = '';
+# ============================================================
+# SELECT KODE ACTIVE STATUS NEGATIF (REJECT) 
+# ============================================================
+$select_kode_reject = '';
+if ($get_at) {
+  $s = "SELECT * FROM tb_status_akun WHERE id < 0 ORDER BY id DESC";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  $opt = '';
+  while ($d = mysqli_fetch_assoc($q)) {
+    $opt .= "<option value=$d[id] >Alasan: $d[status]</option>";
+  }
+  $select_kode_reject = "<select class='form-control' name=active_status>$opt</select>";
+}
+
+foreach ($rstuck_at as $at => $v) {
+  if ($get_at) {
+    $link_back = "<a href=?petugas>Home Petugas</a>";
+    # ============================================================
+    # NAVIGASI FOLLOW UP
+    # ============================================================
+    $navs .= "
+      <div class='py-1 px-3 gradasi-toska br5'>
+        <i>at</i> <a href='?follow_up&at=$at'>$at</a>
+      </div>
+    ";
+  }
+
+  $col = 4;
+  $limit = 3;
+  if ($get_at) {
+    $limit = 100;
+    $col = 12;
+    if ($get_at != $at) continue; // at formulir | berkas | registrasi
+  }
+
+  # ============================================================
+  # EXECUTE SQL STUCKER
+  # ============================================================
+  $q = mysqli_query($cn, $v['sql'] . " LIMIT $limit") or die(mysqli_error($cn));
+
+  $rstuck[$at] = '';
   $bg = 'danger';
   if (mysqli_num_rows($q)) {
     $i = 0;
     while ($d = mysqli_fetch_assoc($q)) {
+      if ($get_username) {
+        if ($get_username != $d['username']) continue; // username yang ini saja
+      }
       $i++;
       $tgl = date('d-M-Y', strtotime($d['last_date']));
       $eta = eta2($d['last_date']);
       $dots = strlen($d['nama']) > 20 ? '...' : '';
       $nama = ucwords(strtolower(substr($d['nama'], 0, 20))) . $dots;
       $info = '';
-      if ($k == 'formulir' || $k == 'registrasi') {
+      $tr_berkas = '';
+      if ($at == 'formulir' || $at == 'registrasi') {
         $info = "<div class='f12 abu'>$tgl, <i>$eta</i></div>";
-      } elseif ($k == 'berkas') {
+      } elseif ($at == 'berkas') {
         if (!$d['belum_upload_count']) continue;
         $info = "<div class='f12 abu'>$d[belum_upload_count] berkas</div>";
+        if ($get_username) {
+          # ============================================================
+          # SHOW BERKAS YANG TELAH DIUPLOAD
+          # ============================================================
+          $s2 = "SELECT a.* FROM tb_berkas a 
+          JOIN tb_akun b ON a.username=b.username 
+          WHERE b.tahun_pmb=$tahun_pmb 
+          AND a.username='$d[username]'";
+          $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
+          $ruploaded_berkas = [];
+          while ($d2 = mysqli_fetch_assoc($q2)) {
+            $ruploaded_berkas[$d2['jenis_berkas']] = $d2;
+          }
+
+          # ============================================================
+          # SHOW BERKAS YANG WAJIB DIUPLOAD
+          # ============================================================
+          $s2 = "SELECT c.berkas_wajib FROM tb_pmb a 
+          JOIN tb_akun b ON a.username=b.username 
+          JOIN tb_jalur c ON a.id_jalur=c.id 
+          WHERE b.tahun_pmb=$tahun_pmb 
+          AND a.username='$d[username]'";
+          $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
+          $d2 = mysqli_fetch_assoc($q2);
+
+          $rberkas_wajib = explode(';', $d2['berkas_wajib']);
+          foreach ($rberkas_wajib as $jenis_berkas) {
+            $verif_by = null;
+            if (key_exists($jenis_berkas, $ruploaded_berkas)) {
+              $verif_by = $ruploaded_berkas[$jenis_berkas]['verif_by'];
+              $verif_date = date('d-M-Y H:i', strtotime($ruploaded_berkas[$jenis_berkas]['verif_date']));
+              $by = !$ruploaded_berkas[$jenis_berkas]['verif_by'] ? "
+                belum diverifikasi oleh Petugas $img_warning
+              " : "
+                <span class=text-success><b>verified by</b>: $verif_by at $verif_date</span>
+              ";
+              $Telah_upload = "
+                <span class=text-center>telah upload $img_check</span>
+                <div class='f12'>$by</div>
+              ";
+            } else {
+              $Telah_upload = "<span class=text-danger>belum upload $img_warning</span>";
+            }
+
+            $last_notif = $ruploaded_berkas[$jenis_berkas]['last_notif'] ?? '-';
+            $btn_kirim_notif = $verif_by ? "
+              <span class='btn btn-success btn-sm'>Kirim Selamat</span>
+            " : "
+              <span class='btn btn-primary btn-sm'>Kirim Peringatan</span>
+            ";
+
+            $tr_berkas .= "
+              <tr>
+                <td><b>$jenis_berkas</b>: $Telah_upload</td>
+                <td>Last Notif: $last_notif</td>
+                <td>
+                  $btn_kirim_notif
+                </td>
+              </tr>
+            ";
+          }
+
+          $tr_berkas = "<table class='table my-2'>$tr_berkas</table>";
+        } // end if username spesifik yang ini
+      } // end if at == berkas
+      # ============================================================
+      # AKSI
+      # ============================================================
+      $btn_aksi = "<a href='?follow_up&at=$at&username=$d[username]' class='btn btn-danger btn-sm'>Follow Up</a>";
+      if ($get_at) {
+        $btn_aksi = "
+          <span class='btn btn-danger btn-sm btn-aksi' id=form-set-nonaktif-$d[username]--toggle>Set Nonaktif</span>
+          <form method=post class='card my-2' id=form-set-nonaktif-$d[username]>
+            <div class='card-header bg-danger text-white'>Form Set Nonaktif</div>
+            <div class='card-body gradasi-merah'>
+              <p>
+                Jika Saudara/i $nama:
+                <ul> 
+                  <li>tidak bisa dihubungi via whatsapp; atau</li> 
+                  <li>menyatakan Resign; atau </li>
+                  <li>penyebab black-list lainnya,</li>
+                </ul> 
+                maka Anda dapat Set Nonaktif agar tidak lagi muncul di Daftar Wajib Follow Up.
+              </p>
+              <p class=text-danger>
+                Perhatian! Status Nonaktif menyebabkan pendaftar tidak bisa melanjutkan proses pendaftaran, kecuali sudah diizinkan kembali oleh Petugas.
+              </p>
+
+              $select_kode_reject
+
+              <label class='d-block my-2 hover'>
+                <input type=checkbox required> 
+                Saya menyatakan bahwa pilihan alasan diatas sudah benar.
+              </label>
+
+              <button class='btn btn-danger w-100 mt-2' name=btn_set_nonaktif value=$d[username]>Set Nonaktif</button>
+            </div>
+          </form>
+        ";
       }
-      $rstuck[$k] .= "
+
+
+      # ============================================================
+      # FINAL TR
+      # ============================================================
+      $rstuck[$at] .= "
         <tr>
           <td>$i</td>
           <td>
-            $nama
+            <a href='?follow_up&at=$get_at&username=$d[username]'>$nama</a>
             $info
           </td>
           <td>
-            <button class='btn btn-danger btn-sm'>Follow Up</button>
+            $btn_aksi
+            $tr_berkas
           </td>
         </tr>
       ";
@@ -107,14 +261,14 @@ foreach ($rstuck_at as $k => $v) {
   }
 
 
-  $rstuck[$k] =  $rstuck[$k] ? "
+  $rstuck[$at] =  $rstuck[$at] ? "
     <table class=table>
       <thead>
         <th>No</th>
         <th>$v[th]</th>
         <th>Aksi</th>
       </thead>
-      $rstuck[$k]
+      $rstuck[$at]
     </table>  
   " : "
     <div class='text-success'>
@@ -122,17 +276,41 @@ foreach ($rstuck_at as $k => $v) {
     </div>
   ";
 
-  $rstuck[$k] = "
-    <div class='col-4'>
+  # ============================================================
+  # FINAL ARRAY STUCKS
+  # ============================================================
+  $rstuck[$at] = "
+    <div class='col-$col'>
       <div class='card'>
         <div class='card-header tengah putih bg-$bg'>$v[title]</div>
         <div class='card-body'>
-          $rstuck[$k]
+          $rstuck[$at]
         </div>
       </div>
     </div>
   ";
 }
 
+if ($get_username) {
+  $navs .= "
+    <div class='py-1 px-3 gradasi-kuning br5'>
+      <i class='abu f12'>filtered by</i> <b> username</b>: $get_username
+    </div>
+    <div class='py-1 px-3 bg-primary br5'>
+      <a href='?follow_up&at=$get_at' class=text-white>Clear Filter</a>
+    </div>
+  ";
+}
 
-echo "<div class='row mt4'>" . join('', $rstuck) . "</div>";
+
+echo "
+  <div class='d-flex'>
+    <div>$link_back</div>
+    <div class=flex-fill>
+      <div class='d-flex flex-center gap-3'>
+        $navs
+      </div>
+    </div>
+  </div>
+  <div class='row mt4'>" . join('', $rstuck) . "</div>
+";
