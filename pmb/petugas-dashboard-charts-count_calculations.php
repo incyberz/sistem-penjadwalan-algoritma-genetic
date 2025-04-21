@@ -230,7 +230,7 @@ foreach ($rtb as $tb => $arr) {
       foreach ($ds as $id => $nama) {
         $d['id'] = $id;
         $d['nama'] = $nama;
-        $d['count'] = $top10[$tb][$d['id']]; // tambahkan count dari data top 10
+        $d['count'] = $top10[$tb][$d['id']] ?? 0; // tambahkan count dari data top 10, 
         $top10[$tb][$d['id']] = $d; // replace count dg array
       }
     } else {

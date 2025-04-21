@@ -69,7 +69,7 @@ b.tanggal_lulus_tes,
   AND username=a.username ) sudah_registrasi
 FROM tb_akun a 
 JOIN tb_pmb b ON a.username=b.username
-WHERE a.role is null
+WHERE 1
 AND a.created_at >= '$awal' AND a.created_at <= '$akhir'
 ";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));

@@ -152,7 +152,7 @@ $select_fields,
 
 FROM tb_akun a 
 JOIN tb_pmb b ON a.username=b.username
-WHERE a.role is null 
+WHERE 1 
 AND $sql_active_status 
 AND $sql_whatsapp_status 
 AND $sql_lulus_tes_pmb 

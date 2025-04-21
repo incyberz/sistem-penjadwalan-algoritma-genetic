@@ -44,7 +44,7 @@ for ($i = $durasi; $i >= 0; $i = $i - 1) {
 
   $s = "SELECT 1 FROM tb_akun a 
   JOIN tb_pmb b ON a.username=b.username -- menghindari data dummy akun
-  WHERE a.role is null 
+  WHERE 1 
   AND a.created_at >= '$tgl' 
   AND a.created_at <= '$tgl 23:59:59'";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
@@ -55,7 +55,7 @@ echo "<i id=tgls class=hideit>$tgls</i>";
 echo "<i id=counts class=hideit>$counts</i>";
 
 $tgls = $tgls ?? kosong('$tgls');
-$counts = $counts ?? kosong('$counts');
+$counts = $counts ?? kosong('counts');
 ?>
 
 <div class="card mt4 gradasi-toska" id=grafik_pendaftar>

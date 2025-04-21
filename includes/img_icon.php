@@ -1,6 +1,7 @@
 <?php
-function img_icon($nama, $w = 20, $h = 20)
+function img_icon($nama, $w = 20, $h = null)
 {
+  $h = $h ?? $w;
   $me = "assets/img/icon/$nama.png";
   $width = $w . 'px';
   $height = $h . 'px';

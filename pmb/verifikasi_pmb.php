@@ -1,9 +1,5 @@
 <?php
 include '../includes/udef.php';
-// include 'tahun_pmb.php';
-// include 'gelombang_aktif.php';
-// include 'info_hari_ini.php';
-// include 'session_manager.php';
 
 set_h2('Verifikasi Akun PMB');
 petugas_only();

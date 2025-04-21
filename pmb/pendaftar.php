@@ -3,7 +3,6 @@ include '../includes/eta.php';
 include '../includes/key2kolom.php';
 include 'tahun_pmb.php';
 include 'gelombang_aktif.php';
-// include 'info_hari_ini.php';
 include 'pendaftar-styles.php';
 petugas_only();
 set_title('Pendaftar PMB');

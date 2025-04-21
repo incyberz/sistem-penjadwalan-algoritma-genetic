@@ -9,3 +9,5 @@ uploads/
 *.xls*
 *.txt
 *.csv
+
+*_old.*

@@ -20,16 +20,22 @@ $password = $_GET['password'] ?? null;
 $username = $_POST['username'] ?? $username;
 $password = $_POST['password'] ?? $password;
 
+$get_role = $_GET['role'] ?? null;
+$h1 = $get_role ? 'Login Petugas' : 'Login PMB!';
+
 include 'login_pmb-styles.php';
 
 if (isset($_POST['btn_login'])) {
   $username = strip_tags(strtolower($_POST['username']));
-  $s = "SELECT * from tb_akun WHERE username='$username' and password=md5('$_POST[password]')";
+  $tb = $get_role ? 'tb_petugas_pmb' : 'tb_akun';
+  $s = "SELECT * from $tb WHERE username='$username' and password=md5('$_POST[password]')";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   if (mysqli_num_rows($q)) {
     $pesan = '';
     $d = mysqli_fetch_assoc($q);
     $_SESSION['pmb_username'] = $_POST['username'];
+
+    $d['role'] = $d['role'] ?? null;
 
     if ($d['role']) {
       $_SESSION['pmb_role'] = $d['role'];
@@ -51,7 +57,7 @@ $pesan = !$pesan ? $pesan : "<div class='alert alert-danger'>$pesan</div>";
 <div class="screen_login">
   <form method=post class="form_login">
     <div class="nama_universitas">Universitas Anda</div>
-    <h1><span class="judul_sim"></span> <span class="span_login">Login PMB!</span></h1>
+    <h1><span class="judul_sim"></span> <span class="span_login"><?= $h1 ?></span></h1>
     <!-- <div>
       <img class='logo' src="assets/img/favicon.png">
     </div> -->
@@ -64,6 +70,10 @@ $pesan = !$pesan ? $pesan : "<div class='alert alert-danger'>$pesan</div>";
       <div class="text-small">
         <a href="?daftar">Daftar Baru</a> |
         <a href="?lupa_password">Lupa Password</a>
+      </div>
+      <div class="text-small">
+        <hr>
+        <a href="?login_pmb&role=petugas">Login Petugas PMB</a>
       </div>
     </div>
   </form>

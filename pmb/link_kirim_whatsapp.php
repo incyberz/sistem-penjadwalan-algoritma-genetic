@@ -11,11 +11,11 @@ if ($link_info) $link_info = "\n\nLink Info: \n$link_info";
 
 $waktu = 'pagi';
 if (date('H') >= 9) {
-  $waktu = 'siang';
+  $waktu = 'Siang';
 } elseif (date('H') >= 15) {
-  $waktu = 'sore';
+  $waktu = 'Sore';
 } elseif (date('H') >= 18) {
-  $waktu = 'malam';
+  $waktu = 'Malam';
 }
 
 if ($dari == 'petugas') {

@@ -133,19 +133,6 @@ if ($pmb['id_jalur']) {
           $kirim_notif_ke_petugas = "
             Last notif: $eta
             <hr>
-            <form method=post class='card'>
-              <div class='card-header bg-$bg tengah putih'>Notifikasi untuk $nama_penerima</div>
-              <div class='card-body'>
-                <div class='f14 abu miring mb1'>Preview Notif:</div>
-                <div id='text_preview' class='form-control'>$text_preview</div>
-                <input type=hidden value='$link_wa' name=link_wa>
-                <button class='btn btn-$bg w-100 mt2' value='$d[id]' name=btn_kirim_notifikasi onclick='return confirm(`Kirim Notif?`)'>Kirim Notifikasi Whatsapp</button>
-              </div>
-            </form>
-          ";
-          $kirim_notif_ke_petugas = "
-            Last notif: $eta
-            <hr>
             <div method=post class='card'>
               <div class='card-header bg-$bg tengah putih'>Notifikasi untuk $nama_penerima</div>
               <div class='card-body'>
