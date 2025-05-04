@@ -120,9 +120,6 @@ if ($bimbingan) {
     $select_peserta_bimbingan -- lihat di bimbingan.php
     AND d.id = $id_dosen -- saya sendiri
   ";
-  // echo '<pre>';
-  // var_dump($s);
-  // echo '</pre>';
   $tr_mhs = '';
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   $jumlah_mhs_bimbingan = mysqli_num_rows($q);

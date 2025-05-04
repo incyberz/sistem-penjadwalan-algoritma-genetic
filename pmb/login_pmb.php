@@ -29,6 +29,11 @@ if (isset($_POST['btn_login'])) {
   $username = strip_tags(strtolower($_POST['username']));
   $tb = $get_role ? 'tb_petugas_pmb' : 'tb_akun';
   $s = "SELECT * from $tb WHERE username='$username' and password=md5('$_POST[password]')";
+  // echo '<pre>';
+  // var_dump($_SESSION);
+  // var_dump($s);
+  // echo '<b style=color:red>Developer SEDANG DEBUGING: exit(true)</b></pre>';
+  // exit;
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   if (mysqli_num_rows($q)) {
     $pesan = '';

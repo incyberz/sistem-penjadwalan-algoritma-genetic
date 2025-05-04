@@ -61,9 +61,6 @@ while ($d = mysqli_fetch_assoc($q)) {
 
 $s = "SELECT a.* 
 FROM tb_$tb a WHERE $sql_where";
-echo '<pre>';
-var_dump($s);
-echo '</pre>';
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $tr = '';
 if (mysqli_num_rows($q)) {

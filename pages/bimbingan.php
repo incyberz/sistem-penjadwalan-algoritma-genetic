@@ -1,14 +1,4 @@
 <?php
-if (0) {
-  # ============================================================
-  # DEBUGGING
-  # ============================================================
-  echo '<pre>';
-  echo '<b style=color:red>Developer SEDANG DEBUGING</b></pre>';
-  $role = 'AKD'; // zzz debug
-  $id_mhs = 15; // aena
-}
-
 function hitungMingguDari($tanggal_awal)
 {
   $tanggal_awal = new DateTime($tanggal_awal);

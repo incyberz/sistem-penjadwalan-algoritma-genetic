@@ -1,5 +1,6 @@
 <?php
 unset($_SESSION['pmb_username']);
+unset($_SESSION['pmb_role']);
 if ($_SESSION) {
   echo '<pre>';
   var_dump($_SESSION);

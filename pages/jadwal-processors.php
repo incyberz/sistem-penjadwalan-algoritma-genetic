@@ -80,9 +80,6 @@ if (isset($_POST['btn_book'])) {
     # GET DATA KONFLIK | UNIQUE DOSEN
     # ============================================================
     $unik_dosen = "$ta_aktif-$id_dosen-$weekday-$id_sesi";
-    echo '<pre>';
-    var_dump($unik_dosen);
-    echo '</pre>';
     $d = []; // inisialisasi
     include 'show_konflik_dosen.php';
     // exit;

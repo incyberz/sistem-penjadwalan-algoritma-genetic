@@ -130,7 +130,7 @@ if (isset($_POST['btn_set_password'])) {
         jenis_sekolah,
         sekolah_negeri,
         alamat_sekolah,
-        kecamatan,
+        kecamatan_sekolah,
         jurusans
       ) VALUES (
         $new_id_sekolah,

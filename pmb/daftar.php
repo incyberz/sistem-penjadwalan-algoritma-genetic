@@ -7,12 +7,12 @@ if ($username) {
   if ($akun['last_step']) include 'pmb.php';
   if ($pmb['tanggal_finish_registrasi']) jsurl('?dashboard_pendaftar');
 }
-if (isset($akun) and $akun['role']) jsurl("./?$akun[role]");
+if (isset($akun) and $role) jsurl("./?$role");
 
 # ============================================================
 # DEFAULT WHATSAPP PETUGAS
 # ============================================================
-$s = "SELECT username, nama, whatsapp FROM tb_akun WHERE role='petugas' AND is_petugas_default=1";
+$s = "SELECT username, nama, whatsapp FROM tb_petugas_pmb WHERE is_petugas_default=1";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 if (!mysqli_num_rows($q)) {
   alert('Belum ada Petugas PMB default.');
@@ -56,10 +56,6 @@ $get_step = $_GET['step'] ?? 1;
 if ($get_step > 1 and !$username) {
   alert('Sesi login telah berakhir. <a href=?login_pmb>Silahkan relogin</a>!');
   exit;
-  echo '<pre>';
-  var_dump($_SESSION);
-  echo '</pre>';
-  die('Silahkan relogin!');
 }
 // $rstep = [
 //   1 => 'Pendaftaran Akun',

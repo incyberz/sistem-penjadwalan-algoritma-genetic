@@ -1,7 +1,6 @@
 <?php
 set_title('Panduan Petugas PMB');
 require_once '../includes/img_icon.php';
-// stop('ZZZ tanya chatgpt untuk Panduan Petugas PMB');
 $get_key = $_GET['key'] ?? null;
 
 $rpanduan = [
