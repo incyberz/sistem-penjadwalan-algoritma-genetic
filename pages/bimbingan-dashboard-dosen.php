@@ -1,4 +1,32 @@
+<style>
+  .image-mhs {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .emoji-mhs {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 30px;
+    border: solid 1px #ccc;
+  }
+
+  .image-mhs-thumb {
+    width: 50px;
+    height: 50px;
+  }
+</style>
 <?php
+# ============================================================
+# ARRAY STATUS BIMBINGAN
+# ============================================================
+include 'rStatusBimbingan.php';
+
+
 $perlu_review_count = 0;
 $belum_update_count = 0;
 $sudah_update_count = 0;
@@ -13,6 +41,26 @@ for ($i = 1; $i < 6; $i++) {
     </label>
   ";
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # ============================================================
 # MAIN SELECT MY BIMBINGAN
@@ -92,27 +140,28 @@ if ($bimbingan) {
   ";
 }
 
-# ============================================================
-# ARRAY STATUS 
-# ============================================================
-$s = "SELECT * FROM tb_status_bimbingan ";
-$q =  mysqli_query($cn, $s) or die(mysqli_error($cn));
-$rStatus = [];
-$tr_status = '';
-while ($d = mysqli_fetch_assoc($q)) {
-  $rStatus[$d['id']] = $d['status'];
-  $tr_status .= "
-    <tr>
-      <td>$d[id]</td>
-      <td>$d[status]</td>
-    </tr>
-  ";
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # ============================================================
 # DAFTAR PESERTA BIMBINGAN
 # ============================================================
 if ($bimbingan) {
+  $countBimbinganStatus = [];
   # ============================================================
   # MY BIMIBNGAN
   # ============================================================
@@ -132,9 +181,14 @@ if ($bimbingan) {
     # PROGRESS TIAP MHS
     # ============================================================
     $id_status = $d['id_status_bimbingan'];
-    $status = $rStatus[$id_status] ?? '<b class=text-danger>Belum Pernah Bimbingan<b>';
-    $count = count($rStatus);
+    $status = $rStatusBimbingan[$id_status] ?? '<b class=text-danger>Belum Pernah Bimbingan<b>';
+    $count = count($rStatusBimbingan);
     $persen = $id_status ? round($id_status / $count * 100) : 0;
+    if (isset($countBimbinganStatus[$id_status])) {
+      $countBimbinganStatus[$id_status]++;
+    } else {
+      $countBimbinganStatus[$id_status] = 1;
+    }
 
     $progress = "
       <div>Status: $status</div>
@@ -156,13 +210,28 @@ if ($bimbingan) {
     # ============================================================
     # APAKAH PERLU REVIEW DARI MHS INI?
     # ============================================================
-    $Lihat_Detail = 'Lihat Detail';
-    $btn_info = 'btn-info';
+    $Lihat_Detail = '🔍 detail';
+    $btn_info = 'btn-outline-info';
     if ($d['perlu_review']) {
       $perlu_review_count++;
-      $Lihat_Detail = 'Review Laporan';
-      $btn_info = 'btn-danger';
+      $Lihat_Detail = '📝 review';
+      $btn_info = 'btn-outline-danger';
     }
+
+    $belumUpload = 'assets/img/belum-upload.jpg';
+    $notFound = 'assets/img/not-found.png';
+    $src = $belumUpload;
+    $path = "assets/img/mhs/$d[image_mhs]";
+    if ($d['image_mhs']) {
+      if (file_exists($path)) {
+        $src = $path;
+      } else {
+        $src = $notFound;
+      }
+    }
+    $profilMhs = "<img src='$src' class='image-mhs image-mhs-thumb'>";
+
+    $linkMhsDetail = "<a href='?detail&tb=mhs&id=$d[id_mhs]'>$profilMhs</a>";
 
     # ============================================================
     # FINAL TR MY MHS BIMBINGAN
@@ -171,16 +240,83 @@ if ($bimbingan) {
       <tr>
         <td>$i</td>
         <td>
-          $d[nama_mhs] $badge_prodi
-          <div class='f10 abu'>$d[nim]</div>
+          <div class='d-flex gap-2'>
+            <div>
+              $linkMhsDetail
+            </div>
+            <div>
+              $d[nama_mhs] $badge_prodi
+              <div class='f10 abu'>$d[nim]</div>
+            </div>
+          </div>
         </td>
         <td>$progress</td>
         $td_status
-        <td><a href='?bimbingan&p=riwayat_laporan&id_mhs=$d[id_mhs]' class='btn btn-sm $btn_info'>$Lihat_Detail</a></td>
+        <td>
+          <a href='?kirim_notif_bimbingan&jenis=peringatan&id_mhs=$d[id_mhs]' class='btn btn-sm btn-outline-danger '>📢 notif</a>
+          <a href='?bimbingan&p=riwayat_laporan&id_mhs=$d[id_mhs]' class='btn btn-sm $btn_info'>$Lihat_Detail</a>
+        </td>
       </tr>
     ";
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ============================================================
+# TABEL STATUS BIMBINGAN
+# ============================================================
+$trStatusBimbingan = '';
+foreach ($rStatusBimbingan as $id => $status) {
+  $countMhs = $countBimbinganStatus[$id] ?? null;
+  if ($countMhs) {
+    $countShow = '';
+    for ($i = 0; $i < $countMhs; $i++) {
+      $countShow .= '🧑‍🎓';
+    }
+  } else {
+    $countShow = '-';
+  }
+
+  $trStatusBimbingan .= "
+    <tr>
+      <td>$id</td>
+      <td>$status</td>
+      <td>$countShow</td>
+    </tr>
+  ";
+}
+$tbStatusBimbingan = "
+  <table class='table table-striped'>
+    <thead>
+      <tr>
+        <th>id</th>
+        <th>status</th>
+        <th>count mhs</th>
+      </tr>
+    </thead>
+    <tbody>
+      $trStatusBimbingan
+    </tbody>
+  </table>
+";
+
+
+
 
 $belum_update_count = $jumlah_mhs_bimbingan - $sudah_update_count;
 
@@ -249,17 +385,7 @@ $belum_update_count = $jumlah_mhs_bimbingan - $sudah_update_count;
 <div class="card mt-4">
   <div class="card-header bg-primary text-white">Kode Status Bimbingan</div>
   <div class="card-body">
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>id</th>
-          <th>status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?= $tr_status ?>
-      </tbody>
-    </table>
+    <?= $tbStatusBimbingan ?>
   </div>
 </div>
 

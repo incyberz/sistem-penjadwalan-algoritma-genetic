@@ -45,6 +45,7 @@ a.*,
 b.id as id_mhs,
 b.nama as nama_mhs,
 b.nim,
+b.image as image_mhs,
 d.id as id_dosen,
 d.nama as nama_dosen,
 e.singkatan as prodi,
@@ -56,7 +57,9 @@ e.singkatan as prodi,
   SELECT COUNT(1) FROM tb_laporan_bimbingan 
   WHERE id_peserta_bimbingan=a.id 
   AND id_status=2 -- perlu review | sedang diperiksa
-  ) perlu_review
+  ) perlu_review,
+(
+  SELECT whatsapp FROM tb_user WHERE id=b.id_user) whatsapp
 
 FROM tb_peserta_bimbingan a 
 JOIN tb_mhs b ON b.id=a.id_mhs 

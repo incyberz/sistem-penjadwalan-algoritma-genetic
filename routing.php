@@ -28,19 +28,15 @@ $arr_route = [
   // 'riwayat-laporan-bimbingan' => 'bimbingan&p=riwayat_laporan',
 ];
 
+// custom param berdasarkan address route
+if (key_exists($param, $arr_route)) $param = $arr_route[$param];
+
 
 # ============================================================
 # SWITCH PARAMETER
 # ============================================================
-$konten = null;
-if (key_exists($param, $arr_route)) {
-  $param = $arr_route[$param];
-}
-
-$konten = $konten ?? $param;
-
 // default konten berada di folder pages
-if (!file_exists($konten)) $konten = "pages/$konten.php";
+$konten = "pages/$param.php";
 
 if (file_exists($konten)) {
   if ($username) {

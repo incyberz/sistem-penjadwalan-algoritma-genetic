@@ -10,4 +10,11 @@ uploads/
 *.txt
 *.csv
 
+
+*.jpg
+*.png
+*.gif
+
 *_old.*
+
+conn.php

@@ -7,9 +7,9 @@ $is_live = $_SERVER['SERVER_NAME'] == 'localhost' ? 0 : 1;
 
 $db_server = 'localhost';
 if ($is_live) {
-  $db_user = "mmcclini_admin";
-  $db_pass = "MMC-Clinic2024";
-  $db_name = "mmcclini_jadwal";
+  $db_user = "kangsoli_admin_siakad";
+  $db_pass = "SiakadUniversitas@2025";
+  $db_name = "kangsoli_siakad";
 } else {
   $db_user = 'root';
   $db_pass = '';

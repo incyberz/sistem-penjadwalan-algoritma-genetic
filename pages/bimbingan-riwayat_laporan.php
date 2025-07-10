@@ -17,6 +17,8 @@ c.nidn,
 d.whatsapp as whatsapp_pembimbing,
 d.image as image_pembimbing,
 e.nama as nama_mhs,
+e.nim,
+f.singkatan as prodi,
 (
   SELECT p.whatsapp FROM tb_user p 
   JOIN tb_mhs q ON q.id_user=p.id 
@@ -29,6 +31,7 @@ JOIN tb_bimbingan b ON b.id=a.id_bimbingan
 JOIN tb_dosen c ON c.id=b.id_dosen 
 JOIN tb_user d ON c.id_user=d.id 
 JOIN tb_mhs e ON a.id_mhs=e.id 
+JOIN tb_prodi f ON e.id_prodi=f.id 
 WHERE a.id_mhs = $get_id_mhs -- TARGET MHS
 AND c.id = $id_dosen -- SAYA SENDIRI
 ";
@@ -264,9 +267,14 @@ $statistik = "
   </div>
 ";
 
+$badge_prodi = badge_prodi($bimbingan['prodi']);
 
 set_title("Riwayat Laporan");
 echo "
+  <div class=mb-3>
+    <div><b>Nama Mhs</b>: <span class='text-primary f24'>$bimbingan[nama_mhs]</span>  </span></div> 
+    <div><b>NIM</b>: $bimbingan[nim] $badge_prodi</div> 
+  </div>
   $statistik 
   $riwayat_laporan
 ";

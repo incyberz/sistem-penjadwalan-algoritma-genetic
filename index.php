@@ -41,6 +41,7 @@ $get_fakultas = $_GET['fakultas'] ?? null;
 $session_fakultas = $_SESSION['fakultas'] ?? $default_fakultas;
 $fakultas = $get_fakultas ?? $session_fakultas;
 $ta_sebelumnya = $ta_aktif - 10;
+$text_wa_footer = "Gamified Academic System \n" . date('D, F d, Y, H:i:s');
 
 
 # ============================================================

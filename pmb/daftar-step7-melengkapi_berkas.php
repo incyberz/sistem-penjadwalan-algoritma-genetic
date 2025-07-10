@@ -248,7 +248,7 @@ if ($pmb['id_jalur']) {
           } elseif ($field == 'nominal') {
             $type = 'number';
             $kolom = "Nominal Transfer";
-            $value_show = 'Rp ' . number_format($value_show) . ',-';
+            $value_show = 'Rp ' . number_format($d_field) . ',-';
           } else {
             $kolom = $field;
           }

@@ -82,7 +82,7 @@ if (!$id_sekolah) {
       sekolah_negeri='$sekolah[sekolah_negeri]', 
       nama_sekolah='$sekolah[nama_sekolah]', 
       alamat_sekolah='$sekolah[alamat_sekolah]', 
-      kecamatan_sekolah='$sekolah[kecamatan]'
+      kecamatan_sekolah='$sekolah[kecamatan_sekolah]'
 
     WHERE username='$username'";
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
